@@ -5,7 +5,7 @@ import { Brand } from "@/components/brand";
 const columns = [
   { title: "Discover", links: [["Stays", "/search?mode=stay"], ["Homes to rent", "/search?mode=rent"], ["Homes to buy", "/search?mode=buy"], ["New developments", "/search?mode=new"]] },
   { title: "Nestora", links: [["Community", "/social"], ["Nora guide", "/nora"], ["Trust & safety", "/trust"], ["Help centre", "/help"]] },
-  { title: "Professionals", links: [["Agent workspace", "/workspace/agent"], ["Host workspace", "/workspace/host"], ["Developer workspace", "/workspace/developer"], ["Agency workspace", "/workspace/agency"]] },
+  { title: "Professionals", links: [["Plans and pricing", "/pricing"], ["All workspaces", "/workspace"], ["Agent workspace", "/workspace/agent"], ["Host workspace", "/workspace/host"], ["Developer workspace", "/workspace/developer"], ["Agency workspace", "/workspace/agency"]] },
 ];
 
 export function SiteFooter() {
@@ -26,7 +26,7 @@ export function SiteFooter() {
       </div>
       <div className="shell catalogue-disclosure"><Info size={15} /><p>Property listings, profiles, reviews and community posts shown in the current catalogue are illustrative content and are not live offers.</p></div>
       <div className="shell footer-bottom">
-        <p>© {new Date().getFullYear()} Nestora Technologies. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} Nestora Technologies. All rights reserved.</p>
         <div><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link><Link href="/accessibility">Accessibility</Link><a href="https://www.linkedin.com" aria-label="Nestora on LinkedIn"><Linkedin size={17} /></a><a href="https://www.instagram.com" aria-label="Nestora on Instagram"><Instagram size={17} /></a></div>
       </div>
     </footer>

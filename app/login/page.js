@@ -4,5 +4,6 @@ export default async function LoginPage({ searchParams }) {
   const params = await searchParams;
   const requested = typeof params?.next === "string" ? params.next : "";
   const nextPath = requested.startsWith("/") && !requested.startsWith("//") ? requested : "/my-nestora";
-  return <AuthPanel nextPath={nextPath} />;
+  const initialMode = params?.mode === "register" ? "register" : "signin";
+  return <AuthPanel nextPath={nextPath} initialMode={initialMode} />;
 }

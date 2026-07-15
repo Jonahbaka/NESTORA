@@ -47,15 +47,15 @@ export function HomeStoryFilm() {
   return (
     <section className="story-film" aria-labelledby="story-film-title">
       <div className="shell story-film__heading">
-        <p className="eyebrow">A place becomes a feeling</p>
-        <h2 id="story-film-title">From first look to first night home.</h2>
-        <p>Nestora keeps discovery, expert guidance, viewing and handover in one considered journey.</p>
+        <p className="eyebrow">Abuja, from keys to community</p>
+        <h2 id="story-film-title">Arrive well. Stay longer. Belong sooner.</h2>
+        <p>Nestora connects homes, hospitality and trusted local guidance in one considered journey.</p>
       </div>
       <div className="story-film__frame" ref={frameRef}>
         <video
           ref={videoRef}
-          src="/media/nestora-home-story.mp4"
-          poster="/media/nestora-home-storyboard.webp"
+          src="/media/nestora-abuja-journey.mp4"
+          poster="/media/nestora-abuja-journey-poster.webp"
           autoPlay
           muted
           loop
@@ -64,14 +64,14 @@ export function HomeStoryFilm() {
           onPlay={() => setPlaying(true)}
           onPause={() => setPlaying(false)}
           onTimeUpdate={(event) => setProgress(event.currentTarget.duration ? (event.currentTarget.currentTime / event.currentTarget.duration) * 100 : 0)}
-          aria-label="A couple discovers, tours and moves into a Nestora home"
+          aria-label="People tour an Abuja home, arrive at a hotel and gather with friends in the city"
         />
         <div className="story-film__shade" />
-        <div className="story-film__label"><span>Life, found on Nestora</span><strong>Abuja, Nigeria</strong></div>
+        <div className="story-film__label"><span>Live Abuja with Nestora</span><strong>Homes, stays and local guidance</strong></div>
         <div className="story-film__controlbar">
           <div>
-            <strong>Find it. See it. Live it.</strong>
-            <span>One connected property journey</span>
+            <strong>Tour it. Check in. Belong.</strong>
+            <span>One connected Abuja journey</span>
           </div>
           <div className="story-film__controls">
             <button type="button" onClick={togglePlayback} aria-label={playing ? "Pause film" : "Play film"}>{playing ? <Pause size={19} /> : <Play size={19} />}</button>
@@ -81,7 +81,7 @@ export function HomeStoryFilm() {
         <div className="story-film__progress" aria-hidden="true"><span style={{ width: `${progress}%` }} /></div>
       </div>
       <div className="shell story-steps" aria-label="Nestora property journey">
-        <span><b>01</b> Discover</span><span><b>02</b> Compare</span><span><b>03</b> Tour</span><span><b>04</b> Move in</span><span><b>05</b> Belong</span>
+        <span><b>01</b> Discover</span><span><b>02</b> Compare</span><span><b>03</b> Tour</span><span><b>04</b> Arrive</span><span><b>05</b> Belong</span>
       </div>
     </section>
   );

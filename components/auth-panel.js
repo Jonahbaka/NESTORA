@@ -5,8 +5,8 @@ import Link from "next/link";
 import { ArrowRight, Check, Eye, EyeOff, LockKeyhole, Mail, ShieldCheck, UserRound } from "lucide-react";
 import { useState } from "react";
 
-export function AuthPanel({ nextPath = "/my-nestora" }) {
-  const [mode, setMode] = useState("signin");
+export function AuthPanel({ nextPath = "/my-nestora", initialMode = "signin" }) {
+  const [mode, setMode] = useState(initialMode === "register" ? "register" : "signin");
   const [show, setShow] = useState(false);
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(false);

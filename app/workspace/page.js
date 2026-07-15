@@ -10,4 +10,56 @@ const roles = [
 ];
 
 export const metadata = { title: "Professional workspace" };
-export default function WorkspacePage() { return <div className="workspace-entry"><section className="workspace-entry__hero"><Image src="/images/nestora/maitama-villa.webp" alt="Contemporary premium property represented on Nestora" fill priority sizes="100vw" /><span /><div className="shell"><p className="eyebrow">Nestora for professionals</p><h1>Run a better property business.</h1><p>Present places beautifully, respond with context and keep every client step visible to the right people.</p><div><span><ShieldCheck size={17} /> Verified professional identities</span><span><ChartNoAxesCombined size={17} /> Clear performance signals</span></div></div></section><section className="section shell role-directory"><div className="section-heading"><div><p className="eyebrow">Choose your workspace</p><h2>Tools matched to how you operate</h2><p>Each workspace shares one trusted listing, conversation and activity record.</p></div></div><div className="role-grid">{roles.map(({ id, title, copy, icon: Icon, image }) => <Link href={`/workspace/${id}`} key={id}><div><Image src={image} alt="" fill sizes="(max-width: 700px) 100vw, 25vw" /></div><span><Icon size={19} /></span><h2>{title}</h2><p>{copy}</p><b>Open workspace <ArrowRight size={16} /></b></Link>)}</div></section></div>; }
+
+export default function WorkspacePage() {
+  return (
+    <div className="workspace-entry">
+      <section className="workspace-entry__hero">
+        <Image src="/images/nestora/maitama-villa.webp" alt="Contemporary premium property represented on Nestora" fill priority sizes="100vw" />
+        <span />
+        <div className="shell">
+          <p className="eyebrow">Nestora for professionals</p>
+          <h1>Run a better property business.</h1>
+          <p>Present places beautifully, respond with context and keep every client step visible to the right people.</p>
+          <div className="workspace-entry__actions">
+            <Link className="button button--coral" href="/pricing">See plans and pricing <ArrowRight size={17} /></Link>
+            <Link className="button button--light" href="/login?mode=register&next=/workspace">Create account</Link>
+          </div>
+          <div className="workspace-entry__proof">
+            <span><ShieldCheck size={17} /> Identity review does not depend on plan</span>
+            <span><ChartNoAxesCombined size={17} /> Clear usage and performance signals</span>
+          </div>
+        </div>
+      </section>
+
+      <section className="section shell role-directory">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">Choose your workspace</p>
+            <h2>Tools matched to how you operate</h2>
+            <p>Each workspace shares one trusted listing, conversation and activity record.</p>
+          </div>
+          <Link href="/pricing">Compare plans <ArrowRight size={16} /></Link>
+        </div>
+        <div className="role-grid">
+          {roles.map(({ id, title, copy, icon: Icon, image }) => (
+            <Link href={`/workspace/${id}`} key={id}>
+              <div><Image src={image} alt="" fill sizes="(max-width: 700px) 100vw, 25vw" /></div>
+              <span><Icon size={19} /></span>
+              <h2>{title}</h2>
+              <p>{copy}</p>
+              <b>Open workspace <ArrowRight size={16} /></b>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="workspace-pricing-band">
+        <div className="shell">
+          <div><p className="eyebrow">Begin with Basic</p><h2>A professional presence costs nothing to start.</h2><p>Publish up to five active listings, receive enquiries and move to a paid plan when your operation needs more capacity.</p></div>
+          <Link className="button button--light" href="/pricing">View full pricing <ArrowRight size={17} /></Link>
+        </div>
+      </section>
+    </div>
+  );
+}

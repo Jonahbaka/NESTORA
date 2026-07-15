@@ -37,6 +37,7 @@ export function SiteHeader() {
           <nav aria-label="Mobile menu">
             {navigation.map((item) => <Link key={item.href} href={item.href} onClick={() => setOpen(false)}>{item.label}</Link>)}
             <Link href="/nora" onClick={() => setOpen(false)}>Ask Nora</Link>
+            <Link href="/pricing" onClick={() => setOpen(false)}>Plans and pricing</Link>
             <Link href="/workspace" onClick={() => setOpen(false)}>Professional workspace</Link>
             <Link href="/my-nestora" onClick={() => setOpen(false)}>My Nestora</Link>
           </nav>
