@@ -1,0 +1,46 @@
+{
+  "name": "nestora",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "description": "Nestora - African hospitality, rentals, property and community platform",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint . --max-warnings=0",
+    "test": "node --test tests/*.test.js",
+    "typecheck": "tsc --noEmit -p jsconfig.json",
+    "migrate": "node scripts/migrate.js",
+    "verify": "npm run lint && npm run typecheck && npm test && npm run build"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.562.0",
+    "next": "15.5.20",
+    "pg": "^8.16.3",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "sharp": "^0.34.5",
+    "tailwind-merge": "^3.4.0",
+    "three": "^0.183.2",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "15.5.20",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "next": {
+      "postcss": "8.5.10"
+    }
+  }
+}
