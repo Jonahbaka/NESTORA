@@ -1,9 +1,5 @@
 import { NextResponse } from "next/server";
-
-const roleAccess = {
-  "/admin": new Set(["moderator", "admin"]),
-  "/workspace": new Set(["agent", "host", "developer", "agency_admin", "admin"]),
-};
+import { canAccessPath } from "@/lib/access-control";
 
 function decodeBase64Url(value) {
   const base64 = value.replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(value.length / 4) * 4, "=");
@@ -38,8 +34,7 @@ export async function middleware(request) {
     return NextResponse.redirect(login);
   }
 
-  const boundary = Object.entries(roleAccess).find(([path]) => request.nextUrl.pathname.startsWith(`${path}/`) || request.nextUrl.pathname === path);
-  if (boundary && !boundary[1].has(session.role)) {
+  if (!canAccessPath(request.nextUrl.pathname, session.role)) {
     const account = new URL("/my-nestora", request.url);
     account.searchParams.set("notice", "access");
     return NextResponse.redirect(account);

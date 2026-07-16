@@ -126,7 +126,7 @@ export function ImmersiveTour({ property }) {
         {loading ? <div className="tour-loading" role="status"><span /><p>Preparing {sceneNames[scene]}</p></div> : null}
         <div className="tour-topbar">
           <Link href={`/properties/${property.id}`} className="tour-icon" aria-label="Back to property"><ArrowLeft size={20} /></Link>
-          <div><strong>{property.title}</strong><span>{sceneNames[scene]} · {scene + 1} of {property.gallery.length}</span></div>
+          <div><h1>{property.title}</h1><span>{sceneNames[scene]} / {scene + 1} of {property.gallery.length}</span></div>
           <div className="tour-topbar__actions"><button type="button" className="tour-icon" onClick={() => setAmbient((value) => !value)} aria-label={ambient ? "Mute ambient sound" : "Turn on ambient sound"}>{ambient ? <Volume2 size={19} /> : <VolumeX size={19} />}</button><button type="button" className="tour-icon" onClick={fullscreen} aria-label="Enter fullscreen"><Maximize size={19} /></button></div>
         </div>
 
@@ -139,7 +139,7 @@ export function ImmersiveTour({ property }) {
           <button type="button" className="tour-icon" onClick={() => changeScene(scene + 1)} aria-label="Next scene"><ChevronRight size={20} /></button>
         </div>
         <button type="button" className="tour-rotate" onClick={() => setAutoRotate((value) => !value)} aria-pressed={autoRotate}>{autoRotate ? <Pause size={16} /> : <Play size={16} />}{autoRotate ? "Pause rotation" : "Resume rotation"}</button>
-        <div className="tour-disclaimer"><Info size={13} /> Interactive imagery helps you orient yourself; dimensions should be independently verified.</div>
+        <div className="tour-disclaimer"><Info size={13} /> Illustrative tour imagery helps you orient yourself; dimensions should be independently verified.</div>
       </div>
     </section>
   );

@@ -40,11 +40,11 @@ export function AuthPanel({ nextPath = "/my-nestora", initialMode = "signin" }) 
         <span />
         <div>
           <p className="eyebrow">Find your place. Feel at home.</p>
-          <h1>Your next chapter,<br />kept together.</h1>
+          <p className="auth-visual__title">Your next chapter,<br />kept together.</p>
           <ul><li><Check size={17} />Save and compare places</li><li><Check size={17} />Track bookings and inspections</li><li><Check size={17} />Message verified professionals</li></ul>
         </div>
       </div>
-      <main className="auth-main">
+      <div className="auth-main">
         <Link className="auth-back" href="/">Nestora</Link>
         <div className="auth-card">
           <span className="auth-lock"><LockKeyhole size={22} /></span>
@@ -66,7 +66,7 @@ export function AuthPanel({ nextPath = "/my-nestora", initialMode = "signin" }) 
           <div className="auth-trust"><ShieldCheck size={17} /><span><strong>Protected access</strong>Your password is hashed and sensitive account actions require fresh authentication.</span></div>
           <small>By continuing, you agree to Nestora&apos;s <Link href="/terms">Terms</Link> and <Link href="/privacy">Privacy Notice</Link>.</small>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

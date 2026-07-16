@@ -8,7 +8,7 @@ import { NoraGuide } from "@/components/nora-guide";
 export const metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_ORIGIN || "http://localhost:3000"),
   title: { default: "Nestora | Find your place. Feel at home.", template: "%s | Nestora" },
-  description: "Verified stays, rentals, homes and neighbourhood communities across Africa, beginning in Abuja.",
+  description: "A clearer way to explore stays, rentals, homes and neighbourhood communities across Africa, beginning in Abuja.",
   applicationName: "Nestora",
   manifest: "/manifest.webmanifest",
   icons: { icon: "/icon.svg", apple: "/icon.svg" },

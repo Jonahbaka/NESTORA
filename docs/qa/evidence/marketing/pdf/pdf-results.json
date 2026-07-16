@@ -1,0 +1,61 @@
+{
+  "generatedAt": "2026-07-16T12:19:50.335Z",
+  "results": [
+    {
+      "kind": "agent-profile-sheet",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\marketing\\pdf\\agent-profile-sheet.pdf",
+      "bytes": 1079783,
+      "pages": 1,
+      "pageSize": "A4 portrait"
+    },
+    {
+      "kind": "rental-flyer",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\marketing\\pdf\\rental-flyer.pdf",
+      "bytes": 1063805,
+      "pages": 1,
+      "pageSize": "A4 portrait"
+    },
+    {
+      "kind": "sale-brochure",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\marketing\\pdf\\sale-brochure.pdf",
+      "bytes": 1131553,
+      "pages": 1,
+      "pageSize": "A4 portrait"
+    },
+    {
+      "kind": "development-brochure",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\marketing\\pdf\\development-brochure.pdf",
+      "bytes": 1169526,
+      "pages": 1,
+      "pageSize": "A4 portrait"
+    },
+    {
+      "kind": "hotel-flyer",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\marketing\\pdf\\hotel-flyer.pdf",
+      "bytes": 896339,
+      "pages": 1,
+      "pageSize": "A4 portrait"
+    },
+    {
+      "kind": "payment-plan-sheet",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\marketing\\pdf\\payment-plan-sheet.pdf",
+      "bytes": 1172794,
+      "pages": 1,
+      "pageSize": "A4 portrait"
+    },
+    {
+      "kind": "qr-poster",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\marketing\\pdf\\qr-poster.pdf",
+      "bytes": 1061572,
+      "pages": 1,
+      "pageSize": "A4 portrait"
+    },
+    {
+      "kind": "comparison-sheet",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\marketing\\pdf\\comparison-sheet.pdf",
+      "bytes": 1069321,
+      "pages": 1,
+      "pageSize": "A4 portrait"
+    }
+  ]
+}

@@ -4,6 +4,7 @@ import { z } from "zod";
 import { communities, getProfile, getProperty, posts } from "@/lib/data";
 import { calculateStayTotal } from "@/lib/platform";
 import { hasDatabase } from "@/lib/server/db";
+import { accessErrorResponse, requireActiveSessionUser } from "@/lib/server/authorization";
 import { createBookingRequest, createInspectionRequest, getMemberState, setMemberMark } from "@/lib/server/member-state";
 import { assertSameOrigin, rateLimit, securityError } from "@/lib/server/request-security";
 import { SESSION_COOKIE, verifySessionToken } from "@/lib/server/session";
@@ -27,8 +28,11 @@ export async function GET() {
     const session = await readSession();
     if (!session) return NextResponse.json({ error: "Sign in to access account activity." }, { status: 401 });
     if (!hasDatabase()) return unavailable();
-    return NextResponse.json({ state: await getMemberState(session.sub) }, { headers: { "Cache-Control": "no-store" } });
+    const user = await requireActiveSessionUser(session);
+    return NextResponse.json({ state: await getMemberState(user.id) }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
+    const access = accessErrorResponse(error);
+    if (access) return NextResponse.json({ error: access.message }, { status: access.status, headers: { "Cache-Control": "no-store" } });
     console.error("Account activity read failed", error);
     return unavailable();
   }
@@ -41,6 +45,7 @@ export async function POST(request) {
     const session = await readSession();
     if (!session) return NextResponse.json({ error: "Sign in to keep this activity with your account." }, { status: 401 });
     if (!hasDatabase()) return unavailable();
+    const user = await requireActiveSessionUser(session);
     const parsed = writeSchema.safeParse(await request.json());
     if (!parsed.success) return NextResponse.json({ error: "Check the request details and try again." }, { status: 400 });
     const input = parsed.data;
@@ -50,14 +55,16 @@ export async function POST(request) {
     if (input.type === "booking" && property.mode !== "stay") return NextResponse.json({ error: "This property accepts inspection requests instead of stay bookings." }, { status: 400 });
     if (input.type === "inspection" && property.mode === "stay") return NextResponse.json({ error: "This stay accepts booking requests instead of inspections." }, { status: 400 });
     const record = input.type === "mark"
-      ? await setMemberMark({ userId: session.sub, ...input })
+      ? await setMemberMark({ userId: user.id, ...input })
       : input.type === "booking"
-        ? await createBookingRequest({ userId: session.sub, ...input, title: property.title, total: calculateStayTotal(property, input.nights).total })
-        : await createInspectionRequest({ userId: session.sub, ...input, title: property.title });
+        ? await createBookingRequest({ userId: user.id, ...input, title: property.title, total: calculateStayTotal(property, input.nights).total })
+        : await createInspectionRequest({ userId: user.id, ...input, title: property.title });
     return NextResponse.json({ record }, { status: input.type === "mark" ? 200 : 201, headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     const known = securityError(error);
     if (known) return NextResponse.json({ error: known.message }, { status: known.status });
+    const access = accessErrorResponse(error);
+    if (access) return NextResponse.json({ error: access.message }, { status: access.status, headers: { "Cache-Control": "no-store" } });
     console.error("Account activity write failed", error);
     return unavailable();
   }

@@ -1,0 +1,106 @@
+{
+  "generatedAt": "2026-07-16T13:07:24.362Z",
+  "environment": "local production build",
+  "results": [
+    {
+      "route": "home",
+      "requestedPath": "/",
+      "guardRedirect": false,
+      "h1Count": 1,
+      "imagesWithoutAlt": 0,
+      "mainCount": 1,
+      "title": "Nestora | Find your place. Feel at home.",
+      "url": "http://localhost:3030/"
+    },
+    {
+      "route": "search-rent",
+      "requestedPath": "/search?mode=rent",
+      "guardRedirect": false,
+      "h1Count": 1,
+      "imagesWithoutAlt": 0,
+      "mainCount": 1,
+      "title": "Explore places | Nestora",
+      "url": "http://localhost:3030/search?mode=rent"
+    },
+    {
+      "route": "property",
+      "requestedPath": "/properties/wuye-courtyard-residence",
+      "guardRedirect": false,
+      "h1Count": 1,
+      "imagesWithoutAlt": 0,
+      "mainCount": 1,
+      "title": "The Courtyard Residence | Nestora",
+      "url": "http://localhost:3030/properties/wuye-courtyard-residence"
+    },
+    {
+      "route": "hotel",
+      "requestedPath": "/properties/jabi-lake-serviced-suite",
+      "guardRedirect": false,
+      "h1Count": 1,
+      "imagesWithoutAlt": 0,
+      "mainCount": 1,
+      "title": "Jabi Lake Serviced Suite | Nestora",
+      "url": "http://localhost:3030/properties/jabi-lake-serviced-suite"
+    },
+    {
+      "route": "messages-guard",
+      "requestedPath": "/messages",
+      "guardRedirect": true,
+      "h1Count": 1,
+      "imagesWithoutAlt": 0,
+      "mainCount": 1,
+      "title": "Sign in | Nestora",
+      "url": "http://localhost:3030/login?next=%2Fmessages"
+    },
+    {
+      "route": "agent-guard",
+      "requestedPath": "/workspace/agent",
+      "guardRedirect": true,
+      "h1Count": 1,
+      "imagesWithoutAlt": 0,
+      "mainCount": 1,
+      "title": "Sign in | Nestora",
+      "url": "http://localhost:3030/login?next=%2Fworkspace%2Fagent"
+    },
+    {
+      "route": "developer-guard",
+      "requestedPath": "/workspace/developer",
+      "guardRedirect": true,
+      "h1Count": 1,
+      "imagesWithoutAlt": 0,
+      "mainCount": 1,
+      "title": "Sign in | Nestora",
+      "url": "http://localhost:3030/login?next=%2Fworkspace%2Fdeveloper"
+    },
+    {
+      "route": "hotel-guard",
+      "requestedPath": "/workspace/host",
+      "guardRedirect": true,
+      "h1Count": 1,
+      "imagesWithoutAlt": 0,
+      "mainCount": 1,
+      "title": "Sign in | Nestora",
+      "url": "http://localhost:3030/login?next=%2Fworkspace%2Fhost"
+    },
+    {
+      "route": "marketing-preview",
+      "requestedPath": "/marketing/rental-flyer",
+      "guardRedirect": false,
+      "h1Count": 1,
+      "imagesWithoutAlt": 0,
+      "mainCount": 1,
+      "title": "Rental presentation | Nestora",
+      "url": "http://localhost:3030/marketing/rental-flyer"
+    },
+    {
+      "route": "virtual-tour",
+      "requestedPath": "/tours/wuye-courtyard-residence",
+      "guardRedirect": false,
+      "h1Count": 1,
+      "imagesWithoutAlt": 0,
+      "mainCount": 1,
+      "title": "Tour The Courtyard Residence | Nestora",
+      "url": "http://localhost:3030/tours/wuye-courtyard-residence"
+    }
+  ]
+}

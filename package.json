@@ -12,6 +12,12 @@
     "test": "node --test tests/*.test.js",
     "typecheck": "tsc --noEmit -p jsconfig.json",
     "migrate": "node scripts/migrate.js",
+    "demo:seed": "node scripts/seed-demo-environment.js",
+    "demo:reset": "node scripts/reset-demo-environment.js",
+    "qa:local-db": "node scripts/run-local-database-qa.js",
+    "qa:marketing-qr": "node scripts/verify-marketing-qr.js",
+    "qa:marketing-pdf": "node scripts/package-marketing-pdfs.js",
+    "qa:commercial": "node scripts/run-commercial-qa.js",
     "verify": "npm run lint && npm run typecheck && npm test && npm run build"
   },
   "engines": {
@@ -20,9 +26,14 @@
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
+    "jsqr": "^1.4.0",
     "lucide-react": "^0.562.0",
     "next": "15.5.20",
+    "pdfkit": "^0.17.2",
     "pg": "^8.16.3",
+    "pg-mem": "^3.0.5",
+    "pngjs": "^7.0.0",
+    "qrcode": "^1.5.4",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "sharp": "^0.34.5",

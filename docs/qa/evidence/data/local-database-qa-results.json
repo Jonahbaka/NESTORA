@@ -1,0 +1,81 @@
+{
+  "generatedAt": "2026-07-16T12:19:33.927Z",
+  "adapter": "pg-mem PostgreSQL-compatible in-memory adapter",
+  "scope": "isolated local commercial data QA",
+  "migrations": [
+    "001_core.sql",
+    "002_member_activity.sql",
+    "003_commercial_operations.sql"
+  ],
+  "tableCount": 27,
+  "limitations": [
+    "PostgreSQL GiST exclusion constraints require validation against the isolated staging PostgreSQL service."
+  ],
+  "results": [
+    {
+      "name": "Clearly labelled demo accounts",
+      "status": "passed",
+      "detail": "6 isolated accounts created"
+    },
+    {
+      "name": "Organization and tenant boundaries",
+      "status": "passed",
+      "detail": "Agency, developer, and hotel tenants created with isolated owners"
+    },
+    {
+      "name": "Renter and agent messaging",
+      "status": "passed",
+      "detail": "Four messages persisted with both users as participants"
+    },
+    {
+      "name": "Inspection workflow",
+      "status": "passed",
+      "detail": "Confirmed inspection completed with labelled QA feedback"
+    },
+    {
+      "name": "Developer inventory",
+      "status": "passed",
+      "detail": "Available, reserved, and sold inventory states persisted"
+    },
+    {
+      "name": "Buyer and developer workflow",
+      "status": "passed",
+      "detail": "Lead, four-message thread, payment-plan request, inspection, and unchanged inventory persisted"
+    },
+    {
+      "name": "Hotel reservation workflow",
+      "status": "passed",
+      "detail": "Reservation persisted and overlap guard query detected the occupied range"
+    },
+    {
+      "name": "Database double-booking constraint",
+      "status": "staging_required",
+      "detail": "Constraint is present in production migration; pg-mem cannot execute PostgreSQL GiST exclusion constraints"
+    },
+    {
+      "name": "Guest and hotel messaging",
+      "status": "passed",
+      "detail": "Reservation lead and four-message guest thread persisted"
+    },
+    {
+      "name": "Agency invitation and subscription",
+      "status": "passed",
+      "detail": "Invitation acceptance, membership, assigned lead, and active pilot entitlement persisted"
+    },
+    {
+      "name": "Marketing attribution and notifications",
+      "status": "passed",
+      "detail": "Generated material retained its QR target and 13 notification events were captured locally"
+    },
+    {
+      "name": "Administrative review and audit",
+      "status": "passed",
+      "detail": "Approve, revise, reject, report, suspend, reinstate, and audit states persisted"
+    },
+    {
+      "name": "Tenant isolation query",
+      "status": "passed",
+      "detail": "Agency-scoped query cannot match the hotel tenant"
+    }
+  ]
+}

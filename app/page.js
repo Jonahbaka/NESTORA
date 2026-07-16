@@ -21,9 +21,9 @@ export default function HomePage() {
           </div>
           <SearchBar />
           <div className="hero-proof" aria-label="Nestora trust markers">
-            <span><ShieldCheck size={17} /> Identity-checked professionals</span>
-            <span><CalendarCheck2 size={17} /> Current availability</span>
-            <span><MessageCircle size={17} /> Secure conversations</span>
+            <span><ShieldCheck size={17} /> Designed for identity checks</span>
+            <span><CalendarCheck2 size={17} /> Visible freshness signals</span>
+            <span><MessageCircle size={17} /> Safer on-platform conversations</span>
           </div>
         </div>
       </section>
@@ -38,7 +38,7 @@ export default function HomePage() {
       </section>
 
       <section className="section shell">
-        <SectionHeading eyebrow="Fresh in Abuja" title="Places worth opening" copy="Carefully presented, recently checked and ready for the next step." href="/search" action="Explore all" />
+        <SectionHeading eyebrow="Illustrative Abuja catalogue" title="Places worth opening" copy="A preview of the clear details and next steps Nestora is designed to provide." href="/search" action="Explore all" />
         <div className="property-grid">
           {properties.slice(0, 4).map((property, index) => <PropertyCard key={property.id} property={property} priority={index < 2} />)}
         </div>
@@ -54,7 +54,7 @@ export default function HomePage() {
               <Link href={`/search?area=${encodeURIComponent(area.name)}`} className="area-tile" key={area.name}>
                 <Image src={area.image} alt={`${area.name}, Abuja`} fill sizes="(max-width: 700px) 82vw, 25vw" />
                 <span className="area-tile__veil" />
-                <div><strong>{area.name}</strong><p>{area.note}</p><small>{area.count} current places</small></div>
+                <div><strong>{area.name}</strong><p>{area.note}</p><small>{area.count} illustrative places</small></div>
               </Link>
             ))}
           </div>
@@ -73,7 +73,7 @@ export default function HomePage() {
           <dl className="feature-stats">
             <div><dt>Phase 1</dt><dd>78% complete</dd></div>
             <div><dt>Next update</dt><dd>24 July</dd></div>
-            <div><dt>From</dt><dd>₦245m</dd></div>
+            <div><dt>Illustrative price</dt><dd>NGN 245m</dd></div>
           </dl>
           <Link href="/properties/katampe-court-residences" className="button button--coral">Open project room <ArrowRight size={17} /></Link>
         </div>
@@ -93,10 +93,10 @@ export default function HomePage() {
       <section className="section shell">
         <SectionHeading eyebrow="People make a place" title="Useful conversations, close to home" copy="Follow trusted professionals, join local circles and learn from people who know the city." href="/social" action="Open community" />
         <div className="community-feature">
-          <div className="community-feature__image"><Image src="/images/nestora/jabi-community.webp" alt="Friends sharing local knowledge at a Jabi lakeside café" fill sizes="(max-width: 800px) 100vw, 56vw" /></div>
+          <div className="community-feature__image"><Image src="/images/nestora/jabi-community.webp" alt="Friends sharing local knowledge at a Jabi lakeside cafe" fill sizes="(max-width: 800px) 100vw, 56vw" /></div>
           <div className="community-feature__content">
             <span className="community-icon"><UsersRound size={22} /></span>
-            <p className="eyebrow">Living in Abuja · 18.4k members</p>
+            <p className="eyebrow">Illustrative community preview</p>
             <h2>Ask better questions before you move.</h2>
             <p>Commute notes, trusted artisans, quiet streets, school runs and weekend routines: the details that rarely make a listing but shape everyday life.</p>
             <div className="community-pills">{communities.map((community) => <Link key={community.id} href={`/communities/${community.id}`}>{community.name}</Link>)}</div>
@@ -109,8 +109,8 @@ export default function HomePage() {
         <div className="host-feature__copy">
           <span className="verified-line"><Sparkles size={18} /> Illustrative professional profile</span>
           <h2>Meet Amina, your property advisor in Abuja.</h2>
-          <p>Six years of neighbourhood knowledge, clear viewing notes and a response time measured in minutes, not days.</p>
-          <div className="host-metrics"><span><strong>4.96</strong> client rating</span><span><strong>26</strong> active listings</span><span><strong>18 min</strong> typical reply</span></div>
+          <p>This fictional profile demonstrates how neighbourhood knowledge, viewing notes and response information can be presented.</p>
+          <div className="host-metrics"><span><strong>Example</strong> client rating</span><span><strong>Example</strong> listings</span><span><strong>Example</strong> reply time</span></div>
           <Link href="/profile/amina-bello" className="button button--ink">View Amina&apos;s profile <ArrowRight size={17} /></Link>
         </div>
         <div className="host-feature__media"><Image src="/images/nestora/amina-bello-agent.webp" alt="Illustrative Abuja property advisor profile" fill sizes="(max-width: 800px) 100vw, 42vw" /></div>

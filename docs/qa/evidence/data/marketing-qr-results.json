@@ -1,0 +1,45 @@
+{
+  "generatedAt": "2026-07-16T12:19:33.991Z",
+  "results": [
+    {
+      "campaign": "agent-profile-sheet",
+      "status": "passed",
+      "decodedTarget": "http://localhost:3030/marketing/agent-profile-sheet?utm_source=nestora_material&utm_medium=qr&utm_campaign=agent-profile-sheet"
+    },
+    {
+      "campaign": "rental-flyer",
+      "status": "passed",
+      "decodedTarget": "http://localhost:3030/marketing/rental-flyer?utm_source=nestora_material&utm_medium=qr&utm_campaign=rental-flyer"
+    },
+    {
+      "campaign": "sale-brochure",
+      "status": "passed",
+      "decodedTarget": "http://localhost:3030/marketing/sale-brochure?utm_source=nestora_material&utm_medium=qr&utm_campaign=sale-brochure"
+    },
+    {
+      "campaign": "development-brochure",
+      "status": "passed",
+      "decodedTarget": "http://localhost:3030/marketing/development-brochure?utm_source=nestora_material&utm_medium=qr&utm_campaign=development-brochure"
+    },
+    {
+      "campaign": "hotel-flyer",
+      "status": "passed",
+      "decodedTarget": "http://localhost:3030/marketing/hotel-flyer?utm_source=nestora_material&utm_medium=qr&utm_campaign=hotel-flyer"
+    },
+    {
+      "campaign": "payment-plan-sheet",
+      "status": "passed",
+      "decodedTarget": "http://localhost:3030/marketing/payment-plan-sheet?utm_source=nestora_material&utm_medium=qr&utm_campaign=payment-plan-sheet"
+    },
+    {
+      "campaign": "qr-poster",
+      "status": "passed",
+      "decodedTarget": "http://localhost:3030/marketing/qr-poster?utm_source=nestora_material&utm_medium=qr&utm_campaign=qr-poster"
+    },
+    {
+      "campaign": "comparison-sheet",
+      "status": "passed",
+      "decodedTarget": "http://localhost:3030/marketing/comparison-sheet?utm_source=nestora_material&utm_medium=qr&utm_campaign=comparison-sheet"
+    }
+  ]
+}

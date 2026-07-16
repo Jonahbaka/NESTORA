@@ -53,7 +53,7 @@ export function SearchResults() {
             <div><p className="eyebrow">{area === "All Abuja" ? "Abuja" : area}</p><h1 id="results-heading">{results.length} {mode === "stay" ? "places to stay" : mode === "new" ? "new homes" : mode === "buy" ? "homes to buy" : "homes to rent"}</h1><span>Illustrative catalogue entries are not live offers</span></div>
             <label>Sort<select value={sort} onChange={(event) => setSort(event.target.value)}><option value="recommended">Recommended</option><option value="price-low">Lowest price</option><option value="rating">Highest rated</option></select><ChevronDown size={14} /></label>
           </div>
-          {results.length ? <div className="results-list">{results.map((property, index) => <PropertyCard key={property.id} property={property} horizontal={mapOpen} priority={index === 0} />)}</div> : <div className="empty-state"><MapPin size={28} /><h2>No exact matches yet</h2><p>Try a nearby area or remove one of your filters.</p><button className="button button--ink" type="button" onClick={() => { setArea("All Abuja"); setBeds(0); setMaxPrice(0); }}>Clear filters</button></div>}
+          {results.length ? <div className="results-list">{results.map((property, index) => <PropertyCard key={property.id} property={property} horizontal={mapOpen} priority={index === 0} headingLevel={2} />)}</div> : <div className="empty-state"><MapPin size={28} /><h2>No exact matches yet</h2><p>Try a nearby area or remove one of your filters.</p><button className="button button--ink" type="button" onClick={() => { setArea("All Abuja"); setBeds(0); setMaxPrice(0); }}>Clear filters</button></div>}
         </section>
 
         {mapOpen ? (

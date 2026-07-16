@@ -1,0 +1,1365 @@
+{
+  "generatedAt": "2026-07-16T09:55:00.227Z",
+  "results": [
+    {
+      "viewport": {
+        "height": 800,
+        "width": 360
+      },
+      "route": "home",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\mobile-360--home.png",
+      "navWarning": null,
+      "bodyWidth": 345,
+      "brokenVisibleImages": 0,
+      "documentWidth": 345,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Nestora | Find your place. Feel at home.",
+      "url": "http://localhost:3030/",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 800,
+        "width": 360
+      },
+      "route": "search-rent",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\mobile-360--search-rent.png",
+      "navWarning": null,
+      "bodyWidth": 345,
+      "brokenVisibleImages": 0,
+      "documentWidth": 345,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Explore places | Nestora",
+      "url": "http://localhost:3030/search?mode=rent",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 800,
+        "width": 360
+      },
+      "route": "property",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\mobile-360--property.png",
+      "navWarning": null,
+      "bodyWidth": 345,
+      "brokenVisibleImages": 0,
+      "documentWidth": 345,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "The Courtyard Residence | Nestora",
+      "url": "http://localhost:3030/properties/wuye-courtyard-residence",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 800,
+        "width": 360
+      },
+      "route": "hotel",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\mobile-360--hotel.png",
+      "navWarning": null,
+      "bodyWidth": 345,
+      "brokenVisibleImages": 0,
+      "documentWidth": 345,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Jabi Lake Serviced Suite | Nestora",
+      "url": "http://localhost:3030/properties/jabi-lake-serviced-suite",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 800,
+        "width": 360
+      },
+      "route": "messages",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\mobile-360--messages.png",
+      "navWarning": null,
+      "bodyWidth": 345,
+      "brokenVisibleImages": 0,
+      "documentWidth": 345,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Messages | Nestora",
+      "url": "http://localhost:3030/messages",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 800,
+        "width": 360
+      },
+      "route": "agent-workspace",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\mobile-360--agent-workspace.png",
+      "navWarning": null,
+      "bodyWidth": 345,
+      "brokenVisibleImages": 0,
+      "documentWidth": 345,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Agent workspace | Nestora",
+      "url": "http://localhost:3030/workspace/agent",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 800,
+        "width": 360
+      },
+      "route": "developer-workspace",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\mobile-360--developer-workspace.png",
+      "navWarning": null,
+      "bodyWidth": 345,
+      "brokenVisibleImages": 0,
+      "documentWidth": 345,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Developer workspace | Nestora",
+      "url": "http://localhost:3030/workspace/developer",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 800,
+        "width": 360
+      },
+      "route": "hotel-workspace",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\mobile-360--hotel-workspace.png",
+      "navWarning": null,
+      "bodyWidth": 345,
+      "brokenVisibleImages": 0,
+      "documentWidth": 345,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Host workspace | Nestora",
+      "url": "http://localhost:3030/workspace/host",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 800,
+        "width": 360
+      },
+      "route": "marketing-preview",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\mobile-360--marketing-preview.png",
+      "navWarning": null,
+      "bodyWidth": 345,
+      "brokenVisibleImages": 0,
+      "documentWidth": 345,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Rental presentation | Nestora | Nestora",
+      "url": "http://localhost:3030/marketing/rental-flyer",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 800,
+        "width": 360
+      },
+      "route": "virtual-tour",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\mobile-360--virtual-tour.png",
+      "navWarning": null,
+      "bodyWidth": 360,
+      "brokenVisibleImages": 0,
+      "documentWidth": 360,
+      "h1Count": 0,
+      "mainExists": true,
+      "title": "Tour The Courtyard Residence | Nestora",
+      "url": "http://localhost:3030/tours/wuye-courtyard-residence",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 844,
+        "width": 390
+      },
+      "route": "home",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\mobile-390--home.png",
+      "navWarning": null,
+      "bodyWidth": 375,
+      "brokenVisibleImages": 0,
+      "documentWidth": 375,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Nestora | Find your place. Feel at home.",
+      "url": "http://localhost:3030/",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 844,
+        "width": 390
+      },
+      "route": "search-rent",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\mobile-390--search-rent.png",
+      "navWarning": null,
+      "bodyWidth": 375,
+      "brokenVisibleImages": 0,
+      "documentWidth": 375,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Explore places | Nestora",
+      "url": "http://localhost:3030/search?mode=rent",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 844,
+        "width": 390
+      },
+      "route": "property",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\mobile-390--property.png",
+      "navWarning": null,
+      "bodyWidth": 375,
+      "brokenVisibleImages": 0,
+      "documentWidth": 375,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "The Courtyard Residence | Nestora",
+      "url": "http://localhost:3030/properties/wuye-courtyard-residence",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 844,
+        "width": 390
+      },
+      "route": "hotel",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\mobile-390--hotel.png",
+      "navWarning": null,
+      "bodyWidth": 375,
+      "brokenVisibleImages": 0,
+      "documentWidth": 375,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Jabi Lake Serviced Suite | Nestora",
+      "url": "http://localhost:3030/properties/jabi-lake-serviced-suite",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 844,
+        "width": 390
+      },
+      "route": "messages",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\mobile-390--messages.png",
+      "navWarning": null,
+      "bodyWidth": 375,
+      "brokenVisibleImages": 0,
+      "documentWidth": 375,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Messages | Nestora",
+      "url": "http://localhost:3030/messages",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 844,
+        "width": 390
+      },
+      "route": "agent-workspace",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\mobile-390--agent-workspace.png",
+      "navWarning": null,
+      "bodyWidth": 375,
+      "brokenVisibleImages": 0,
+      "documentWidth": 375,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Agent workspace | Nestora",
+      "url": "http://localhost:3030/workspace/agent",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 844,
+        "width": 390
+      },
+      "route": "developer-workspace",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\mobile-390--developer-workspace.png",
+      "navWarning": null,
+      "bodyWidth": 375,
+      "brokenVisibleImages": 0,
+      "documentWidth": 375,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Developer workspace | Nestora",
+      "url": "http://localhost:3030/workspace/developer",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 844,
+        "width": 390
+      },
+      "route": "hotel-workspace",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\mobile-390--hotel-workspace.png",
+      "navWarning": null,
+      "bodyWidth": 375,
+      "brokenVisibleImages": 0,
+      "documentWidth": 375,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Host workspace | Nestora",
+      "url": "http://localhost:3030/workspace/host",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 844,
+        "width": 390
+      },
+      "route": "marketing-preview",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\mobile-390--marketing-preview.png",
+      "navWarning": null,
+      "bodyWidth": 375,
+      "brokenVisibleImages": 0,
+      "documentWidth": 375,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Rental presentation | Nestora | Nestora",
+      "url": "http://localhost:3030/marketing/rental-flyer",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 844,
+        "width": 390
+      },
+      "route": "virtual-tour",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\mobile-390--virtual-tour.png",
+      "navWarning": null,
+      "bodyWidth": 390,
+      "brokenVisibleImages": 0,
+      "documentWidth": 390,
+      "h1Count": 0,
+      "mainExists": true,
+      "title": "Tour The Courtyard Residence | Nestora",
+      "url": "http://localhost:3030/tours/wuye-courtyard-residence",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 932,
+        "width": 430
+      },
+      "route": "home",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\mobile-430--home.png",
+      "navWarning": null,
+      "bodyWidth": 415,
+      "brokenVisibleImages": 0,
+      "documentWidth": 415,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Nestora | Find your place. Feel at home.",
+      "url": "http://localhost:3030/",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 932,
+        "width": 430
+      },
+      "route": "search-rent",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\mobile-430--search-rent.png",
+      "navWarning": null,
+      "bodyWidth": 415,
+      "brokenVisibleImages": 0,
+      "documentWidth": 415,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Explore places | Nestora",
+      "url": "http://localhost:3030/search?mode=rent",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 932,
+        "width": 430
+      },
+      "route": "property",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\mobile-430--property.png",
+      "navWarning": null,
+      "bodyWidth": 415,
+      "brokenVisibleImages": 0,
+      "documentWidth": 415,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "The Courtyard Residence | Nestora",
+      "url": "http://localhost:3030/properties/wuye-courtyard-residence",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 932,
+        "width": 430
+      },
+      "route": "hotel",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\mobile-430--hotel.png",
+      "navWarning": null,
+      "bodyWidth": 415,
+      "brokenVisibleImages": 0,
+      "documentWidth": 415,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Jabi Lake Serviced Suite | Nestora",
+      "url": "http://localhost:3030/properties/jabi-lake-serviced-suite",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 932,
+        "width": 430
+      },
+      "route": "messages",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\mobile-430--messages.png",
+      "navWarning": null,
+      "bodyWidth": 415,
+      "brokenVisibleImages": 0,
+      "documentWidth": 415,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Messages | Nestora",
+      "url": "http://localhost:3030/messages",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 932,
+        "width": 430
+      },
+      "route": "agent-workspace",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\mobile-430--agent-workspace.png",
+      "navWarning": null,
+      "bodyWidth": 415,
+      "brokenVisibleImages": 0,
+      "documentWidth": 415,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Agent workspace | Nestora",
+      "url": "http://localhost:3030/workspace/agent",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 932,
+        "width": 430
+      },
+      "route": "developer-workspace",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\mobile-430--developer-workspace.png",
+      "navWarning": null,
+      "bodyWidth": 415,
+      "brokenVisibleImages": 0,
+      "documentWidth": 415,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Developer workspace | Nestora",
+      "url": "http://localhost:3030/workspace/developer",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 932,
+        "width": 430
+      },
+      "route": "hotel-workspace",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\mobile-430--hotel-workspace.png",
+      "navWarning": null,
+      "bodyWidth": 415,
+      "brokenVisibleImages": 0,
+      "documentWidth": 415,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Host workspace | Nestora",
+      "url": "http://localhost:3030/workspace/host",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 932,
+        "width": 430
+      },
+      "route": "marketing-preview",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\mobile-430--marketing-preview.png",
+      "navWarning": null,
+      "bodyWidth": 415,
+      "brokenVisibleImages": 0,
+      "documentWidth": 415,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Rental presentation | Nestora | Nestora",
+      "url": "http://localhost:3030/marketing/rental-flyer",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 932,
+        "width": 430
+      },
+      "route": "virtual-tour",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\mobile-430--virtual-tour.png",
+      "navWarning": null,
+      "bodyWidth": 430,
+      "brokenVisibleImages": 0,
+      "documentWidth": 430,
+      "h1Count": 0,
+      "mainExists": true,
+      "title": "Tour The Courtyard Residence | Nestora",
+      "url": "http://localhost:3030/tours/wuye-courtyard-residence",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 1024,
+        "width": 768
+      },
+      "route": "home",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\tablet-portrait--home.png",
+      "navWarning": null,
+      "bodyWidth": 753,
+      "brokenVisibleImages": 0,
+      "documentWidth": 753,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Nestora | Find your place. Feel at home.",
+      "url": "http://localhost:3030/",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 1024,
+        "width": 768
+      },
+      "route": "search-rent",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\tablet-portrait--search-rent.png",
+      "navWarning": null,
+      "bodyWidth": 753,
+      "brokenVisibleImages": 0,
+      "documentWidth": 753,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Explore places | Nestora",
+      "url": "http://localhost:3030/search?mode=rent",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 1024,
+        "width": 768
+      },
+      "route": "property",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\tablet-portrait--property.png",
+      "navWarning": null,
+      "bodyWidth": 753,
+      "brokenVisibleImages": 0,
+      "documentWidth": 753,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "The Courtyard Residence | Nestora",
+      "url": "http://localhost:3030/properties/wuye-courtyard-residence",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 1024,
+        "width": 768
+      },
+      "route": "hotel",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\tablet-portrait--hotel.png",
+      "navWarning": null,
+      "bodyWidth": 753,
+      "brokenVisibleImages": 0,
+      "documentWidth": 753,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Jabi Lake Serviced Suite | Nestora",
+      "url": "http://localhost:3030/properties/jabi-lake-serviced-suite",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 1024,
+        "width": 768
+      },
+      "route": "messages",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\tablet-portrait--messages.png",
+      "navWarning": null,
+      "bodyWidth": 753,
+      "brokenVisibleImages": 0,
+      "documentWidth": 753,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Messages | Nestora",
+      "url": "http://localhost:3030/messages",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 1024,
+        "width": 768
+      },
+      "route": "agent-workspace",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\tablet-portrait--agent-workspace.png",
+      "navWarning": null,
+      "bodyWidth": 753,
+      "brokenVisibleImages": 0,
+      "documentWidth": 753,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Agent workspace | Nestora",
+      "url": "http://localhost:3030/workspace/agent",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 1024,
+        "width": 768
+      },
+      "route": "developer-workspace",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\tablet-portrait--developer-workspace.png",
+      "navWarning": null,
+      "bodyWidth": 753,
+      "brokenVisibleImages": 0,
+      "documentWidth": 753,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Developer workspace | Nestora",
+      "url": "http://localhost:3030/workspace/developer",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 1024,
+        "width": 768
+      },
+      "route": "hotel-workspace",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\tablet-portrait--hotel-workspace.png",
+      "navWarning": null,
+      "bodyWidth": 753,
+      "brokenVisibleImages": 0,
+      "documentWidth": 753,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Host workspace | Nestora",
+      "url": "http://localhost:3030/workspace/host",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 1024,
+        "width": 768
+      },
+      "route": "marketing-preview",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\tablet-portrait--marketing-preview.png",
+      "navWarning": null,
+      "bodyWidth": 753,
+      "brokenVisibleImages": 0,
+      "documentWidth": 753,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Rental presentation | Nestora | Nestora",
+      "url": "http://localhost:3030/marketing/rental-flyer",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 1024,
+        "width": 768
+      },
+      "route": "virtual-tour",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\tablet-portrait--virtual-tour.png",
+      "navWarning": null,
+      "bodyWidth": 768,
+      "brokenVisibleImages": 0,
+      "documentWidth": 768,
+      "h1Count": 0,
+      "mainExists": true,
+      "title": "Tour The Courtyard Residence | Nestora",
+      "url": "http://localhost:3030/tours/wuye-courtyard-residence",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 768,
+        "width": 1024
+      },
+      "route": "home",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\tablet-landscape--home.png",
+      "navWarning": null,
+      "bodyWidth": 1009,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1009,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Nestora | Find your place. Feel at home.",
+      "url": "http://localhost:3030/",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 768,
+        "width": 1024
+      },
+      "route": "search-rent",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\tablet-landscape--search-rent.png",
+      "navWarning": null,
+      "bodyWidth": 1009,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1009,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Explore places | Nestora",
+      "url": "http://localhost:3030/search?mode=rent",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 768,
+        "width": 1024
+      },
+      "route": "property",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\tablet-landscape--property.png",
+      "navWarning": null,
+      "bodyWidth": 1009,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1009,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "The Courtyard Residence | Nestora",
+      "url": "http://localhost:3030/properties/wuye-courtyard-residence",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 768,
+        "width": 1024
+      },
+      "route": "hotel",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\tablet-landscape--hotel.png",
+      "navWarning": null,
+      "bodyWidth": 1009,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1009,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Jabi Lake Serviced Suite | Nestora",
+      "url": "http://localhost:3030/properties/jabi-lake-serviced-suite",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 768,
+        "width": 1024
+      },
+      "route": "messages",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\tablet-landscape--messages.png",
+      "navWarning": null,
+      "bodyWidth": 1009,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1009,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Messages | Nestora",
+      "url": "http://localhost:3030/messages",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 768,
+        "width": 1024
+      },
+      "route": "agent-workspace",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\tablet-landscape--agent-workspace.png",
+      "navWarning": null,
+      "bodyWidth": 1009,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1009,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Agent workspace | Nestora",
+      "url": "http://localhost:3030/workspace/agent",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 768,
+        "width": 1024
+      },
+      "route": "developer-workspace",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\tablet-landscape--developer-workspace.png",
+      "navWarning": null,
+      "bodyWidth": 1009,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1009,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Developer workspace | Nestora",
+      "url": "http://localhost:3030/workspace/developer",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 768,
+        "width": 1024
+      },
+      "route": "hotel-workspace",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\tablet-landscape--hotel-workspace.png",
+      "navWarning": null,
+      "bodyWidth": 1009,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1009,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Host workspace | Nestora",
+      "url": "http://localhost:3030/workspace/host",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 768,
+        "width": 1024
+      },
+      "route": "marketing-preview",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\tablet-landscape--marketing-preview.png",
+      "navWarning": null,
+      "bodyWidth": 1009,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1009,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Rental presentation | Nestora | Nestora",
+      "url": "http://localhost:3030/marketing/rental-flyer",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 768,
+        "width": 1024
+      },
+      "route": "virtual-tour",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\tablet-landscape--virtual-tour.png",
+      "navWarning": null,
+      "bodyWidth": 1024,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1024,
+      "h1Count": 0,
+      "mainExists": true,
+      "title": "Tour The Courtyard Residence | Nestora",
+      "url": "http://localhost:3030/tours/wuye-courtyard-residence",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 800,
+        "width": 1280
+      },
+      "route": "home",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\desktop-1280--home.png",
+      "navWarning": null,
+      "bodyWidth": 1265,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1265,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Nestora | Find your place. Feel at home.",
+      "url": "http://localhost:3030/",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 800,
+        "width": 1280
+      },
+      "route": "search-rent",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\desktop-1280--search-rent.png",
+      "navWarning": null,
+      "bodyWidth": 1265,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1265,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Explore places | Nestora",
+      "url": "http://localhost:3030/search?mode=rent",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 800,
+        "width": 1280
+      },
+      "route": "property",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\desktop-1280--property.png",
+      "navWarning": null,
+      "bodyWidth": 1265,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1265,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "The Courtyard Residence | Nestora",
+      "url": "http://localhost:3030/properties/wuye-courtyard-residence",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 800,
+        "width": 1280
+      },
+      "route": "hotel",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\desktop-1280--hotel.png",
+      "navWarning": null,
+      "bodyWidth": 1265,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1265,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Jabi Lake Serviced Suite | Nestora",
+      "url": "http://localhost:3030/properties/jabi-lake-serviced-suite",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 800,
+        "width": 1280
+      },
+      "route": "messages",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\desktop-1280--messages.png",
+      "navWarning": null,
+      "bodyWidth": 1265,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1265,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Messages | Nestora",
+      "url": "http://localhost:3030/messages",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 800,
+        "width": 1280
+      },
+      "route": "agent-workspace",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\desktop-1280--agent-workspace.png",
+      "navWarning": null,
+      "bodyWidth": 1265,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1265,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Agent workspace | Nestora",
+      "url": "http://localhost:3030/workspace/agent",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 800,
+        "width": 1280
+      },
+      "route": "developer-workspace",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\desktop-1280--developer-workspace.png",
+      "navWarning": null,
+      "bodyWidth": 1265,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1265,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Developer workspace | Nestora",
+      "url": "http://localhost:3030/workspace/developer",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 800,
+        "width": 1280
+      },
+      "route": "hotel-workspace",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\desktop-1280--hotel-workspace.png",
+      "navWarning": null,
+      "bodyWidth": 1265,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1265,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Host workspace | Nestora",
+      "url": "http://localhost:3030/workspace/host",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 800,
+        "width": 1280
+      },
+      "route": "marketing-preview",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\desktop-1280--marketing-preview.png",
+      "navWarning": null,
+      "bodyWidth": 1265,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1265,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Rental presentation | Nestora | Nestora",
+      "url": "http://localhost:3030/marketing/rental-flyer",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 800,
+        "width": 1280
+      },
+      "route": "virtual-tour",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\desktop-1280--virtual-tour.png",
+      "navWarning": null,
+      "bodyWidth": 1280,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1280,
+      "h1Count": 0,
+      "mainExists": true,
+      "title": "Tour The Courtyard Residence | Nestora",
+      "url": "http://localhost:3030/tours/wuye-courtyard-residence",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 900,
+        "width": 1440
+      },
+      "route": "home",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\desktop-1440--home.png",
+      "navWarning": null,
+      "bodyWidth": 1425,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1425,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Nestora | Find your place. Feel at home.",
+      "url": "http://localhost:3030/",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 900,
+        "width": 1440
+      },
+      "route": "search-rent",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\desktop-1440--search-rent.png",
+      "navWarning": null,
+      "bodyWidth": 1425,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1425,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Explore places | Nestora",
+      "url": "http://localhost:3030/search?mode=rent",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 900,
+        "width": 1440
+      },
+      "route": "property",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\desktop-1440--property.png",
+      "navWarning": null,
+      "bodyWidth": 1425,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1425,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "The Courtyard Residence | Nestora",
+      "url": "http://localhost:3030/properties/wuye-courtyard-residence",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 900,
+        "width": 1440
+      },
+      "route": "hotel",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\desktop-1440--hotel.png",
+      "navWarning": null,
+      "bodyWidth": 1425,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1425,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Jabi Lake Serviced Suite | Nestora",
+      "url": "http://localhost:3030/properties/jabi-lake-serviced-suite",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 900,
+        "width": 1440
+      },
+      "route": "messages",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\desktop-1440--messages.png",
+      "navWarning": null,
+      "bodyWidth": 1425,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1425,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Messages | Nestora",
+      "url": "http://localhost:3030/messages",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 900,
+        "width": 1440
+      },
+      "route": "agent-workspace",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\desktop-1440--agent-workspace.png",
+      "navWarning": null,
+      "bodyWidth": 1425,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1425,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Agent workspace | Nestora",
+      "url": "http://localhost:3030/workspace/agent",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 900,
+        "width": 1440
+      },
+      "route": "developer-workspace",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\desktop-1440--developer-workspace.png",
+      "navWarning": null,
+      "bodyWidth": 1425,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1425,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Developer workspace | Nestora",
+      "url": "http://localhost:3030/workspace/developer",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 900,
+        "width": 1440
+      },
+      "route": "hotel-workspace",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\desktop-1440--hotel-workspace.png",
+      "navWarning": null,
+      "bodyWidth": 1425,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1425,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Host workspace | Nestora",
+      "url": "http://localhost:3030/workspace/host",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 900,
+        "width": 1440
+      },
+      "route": "marketing-preview",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\desktop-1440--marketing-preview.png",
+      "navWarning": null,
+      "bodyWidth": 1425,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1425,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Rental presentation | Nestora | Nestora",
+      "url": "http://localhost:3030/marketing/rental-flyer",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 900,
+        "width": 1440
+      },
+      "route": "virtual-tour",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\desktop-1440--virtual-tour.png",
+      "navWarning": null,
+      "bodyWidth": 1440,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1440,
+      "h1Count": 0,
+      "mainExists": true,
+      "title": "Tour The Courtyard Residence | Nestora",
+      "url": "http://localhost:3030/tours/wuye-courtyard-residence",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 1080,
+        "width": 1920
+      },
+      "route": "home",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\desktop-1920--home.png",
+      "navWarning": null,
+      "bodyWidth": 1905,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1905,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Nestora | Find your place. Feel at home.",
+      "url": "http://localhost:3030/",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 1080,
+        "width": 1920
+      },
+      "route": "search-rent",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\desktop-1920--search-rent.png",
+      "navWarning": null,
+      "bodyWidth": 1905,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1905,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Explore places | Nestora",
+      "url": "http://localhost:3030/search?mode=rent",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 1080,
+        "width": 1920
+      },
+      "route": "property",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\desktop-1920--property.png",
+      "navWarning": null,
+      "bodyWidth": 1905,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1905,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "The Courtyard Residence | Nestora",
+      "url": "http://localhost:3030/properties/wuye-courtyard-residence",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 1080,
+        "width": 1920
+      },
+      "route": "hotel",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\desktop-1920--hotel.png",
+      "navWarning": null,
+      "bodyWidth": 1905,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1905,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Jabi Lake Serviced Suite | Nestora",
+      "url": "http://localhost:3030/properties/jabi-lake-serviced-suite",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 1080,
+        "width": 1920
+      },
+      "route": "messages",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\desktop-1920--messages.png",
+      "navWarning": null,
+      "bodyWidth": 1905,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1905,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Messages | Nestora",
+      "url": "http://localhost:3030/messages",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 1080,
+        "width": 1920
+      },
+      "route": "agent-workspace",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\desktop-1920--agent-workspace.png",
+      "navWarning": null,
+      "bodyWidth": 1905,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1905,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Agent workspace | Nestora",
+      "url": "http://localhost:3030/workspace/agent",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 1080,
+        "width": 1920
+      },
+      "route": "developer-workspace",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\desktop-1920--developer-workspace.png",
+      "navWarning": null,
+      "bodyWidth": 1905,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1905,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Developer workspace | Nestora",
+      "url": "http://localhost:3030/workspace/developer",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 1080,
+        "width": 1920
+      },
+      "route": "hotel-workspace",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\desktop-1920--hotel-workspace.png",
+      "navWarning": null,
+      "bodyWidth": 1905,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1905,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Host workspace | Nestora",
+      "url": "http://localhost:3030/workspace/host",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 1080,
+        "width": 1920
+      },
+      "route": "marketing-preview",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\desktop-1920--marketing-preview.png",
+      "navWarning": null,
+      "bodyWidth": 1905,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1905,
+      "h1Count": 1,
+      "mainExists": true,
+      "title": "Rental presentation | Nestora | Nestora",
+      "url": "http://localhost:3030/marketing/rental-flyer",
+      "horizontalOverflow": false
+    },
+    {
+      "viewport": {
+        "height": 1080,
+        "width": 1920
+      },
+      "route": "virtual-tour",
+      "path": "C:\\Users\\One Stop\\Documents\\NESTORA\\docs\\qa\\evidence\\responsive\\desktop-1920--virtual-tour.png",
+      "navWarning": null,
+      "bodyWidth": 1920,
+      "brokenVisibleImages": 0,
+      "documentWidth": 1920,
+      "h1Count": 0,
+      "mainExists": true,
+      "title": "Tour The Courtyard Residence | Nestora",
+      "url": "http://localhost:3030/tours/wuye-courtyard-residence",
+      "horizontalOverflow": false
+    }
+  ]
+}

@@ -6,9 +6,10 @@ import { BadgeCheck, BedDouble, Heart, MapPin, Star } from "lucide-react";
 import { useNestora } from "@/components/providers";
 import { priceLabel } from "@/lib/platform";
 
-export function PropertyCard({ property, priority = false, horizontal = false }) {
+export function PropertyCard({ property, priority = false, horizontal = false, headingLevel = 3 }) {
   const { saved, toggleSaved } = useNestora();
   const isSaved = saved.includes(property.id);
+  const Heading = headingLevel === 2 ? "h2" : "h3";
   return (
     <article className={`property-card ${horizontal ? "property-card--horizontal" : ""}`}>
       <div className="property-card__media">
@@ -17,8 +18,8 @@ export function PropertyCard({ property, priority = false, horizontal = false })
         <button type="button" className={`save-button ${isSaved ? "active" : ""}`} onClick={() => toggleSaved(property.id)} aria-label={isSaved ? `Remove ${property.title} from saved` : `Save ${property.title}`} aria-pressed={isSaved}><Heart size={19} fill={isSaved ? "currentColor" : "none"} /></button>
       </div>
       <div className="property-card__body">
-        <div className="card-meta"><span><MapPin size={14} />{property.location}</span><span><Star size={14} fill="currentColor" />{property.rating} <em>({property.reviews})</em></span></div>
-        <h3><Link href={`/properties/${property.id}`}>{property.title}</Link></h3>
+        <div className="card-meta"><span><MapPin size={14} />{property.location}</span><span><Star size={14} fill="currentColor" />{property.rating} <em>({property.illustrative ? "example" : property.reviews})</em></span></div>
+        <Heading><Link href={`/properties/${property.id}`}>{property.title}</Link></Heading>
         <p className="property-facts"><span><BedDouble size={16} />{property.beds} beds</span><span>{property.baths} baths</span><span>{property.sqm} m²</span></p>
         <div className="property-card__price"><strong>{priceLabel(property)}</strong>{property.illustrative ? <span>Illustrative</span> : property.verified ? <span><BadgeCheck size={15} /> Verified</span> : null}</div>
         <p className="freshness">{property.illustrative ? "Catalogue presentation" : property.fresh}</p>

@@ -27,6 +27,7 @@ export function MessagesWorkspace() {
   const [query, setQuery] = useState("");
   const [mobileThread, setMobileThread] = useState(Boolean(requested));
   const active = conversations.find((conversation) => conversation.id === activeId) || conversations[0];
+  const illustrative = active?.illustrative;
   const property = properties.find((item) => item.id === (requestedProperty || active.propertyId));
   const filtered = useMemo(() => conversations.filter((conversation) => conversation.name.toLowerCase().includes(query.toLowerCase())), [query]);
 
@@ -47,14 +48,15 @@ export function MessagesWorkspace() {
       </aside>
 
       <section className="message-thread">
-        <header><button type="button" className="thread-back" onClick={() => setMobileThread(false)} aria-label="Back to conversations"><ArrowLeft size={20} /></button><span className="thread-avatar"><Image src={active.avatar} alt="" fill sizes="42px" /></span><div><strong>{active.name}<BadgeCheck size={14} /></strong><small>Verified · Active now</small></div><button type="button" aria-label="Start video call"><Video size={19} /></button><button type="button" aria-label="Conversation details"><Info size={19} /></button></header>
+        <header><button type="button" className="thread-back" onClick={() => setMobileThread(false)} aria-label="Back to conversations"><ArrowLeft size={20} /></button><span className="thread-avatar"><Image src={active.avatar} alt="" fill sizes="42px" /></span><div><strong>{active.name}{!illustrative ? <BadgeCheck size={14} /> : null}</strong><small>{illustrative ? "Pre-launch example conversation" : "Verified · Active now"}</small></div><button type="button" aria-label="Start video call"><Video size={19} /></button><button type="button" aria-label="Conversation details"><Info size={19} /></button></header>
+        {illustrative ? <div className="message-preview-note" role="note">Fictional QA conversation · replies are local preview activity and are not sent to a real person.</div> : null}
         {property ? <Link href={`/properties/${property.id}`} className="message-property"><span className="message-property__image"><Image src={property.image} alt="" fill sizes="64px" /></span><div><small>Conversation about</small><strong>{property.title}</strong><span>{property.location}</span></div><ChevronRight size={18} /></Link> : null}
         <div className="message-safety"><ShieldCheck size={15} /> Keep payments and important agreements on Nestora. We will never ask for your password or one-time code.</div>
         <div className="message-history" aria-live="polite"><div className="date-divider"><span>Today</span></div>{(messages[activeId] || []).map((message) => <div key={message.id} className={`bubble-row bubble-row--${message.from}`}><div className="message-bubble"><p>{message.text}</p><span>{message.time}{message.from === "me" ? <CheckCheck size={13} /> : null}</span></div></div>)}</div>
         <form className="message-composer" onSubmit={send}><button type="button" aria-label="Attach a file"><Paperclip size={19} /></button><input name="message" autoComplete="off" placeholder={`Message ${active.name.split(" ")[0]}…`} aria-label="Message" /><button type="button" aria-label="Attach an image"><ImagePlus size={19} /></button><button type="submit" className="send-message" aria-label="Send message"><Send size={18} /></button></form>
       </section>
 
-      <aside className="message-details"><div className="message-details__profile"><span><Image src={active.avatar} alt={active.name} fill sizes="76px" /></span><h2>{active.name}</h2><p><BadgeCheck size={14} /> Verified on Nestora</p></div><div className="detail-actions"><button type="button"><Search size={18} /><span>Search</span></button><button type="button"><FileText size={18} /><span>Files</span></button><button type="button"><Building2 size={18} /><span>Places</span></button></div><section><h3>Safety controls</h3><button type="button">Report conversation</button><button type="button">Block this profile</button></section><p className="encrypted-note"><ShieldCheck size={15} /> Messages are encrypted in transit and access is logged.</p></aside>
+      <aside className="message-details"><div className="message-details__profile"><span><Image src={active.avatar} alt={active.name} fill sizes="76px" /></span><h2>{active.name}</h2><p>{illustrative ? "Illustrative catalogue profile" : <><BadgeCheck size={14} /> Verified on Nestora</>}</p></div><div className="detail-actions"><button type="button"><Search size={18} /><span>Search</span></button><button type="button"><FileText size={18} /><span>Files</span></button><button type="button"><Building2 size={18} /><span>Places</span></button></div><section><h3>Safety controls</h3><button type="button">Report conversation</button><button type="button">Block this profile</button></section><p className="encrypted-note"><ShieldCheck size={15} />{illustrative ? "Local preview only. No message is delivered." : "Messages are encrypted in transit and access is logged."}</p></aside>
     </div>
   );
 }
