@@ -8,19 +8,22 @@ Date: 2026-07-16
 
 ## Verified
 
-- Production release `4896a7903d3ae13876275d85cb2202dda808450b` is live at `https://nestora.doctarx.com`.
+- Production release `d989650c83467328ff7c8af4aec940b3633ef753` is live at `https://nestora.doctarx.com`.
 - The prerequisite and auxiliary GitHub Actions runs both completed successfully.
 - Deep health returned HTTP 200 with the PostgreSQL database configured.
 - Six labelled demo accounts authenticated through the public login page.
 - Renter, agent, developer, hotel, agency, and administrator accounts reached their intended protected destinations.
 - Desktop and 390px mobile visual checks found no broken images or horizontal overflow; hero contrast remained readable.
-- Twenty-four unit and security tests, lint, type checking, and the Next.js production build passed before release.
+- Twenty-seven unit and security tests, lint, type checking, and the Next.js production build passed before release.
 - Twelve deterministic commercial data scenarios passed across all six roles.
-- Eight marketing QR targets decode correctly and can be generated against the production origin.
+- Public search, saved homes, an inspection request, and a stay request persisted in PostgreSQL and rendered in My Nestora after redeployment.
+- The online 360-degree tour rendered a 1600 x 900 WebGL canvas with no broken imagery.
+- The QR image rendered by the live rental flyer decoded to its attributed `nestora.doctarx.com` property URL.
+- Role-denied navigation was found to redirect through the internal `localhost:3003` origin; the redirect now uses the configured public origin and is covered by regression tests.
 
 ## Remaining launch risks
 
-1. Several professional workspace controls are polished illustrative presentations rather than complete authenticated CRUD workflows.
+1. Cross-role messages, professional lead handling, developer inventory updates, agency invitations, and admin case actions are polished illustrative presentations rather than durable authenticated workflows.
 2. Email delivery, WhatsApp, SMS, push, payment webhooks, and provider failure handling are not configured.
 3. Private object storage, signed media URLs, content inspection, malware scanning, and CDN delivery are not complete.
 4. Background queues, production error monitoring, alerting, backup restoration evidence, and cross-device state need pilot verification.

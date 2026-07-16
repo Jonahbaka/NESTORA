@@ -1,15 +1,15 @@
 {
-  "generatedAt": "2026-07-16T15:36:35Z",
+  "generatedAt": "2026-07-16T16:52:55Z",
   "environment": "https://nestora.doctarx.com",
-  "nestoraCommit": "4896a7903d3ae13876275d85cb2202dda808450b",
-  "deploymentCommit": "9e23cec5e754ee583ab423df7706cc813c6d237e",
+  "nestoraCommit": "d989650c83467328ff7c8af4aec940b3633ef753",
+  "deploymentCommit": "ddb89d6cbc369e969f0e8305d6f900d06346f036",
   "workflowRuns": {
     "doctaRxPrerequisite": {
-      "id": 29510100067,
+      "id": 29515770411,
       "conclusion": "success"
     },
     "auxiliaryPlatforms": {
-      "id": 29510099849,
+      "id": 29515770353,
       "conclusion": "success"
     }
   },
@@ -23,9 +23,26 @@
   "visual": {
     "desktop": "passed",
     "mobileWidth": 390,
+    "tabletWidth": 768,
     "horizontalOverflow": false,
     "brokenImages": 0,
     "heroTextReadable": true
+  },
+  "onlineWorkflows": {
+    "search": { "status": "passed", "query": "Guzape" },
+    "savedProperty": { "status": "passed", "propertyId": "guzape-garden-duplex", "persisted": true },
+    "virtualTour": { "status": "passed", "canvas": "1600x900", "brokenImages": 0 },
+    "inspectionRequest": { "status": "passed", "id": "37874786-47d5-4172-a9b3-a64b1452bc60", "persisted": true },
+    "stayRequest": { "status": "passed", "id": "6f30fadd-a387-4cf0-8c49-9d3fa0709a89", "persisted": true },
+    "messaging": { "status": "mocked", "evidence": "Live UI labels replies as local preview activity that is not delivered" },
+    "developerInventory": { "status": "mocked", "evidence": "Projects view is illustrative and exposes no durable unit update action" },
+    "agencyInvitation": { "status": "not_implemented", "evidence": "No invitation or permission-management control is exposed" },
+    "adminModeration": { "status": "mocked", "evidence": "Restrict content resets on reload" },
+    "roleDenial": { "status": "passed", "destination": "https://nestora.doctarx.com/my-nestora?notice=access" },
+    "liveQr": {
+      "status": "passed",
+      "target": "https://nestora.doctarx.com/properties/wuye-courtyard-residence?utm_source=nestora_material&utm_medium=qr&utm_campaign=rental-flyer"
+    }
   },
   "accounts": [
     { "role": "member", "email": "renter.qa@demo.nestora.local", "destination": "/my-nestora", "status": "passed" },

@@ -9,6 +9,9 @@
 - [x] Keep the shared credential out of Git and workflow plaintext.
 - [x] Verify desktop and mobile public presentation.
 - [x] Generate attributed QR targets against the production origin.
+- [x] Verify tablet presentation and decode a QR rendered by the live marketing page.
+- [x] Verify saved homes, inspection requests, and stay requests persist through the public API and account UI.
+- [x] Verify denied role access remains on the public Nestora origin.
 
 ## Before pilot
 
