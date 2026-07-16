@@ -1,21 +1,21 @@
 # Workflow Test Matrix
 
-| Workflow | Local result | Online staging | Evidence or limitation |
+| Workflow | Local result | Online result | Evidence or limitation |
 | --- | --- | --- | --- |
-| Registration and role accounts | Pass with limitation | Blocked by environment | Six accounts seed in isolated database QA; no application staging login verified |
-| Renter-agent messaging | Pass | Blocked by environment | Four persisted messages with both participants |
-| Save property and tour | Pass with limitation | Blocked by environment | Browser surfaces verified; saved state is not cloud cross-device state |
-| Agent lead receipt and reply | Pass with limitation | Blocked by environment | Database workflow passed; workspace API integration remains incomplete |
-| Inspection booking | Pass | Blocked by environment | Confirmed inspection and feedback persisted |
-| Buyer-developer workflow | Pass | Blocked by environment | Lead, four messages, payment-plan request, inspection, inventory check |
-| Hotel reservation | Pass with limitation | Blocked by environment | Request and overlap query passed; real PostgreSQL exclusion constraint needs staging |
-| Agency invitation and lead assignment | Pass | Blocked by environment | Accepted invite, membership, assigned lead, pilot entitlement |
-| Admin verification and moderation | Pass | Blocked by environment | Approve, revise, reject, report, suspend, reinstate, audit |
-| Notifications | Pass with limitation | Blocked by environment | Thirteen events captured locally; no external email or WhatsApp delivery |
-| Marketing generation | Pass | Blocked by environment | Eight previews, PDFs, and attributed QR codes verified |
-| Responsive experience | Pass | Blocked by environment | Ten routes x eight viewports, 80 captures |
-| Accessibility semantics | Pass with limitation | Blocked by environment | Automated landmarks, names, headings, alt text; no full assistive-technology audit |
-| Role enforcement | Pass | Blocked by environment | Middleware and server authorization regression tests |
-| Tenant isolation | Pass with limitation | Blocked by environment | Scoped database query passed; online API isolation not available |
-| File uploads | Not implemented | Blocked by environment | Metadata policy tested; no upload route, storage, malware scan, or signed URL |
-| Payments and entitlements | Pass with limitation | Blocked by environment | Pilot entitlement persisted; payment provider/webhooks not implemented |
+| Registration and role accounts | Pass | Pass | Six public logins and authorized destinations verified |
+| Renter-agent messaging | Pass | Partial | Seeded thread persists; full send/notification path remains pilot work |
+| Save property and tour | Pass with limitation | Pass with limitation | Browser surfaces work; cross-device synchronization is incomplete |
+| Agent lead receipt and reply | Pass with limitation | Pass with limitation | Role workspace loads; several actions remain illustrative |
+| Inspection booking | Pass | Partial | Seeded inspection persists; complete online mutation path needs pilot coverage |
+| Buyer-developer workflow | Pass | Pass with limitation | Developer login and workspace pass; provider delivery remains absent |
+| Hotel reservation | Pass with limitation | Pass with limitation | Host login passes; payment and delivery integrations are absent |
+| Agency invitation and lead assignment | Pass | Pass with limitation | Agency login and seeded membership pass; invitation email is not configured |
+| Admin verification and moderation | Pass | Pass | Restricted public admin console and seeded audit records verified |
+| Notifications | Pass with limitation | Partial | In-app fixtures render; external channels are not configured |
+| Marketing generation | Pass | Pass | Production-origin QR targets decode; eight PDF layouts verified locally |
+| Responsive experience | Pass | Pass | Desktop and 390px public checks; no overflow or broken images |
+| Accessibility semantics | Pass with limitation | Pass with limitation | Automated landmarks, names, headings, and alt text; no full WCAG audit |
+| Role enforcement | Pass | Pass | Six allowed destinations plus authorization regression tests |
+| Tenant isolation | Pass with limitation | Not fully exercised | Scoped queries pass; broader adversarial online API testing remains |
+| File uploads | Not implemented | Not implemented | Metadata policy exists; storage and malware scan are absent |
+| Payments and entitlements | Pass with limitation | Not configured | Seeded entitlement exists; provider and webhook enforcement remain |

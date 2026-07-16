@@ -4,35 +4,31 @@ Date: 2026-07-16
 
 ## Recommendation
 
-**Not ready** for partner demonstrations on a shared online environment. The local presentation, responsive experience, role boundaries, data model, deterministic commercial workflow QA, marketing output, QR attribution, and production build are substantially improved. A real isolated staging service, PostgreSQL database, object storage, email transport, and working demo logins are still absent.
+**Ready for controlled stakeholder demonstrations and production pilot testing. Not yet ready for unrestricted commercial launch.** The public AWS release, PostgreSQL migrations, DNS, TLS, health checks, six role accounts, protected destinations, responsive presentation, commercial workflow fixtures, and rollback path are verified. External delivery, payment, media-security, observability, and several durable workspace APIs remain launch work.
 
-## What was verified locally
+## Verified
 
-- Twelve commercial data scenarios passed against a PostgreSQL-compatible in-memory adapter across renter, agent, developer, hotel, agency, and administrator roles.
-- Four-message renter-agent, buyer-developer, and guest-hotel conversations persisted.
-- Inspections, inventory states, reservation requests, team invitations, lead assignment, subscription assignment, verification decisions, suspension, reinstatement, and audit events persisted.
-- Eight branded A4 marketing materials rendered as one-page PDFs and eight QR codes decoded to the expected attributed targets.
-- Ten product surfaces were captured at eight responsive viewports. Automated checks found no horizontal overflow or broken visible images.
-- Role and authorization regression tests, upload metadata policy tests, lint, type checking, unit tests, and the production build are release gates.
+- Production release `4896a7903d3ae13876275d85cb2202dda808450b` is live at `https://nestora.doctarx.com`.
+- The prerequisite and auxiliary GitHub Actions runs both completed successfully.
+- Deep health returned HTTP 200 with the PostgreSQL database configured.
+- Six labelled demo accounts authenticated through the public login page.
+- Renter, agent, developer, hotel, agency, and administrator accounts reached their intended protected destinations.
+- Desktop and 390px mobile visual checks found no broken images or horizontal overflow; hero contrast remained readable.
+- Twenty-four unit and security tests, lint, type checking, and the Next.js production build passed before release.
+- Twelve deterministic commercial data scenarios passed across all six roles.
+- Eight marketing QR targets decode correctly and can be generated against the production origin.
 
-## Blockers
+## Remaining launch risks
 
-1. No isolated staging host, staging database URL, staging object-storage credentials, or staging domain is configured.
-2. The Nestora repository has no GitHub Actions deployment workflow. The referenced DoctaRx workflow deploys zuma-teledoc production from its own `main` branch and is not a Nestora staging path.
-3. No durable demo accounts can be verified through the application login until a real PostgreSQL environment is migrated and seeded.
-4. Commercial workspace screens remain illustrative client-side presentations; they are not all connected to the new commercial schema through authenticated APIs.
-5. Email delivery, WhatsApp, payment webhooks, signed media URLs, malware scanning, background jobs, CDN delivery, and cross-device persistence are not configured.
-
-## Severity summary
-
-- Blocker: missing isolated online staging environment and demo credentials.
-- Critical: none confirmed in the locally exercised code paths.
-- High: commercial workspaces are not end-to-end wired to durable APIs; cloud media and external delivery are absent.
-- Medium: real PostgreSQL GiST double-booking enforcement and HTTPS cookie behavior remain unverified.
-- Low: the visual catalogue is intentionally illustrative and must stay clearly labelled until real inventory is onboarded.
+1. Several professional workspace controls are polished illustrative presentations rather than complete authenticated CRUD workflows.
+2. Email delivery, WhatsApp, SMS, push, payment webhooks, and provider failure handling are not configured.
+3. Private object storage, signed media URLs, content inspection, malware scanning, and CDN delivery are not complete.
+4. Background queues, production error monitoring, alerting, backup restoration evidence, and cross-device state need pilot verification.
+5. Public catalogue inventory, ratings, profiles, conversations, and analytics remain clearly labelled illustrative content until verified businesses onboard real records.
 
 ## Evidence
 
+- Online release and role access: `docs/qa/evidence/online-deployment-results.json`
 - Data workflows: `docs/qa/evidence/data/local-database-qa-results.json`
 - Accessibility scan: `docs/qa/evidence/accessibility-results.json`
 - Responsive results: `docs/qa/evidence/responsive/responsive-results.json`

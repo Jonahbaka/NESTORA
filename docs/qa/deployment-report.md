@@ -1,39 +1,34 @@
 # Deployment Report
 
-## Inspected configuration
+Date: 2026-07-16
 
-- Repository remote: `https://github.com/Jonahbaka/NESTORA.git`
-- Working branch: `codex/nestora-commercial-readiness-qa`
-- Nestora deployment documentation: `DEPLOYMENT.md`
-- Expected architecture: AWS managed Node.js runtime, RDS PostgreSQL, S3/CloudFront, Secrets Manager, TLS, WAF.
-- Repository automation: no root `.github/workflows` directory exists, so a push does not deploy Nestora.
+## Release path
 
-The referenced DoctaRx `deployment.md` was inspected. Its normal workflow is owned by the zuma-teledoc repository, triggers from that repository's `main` branch, uploads a zuma-teledoc build to the live `https://doctarx.com/api/upload-build-binary` endpoint, and is production-only. It is not a safe or compatible Nestora staging target.
+- Nestora repository: `https://github.com/Jonahbaka/NESTORA.git`
+- Nestora release branch: `codex/nestora-commercial-readiness-qa`
+- Deployed Nestora commit: `4896a7903d3ae13876275d85cb2202dda808450b`
+- Deployment owner: `Jonahbaka/zuma-teledoc`
+- Deployment commit: `9e23cec5e754ee583ab423df7706cc813c6d237e`
+- Production URL: `https://nestora.doctarx.com`
+- EC2 address: `18.217.97.145`
 
-## Deployment result
+The deployment uses the established zuma-teledoc auxiliary release channel. A push to zuma-teledoc `main` starts the normal `Deploy to EC2` workflow. The auxiliary workflow waits for that commit to become healthy, then builds the pinned Nestora commit, runs PostgreSQL migrations, activates the versioned PM2 release, verifies the EC2 origin, DNS, TLS, and public health endpoint, and retains the previous release for rollback.
 
-Online staging deployment is blocked. No production deployment was attempted.
+## Verified result
 
-Missing configuration or permission names:
+| Check | Result | Evidence |
+| --- | --- | --- |
+| DoctaRx prerequisite deploy | Pass | Run `29510100067` completed successfully |
+| Nestora auxiliary deploy | Pass | Run `29510099849` completed successfully |
+| Public health | Pass | `/api/health?deep=1` returned HTTP 200, `status=ok`, `database=configured` |
+| DNS | Pass | `nestora.doctarx.com` resolves to `18.217.97.145` |
+| TLS and nginx | Pass | HTTPS active; workflow origin and public checks passed |
+| Runtime | Pass | PM2 reported Nestora online after activation |
+| Demo seed | Pass | Six labelled fictional accounts seeded through the release runner |
+| Public login | Pass | Six roles authenticated and reached their authorized destinations |
 
-- `NESTORA_STAGING_URL`
-- `NESTORA_STAGING_DATABASE_URL` or staging `DATABASE_URL`
-- staging `NESTORA_SESSION_SECRET`
-- AWS access credentials or an authenticated deployment runner
-- staging object-storage bucket and signing credentials
-- staging DNS/domain and TLS route
-- sandbox email, payment, and messaging provider credentials
+The shared demo password is generated on the server, stored with mode `600`, and emitted only as RSA-OAEP encrypted ciphertext. No reusable password is committed to either repository.
 
-The commands that cannot safely run are `npm run migrate`, `npm run demo:seed`, and the hosting release command because no isolated staging target or credentials exist. Attempting the DoctaRx production uploader would violate the instruction not to deploy fictional QA data to production.
+## Rollback
 
-## Manual staging steps
-
-1. Create an isolated AWS service and RDS PostgreSQL database, separate from DoctaRx production.
-2. Create private S3 storage and CloudFront/CDN configuration for staging.
-3. Store staging secrets in AWS Secrets Manager and expose only to the staging task.
-4. Add a staging GitHub Actions workflow to this repository, triggered manually or from a protected staging branch.
-5. Run `npm ci`, verification, migrations, deploy, and health checks.
-6. Set the demo-mode variables and seed the six labelled accounts.
-7. Verify every credential and critical workflow from a fresh browser session.
-
-The pushed branch and final commit hash are reported in the execution response because the hash cannot be embedded inside the commit that creates it.
+The EC2 release script keeps versioned releases under `/home/ec2-user/apps/nestora/releases` and switches `/home/ec2-user/apps/nestora/current` atomically. If process startup or the deep health check fails, the script restores the previous symlink and restarts the previous PM2 release.

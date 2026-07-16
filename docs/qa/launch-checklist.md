@@ -1,33 +1,29 @@
 # Launch Checklist
 
-## Before partner demonstration
+## Stakeholder demonstration
 
-- [ ] Provision isolated staging host and PostgreSQL database.
-- [ ] Deploy the pushed branch without touching production.
-- [ ] Migrate and seed six labelled demo accounts.
-- [ ] Verify application login for every role and share temporary credentials privately.
-- [ ] Wire core workspace actions to authenticated APIs and durable records.
-- [ ] Regenerate QR materials against the staging origin.
+- [x] Deploy the commercial-readiness release to AWS.
+- [x] Run PostgreSQL migrations and seed six labelled accounts.
+- [x] Verify the public deep-health endpoint, DNS, and TLS.
+- [x] Verify application login and authorized destination for every role.
+- [x] Keep the shared credential out of Git and workflow plaintext.
+- [x] Verify desktop and mobile public presentation.
+- [x] Generate attributed QR targets against the production origin.
 
 ## Before pilot
 
-- [ ] Configure sandbox email and verify registration, reset, and workflow notifications.
+- [ ] Configure sandbox email and verify registration, reset, invitation, and workflow notifications.
 - [ ] Add private object storage, signed uploads/downloads, content sniffing, and malware scanning.
-- [ ] Validate the GiST reservation exclusion constraint on real PostgreSQL.
+- [ ] Connect priority workspace actions to authenticated APIs and durable records.
 - [ ] Enforce subscription entitlements server-side.
-- [ ] Add error monitoring, uptime checks, retry queues, and audit-log retention.
-- [ ] Complete browser, keyboard, screen-reader, low-bandwidth, and supported-device testing.
+- [ ] Add error monitoring, uptime alerts, retry queues, and audit-log retention.
+- [ ] Verify backup restoration, rollback rehearsal, and low-bandwidth behavior.
+- [ ] Rotate the shared demonstration credential before expanding access.
 
-## Before public launch
+## Before unrestricted public launch
 
-- [ ] Replace all illustrative inventory with verified owner-controlled records or keep explicit labels.
+- [ ] Replace illustrative inventory with verified owner-controlled records or preserve explicit labels.
 - [ ] Complete legal, privacy, data-retention, moderation, incident-response, and support ownership.
 - [ ] Complete payment-provider and webhook security testing if payments are enabled.
 - [ ] Complete external penetration testing and disaster-recovery rehearsal.
-- [ ] Verify production DNS, TLS, secure cookies, backups, rollback, WAF, and least privilege.
-
-## Post-launch
-
-- [ ] Add richer funnel analytics using consented, privacy-preserving events.
-- [ ] Add cross-device saved-state synchronization and notification preferences.
-- [ ] Monitor QR campaign conversion and marketing-material usage.
+- [ ] Verify WAF, least privilege, secrets rotation, production backups, and observability.

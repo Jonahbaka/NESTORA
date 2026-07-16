@@ -1,0 +1,38 @@
+{
+  "generatedAt": "2026-07-16T15:36:35Z",
+  "environment": "https://nestora.doctarx.com",
+  "nestoraCommit": "4896a7903d3ae13876275d85cb2202dda808450b",
+  "deploymentCommit": "9e23cec5e754ee583ab423df7706cc813c6d237e",
+  "workflowRuns": {
+    "doctaRxPrerequisite": {
+      "id": 29510100067,
+      "conclusion": "success"
+    },
+    "auxiliaryPlatforms": {
+      "id": 29510099849,
+      "conclusion": "success"
+    }
+  },
+  "infrastructure": {
+    "healthStatus": 200,
+    "applicationStatus": "ok",
+    "database": "configured",
+    "dnsA": "18.217.97.145",
+    "tls": "active"
+  },
+  "visual": {
+    "desktop": "passed",
+    "mobileWidth": 390,
+    "horizontalOverflow": false,
+    "brokenImages": 0,
+    "heroTextReadable": true
+  },
+  "accounts": [
+    { "role": "member", "email": "renter.qa@demo.nestora.local", "destination": "/my-nestora", "status": "passed" },
+    { "role": "agent", "email": "agent.qa@demo.nestora.local", "destination": "/workspace/agent", "status": "passed" },
+    { "role": "developer", "email": "developer.qa@demo.nestora.local", "destination": "/workspace/developer", "status": "passed" },
+    { "role": "host", "email": "hotel.qa@demo.nestora.local", "destination": "/workspace/host", "status": "passed" },
+    { "role": "agency_admin", "email": "agency.qa@demo.nestora.local", "destination": "/workspace/agency", "status": "passed" },
+    { "role": "admin", "email": "admin.qa@demo.nestora.local", "destination": "/admin", "status": "passed" }
+  ]
+}

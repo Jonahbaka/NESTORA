@@ -14,7 +14,7 @@ const campaigns = [
   "qr-poster",
   "comparison-sheet",
 ];
-const origin = "http://localhost:3030";
+const origin = (process.env.NEXT_PUBLIC_APP_ORIGIN || "http://localhost:3030").replace(/\/$/, "");
 const outputPath = path.join(process.cwd(), "docs", "qa", "evidence", "data", "marketing-qr-results.json");
 const results = [];
 
