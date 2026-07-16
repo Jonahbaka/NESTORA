@@ -9,8 +9,12 @@ export function assertSafeDemoTarget(environment = process.env) {
   }
 
   const origin = String(environment.NEXT_PUBLIC_APP_ORIGIN || "").toLowerCase();
-  if (origin.includes("nestora.doctarx.com")) {
-    throw new Error("Demo data operations refuse the Nestora production origin.");
+  const isProductionOrigin = origin === "https://nestora.doctarx.com";
+  if (isProductionOrigin && environment.NESTORA_ALLOW_PRODUCTION_DEMO_SEED !== "true") {
+    throw new Error("Demo data operations refuse the Nestora production origin without deployment approval.");
+  }
+  if (origin.includes("nestora.doctarx.com") && !isProductionOrigin) {
+    throw new Error("Demo data operations refuse unrecognized Nestora production origins.");
   }
 
   if (!environment.DATABASE_URL) throw new Error("DATABASE_URL is required for demo data operations.");

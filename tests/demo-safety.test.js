@@ -15,6 +15,17 @@ test("demo data operations require an explicitly isolated target", () => {
   assert.throws(() => assertSafeDemoTarget({ ...safeEnvironment, NESTORA_DEMO_MODE: "false" }), /NESTORA_DEMO_MODE/);
   assert.throws(() => assertSafeDemoTarget({ ...safeEnvironment, NESTORA_ENVIRONMENT: "production" }), /NESTORA_ENVIRONMENT/);
   assert.throws(() => assertSafeDemoTarget({ ...safeEnvironment, NEXT_PUBLIC_APP_ORIGIN: "https://nestora.doctarx.com" }), /production origin/);
+  assert.doesNotThrow(() => assertSafeDemoTarget({
+    ...safeEnvironment,
+    NESTORA_ENVIRONMENT: "demo",
+    NEXT_PUBLIC_APP_ORIGIN: "https://nestora.doctarx.com",
+    NESTORA_ALLOW_PRODUCTION_DEMO_SEED: "true",
+  }));
+  assert.throws(() => assertSafeDemoTarget({
+    ...safeEnvironment,
+    NEXT_PUBLIC_APP_ORIGIN: "https://preview.nestora.doctarx.com",
+    NESTORA_ALLOW_PRODUCTION_DEMO_SEED: "true",
+  }), /unrecognized/);
   assert.throws(() => assertSafeDemoTarget({ ...safeEnvironment, DATABASE_URL: "" }), /DATABASE_URL/);
 });
 
