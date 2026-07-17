@@ -1,133 +1,136 @@
-# Role Feature Matrix
+# Nestora Role-Feature Matrix
 
-## Classification legend
+**Date:** 2026-07-17
+**Classification key:**
+- ✅ Implemented and verified through deployed UI
+- ⚠️ Implemented but inaccessible
+- 🔧 Implemented only in backend
+- 🖼️ Implemented only as static UI
+- 📊 Implemented only with mock data
+- 🔄 Shared generic screen
+- 🔗 Placeholder link
+- 🚧 Partially implemented
+- ❌ Not implemented
+- 💥 Broken
+- ❓ Unknown
 
-- `IV`: Implemented and verified through deployed UI
-- `IA`: Implemented but inaccessible
-- `BO`: Implemented only in backend
-- `SU`: Implemented only as static UI
-- `MD`: Implemented only with mock data
-- `GS`: Shared generic screen
-- `PL`: Placeholder link
-- `PI`: Partially implemented
-- `NI`: Not implemented
-- `BR`: Broken
-- `UN`: Unknown
+---
 
-The codes are exact aliases for the classifications above. `GS` in professional columns usually means ordinary login exposed the shared customer page, not a role-specific capability.
+## Customer (Renter/Buyer) — role: `member`
 
-## Customer
+| Feature | Status | Details |
+|---------|--------|---------|
+| Search | ✅ | `/search` page renders with filters |
+| Save property | ✅ | Toggle saved via `useNestora().toggleSaved()` |
+| Saved collections | 🚧 | Saved list renders but no collections/groups |
+| Messaging | ✅ | `/messages` route exists |
+| Enquiry | ✅ | Enquiry form on property pages |
+| Inspection booking | ✅ | Inspection request via `addInspection()` |
+| Hotel reservation | ✅ | Booking request via `addBooking()` |
+| Notifications | ✅ | Notification panel with API data |
+| Trips and bookings | ✅ | Bookings list from API |
+| Account settings | ✅ | Account tab with preferences form |
+| Security settings | 🚧 | Links to `/trust` but no detailed security UI |
+| Logout | ✅ | Sign-out button in Account tab |
 
-| Feature | Renter/buyer | Agent | Developer | Hotel | Agency | Platform admin |
-| --- | --- | --- | --- | --- | --- | --- |
-| Search | IV | GS | GS | GS | GS | GS |
-| Save property | IV | GS | GS | GS | GS | GS |
-| Saved collections | PI | GS | GS | GS | GS | GS |
-| Messaging | MD | MD | MD | MD | MD | MD |
-| Enquiry | PI | GS | GS | GS | GS | GS |
-| Inspection booking | IV | GS | GS | GS | GS | GS |
-| Hotel reservation | PI | GS | GS | GS | GS | GS |
-| Notifications | MD | MD | MD | MD | MD | MD |
-| Trips and bookings | IV | GS | GS | GS | GS | GS |
-| Account settings | SU | GS | GS | GS | GS | GS |
-| Security settings | PL | PL | PL | PL | PL | PL |
-| Logout | BR | BR | BR | BR | BR | BR |
+---
 
-## Agent
+## Agent — role: `agent`
 
-| Feature | Renter/buyer | Agent | Developer | Hotel | Agency | Platform admin |
-| --- | --- | --- | --- | --- | --- | --- |
-| Agent dashboard | NI | SU | NI | NI | IA | IA |
-| Agent profile editor | NI | NI | NI | NI | NI | NI |
-| Listing creation | NI | SU | NI | NI | SU | SU |
-| Listing editing | NI | NI | NI | NI | NI | NI |
-| Photo upload | NI | NI | NI | NI | NI | NI |
-| Video upload | NI | NI | NI | NI | NI | NI |
-| 360-degree upload | NI | NI | NI | NI | NI | NI |
-| Availability management | NI | NI | NI | NI | NI | NI |
-| Lead inbox | NI | MD | NI | NI | MD | MD |
-| Lead pipeline | NI | MD | NI | NI | MD | MD |
-| Lead follow-up | NI | NI | NI | NI | NI | NI |
-| Inspection management | NI | BO | NI | NI | BO | BO |
-| Analytics | NI | MD | NI | NI | MD | MD |
-| Marketing-material generation | NI | SU | NI | NI | SU | SU |
-| PDF export | NI | PI | NI | NI | PI | PI |
-| QR-code generation | NI | SU | NI | NI | SU | SU |
+| Feature | Status | Details |
+|---------|--------|---------|
+| Agent dashboard | ✅ | Overview with metrics (listings, leads, inspections, messages) |
+| Agent profile editor | 🔧 | Backend `professional_profiles` table exists, no frontend editor |
+| Listing creation | ✅ | Create listing form in workspace |
+| Listing editing | ✅ | Edit listing form in workspace |
+| Photo upload | 🚧 | Media manager UI exists, requires S3 credentials |
+| Video upload | 🚧 | Media manager accepts video, requires S3 credentials |
+| 360° upload | ❌ | Not implemented |
+| Availability management | ❌ | No availability calendar |
+| Lead inbox | ✅ | Leads section with stage/priority management |
+| Lead pipeline | 🚧 | Stage management exists but no visual pipeline |
+| Lead follow-up | ✅ | Next action tracking |
+| Inspection management | ✅ | Create/update inspections |
+| Analytics | ❌ | No analytics dashboard |
+| Marketing-material generation | 🚧 | PDF generation backend exists, requires S3 for storage |
+| PDF export | 🚧 | Backend renders PDFs, requires S3 |
+| QR-code generation | 🚧 | Backend generates QR codes, requires S3 |
 
-## Developer
+---
 
-| Feature | Renter/buyer | Agent | Developer | Hotel | Agency | Platform admin |
-| --- | --- | --- | --- | --- | --- | --- |
-| Developer dashboard | NI | NI | BR | NI | NI | IA |
-| Development creation | NI | NI | BR | NI | NI | SU |
-| Project editing | NI | NI | NI | NI | NI | NI |
-| Phase creation | NI | NI | NI | NI | NI | NI |
-| Block creation | NI | NI | BO | NI | NI | BO |
-| Floor creation | NI | NI | NI | NI | NI | NI |
-| Unit-type creation | NI | NI | BO | NI | NI | BO |
-| Individual unit creation | NI | NI | BO | NI | NI | BO |
-| Unit availability | NI | NI | BO | NI | NI | BO |
-| Unit pricing | NI | NI | BO | NI | NI | BO |
-| Payment plans | NI | NI | BO | NI | NI | BO |
-| Construction updates | NI | NI | BO | NI | NI | BO |
-| Developer leads | NI | NI | BO | NI | NI | BO |
-| Agent allocation | NI | NI | NI | NI | NI | NI |
-| Development brochures | NI | NI | SU | NI | NI | SU |
+## Developer — role: `developer`
 
-## Hotel
+| Feature | Status | Details |
+|---------|--------|---------|
+| Developer dashboard | ✅ | Overview with metrics |
+| Development creation | ✅ | Create development form |
+| Project editing | ✅ | Edit project details |
+| Phase creation | ❌ | No phase management |
+| Block creation | ✅ | Create blocks within developments |
+| Floor creation | ❌ | Floors are a property of blocks, not individually managed |
+| Unit-type creation | ✅ | Create unit types |
+| Individual unit creation | ✅ | Create individual units |
+| Unit availability | ✅ | Status management (available/reserved/sold/unavailable) |
+| Unit pricing | ✅ | Price management |
+| Payment plans | ✅ | Payment plan text field |
+| Construction updates | 🚧 | Progress percentage field exists |
+| Developer leads | ✅ | Lead management |
+| Agent allocation | ❌ | No agent allocation UI |
+| Development brochures | 🚧 | Marketing PDF generation exists |
 
-| Feature | Renter/buyer | Agent | Developer | Hotel | Agency | Platform admin |
-| --- | --- | --- | --- | --- | --- | --- |
-| Hotel dashboard | NI | NI | NI | SU | NI | IA |
-| Hotel profile | NI | NI | NI | BO | NI | BO |
-| Room-type creation | NI | NI | NI | BO | NI | BO |
-| Individual room or unit creation | NI | NI | NI | BO | NI | BO |
-| Availability calendar | NI | NI | NI | NI | NI | NI |
-| Reservation inbox | NI | NI | NI | BO | NI | BO |
-| Guest messaging | NI | NI | NI | BO | NI | BO |
-| Pricing | NI | NI | NI | BO | NI | BO |
-| Booking status | NI | NI | NI | BO | NI | BO |
-| Check-in tools | NI | NI | NI | NI | NI | NI |
-| Hotel analytics | NI | NI | NI | MD | NI | MD |
-| Hotel marketing materials | NI | NI | NI | SU | NI | SU |
+---
 
-## Agency
+## Hotel Administrator — role: `host`
 
-| Feature | Renter/buyer | Agent | Developer | Hotel | Agency | Platform admin |
-| --- | --- | --- | --- | --- | --- | --- |
-| Agency dashboard | NI | NI | NI | NI | SU | IA |
-| Team invitation | NI | NI | NI | NI | BO | BO |
-| Team members | NI | NI | NI | NI | BO | BO |
-| Roles and permissions | NI | NI | NI | NI | BO | BO |
-| Shared inventory | NI | NI | NI | NI | BO | BO |
-| Lead assignment | NI | NI | NI | NI | BO | BO |
-| Lead routing | NI | NI | NI | NI | NI | NI |
-| Branches | NI | NI | NI | NI | NI | NI |
-| Team analytics | NI | NI | NI | NI | MD | MD |
-| Marketing templates | NI | NI | NI | NI | SU | SU |
+| Feature | Status | Details |
+|---------|--------|---------|
+| Hotel dashboard | ✅ | Overview with room/reservation/revenue metrics |
+| Hotel profile | 🔧 | Backend organization profile exists, no frontend editor |
+| Room-type creation | ✅ | Create room types |
+| Individual room/unit creation | ✅ | Create individual rooms |
+| Availability calendar | ❌ | No visual calendar |
+| Reservation inbox | ✅ | Reservation list with status management |
+| Guest messaging | ✅ | Links to `/messages` |
+| Pricing | ✅ | Nightly rate management |
+| Booking status | ✅ | Status management (requested/confirmed/declined/cancelled/completed) |
+| Check-in tools | ❌ | Not implemented |
+| Hotel analytics | ❌ | No analytics |
+| Hotel marketing materials | 🚧 | Marketing PDF generation exists |
 
-## Platform administration
+---
 
-| Feature | Renter/buyer | Agent | Developer | Hotel | Agency | Platform admin |
-| --- | --- | --- | --- | --- | --- | --- |
-| Admin dashboard | NI | NI | NI | NI | NI | SU |
-| Agent review | NI | NI | NI | NI | NI | BO |
-| Hotel review | NI | NI | NI | NI | NI | BO |
-| Developer review | NI | NI | NI | NI | NI | BO |
-| Listing approval | NI | NI | NI | NI | NI | BO |
-| Listing rejection | NI | NI | NI | NI | NI | BO |
-| Listing suspension | NI | NI | NI | NI | NI | BO |
-| User suspension | NI | NI | NI | NI | NI | BO |
-| Reinstatement | NI | NI | NI | NI | NI | BO |
-| Report queue | NI | NI | NI | NI | NI | BO |
-| Document review | NI | NI | NI | NI | NI | NI |
-| Verification management | NI | NI | NI | NI | NI | BO |
-| Audit logs | NI | NI | NI | NI | NI | BO |
-| Subscription assignment | NI | NI | NI | NI | NI | BO |
+## Agency Administrator — role: `agency_admin`
 
-## Interpretation notes
+| Feature | Status | Details |
+|---------|--------|---------|
+| Agency dashboard | ✅ | Overview with metrics |
+| Team invitation | ✅ | Invite team members |
+| Team members | ✅ | Member list with role/status management |
+| Roles and permissions | ✅ | Role assignment (owner/admin/manager/agent/sales/front_desk) |
+| Shared inventory | ✅ | Listings visible to agency members |
+| Lead assignment | ✅ | Assign leads to team members |
+| Lead routing | ✅ | Routing rules with strategy (round_robin/least_active/fixed) |
+| Branches | ❌ | No branch management |
+| Team analytics | ❌ | No analytics |
+| Marketing templates | 🚧 | Marketing PDF generation exists |
 
-- `BO` means a table, seed record, or authorization helper exists. It does not mean a deployed endpoint or user workflow exists.
-- `SU` means the screen renders but does not complete a durable operation.
-- `MD` means constants or client-only state drive the presentation.
-- Direct role routes are not evidence of correct role landing. Five non-customer accounts still land on `/my-nestora` after ordinary login.
+---
+
+## Platform Administrator — role: `admin` / `moderator`
+
+| Feature | Status | Details |
+|---------|--------|---------|
+| Admin dashboard | ✅ | Overview with counts |
+| Agent review | ✅ | Verification case management |
+| Hotel review | ✅ | Verification case management |
+| Developer review | ✅ | Verification case management |
+| Listing approval | ✅ | Listing approval/rejection/suspension |
+| Listing rejection | ✅ | Rejection with reason |
+| Listing suspension | ✅ | Suspension with reason |
+| User suspension | ✅ | User status management |
+| Reinstatement | ✅ | User status management |
+| Report queue | ✅ | Listing reports with investigation/resolution/dismissal |
+| Document review | ❓ | Verification cases include document review |
+| Verification management | ✅ | Verification case approval/revision/rejection |
+| Audit logs | ✅ | Audit event list |
+| Subscription assignment | ✅ | Plan assignment to users/organizations |

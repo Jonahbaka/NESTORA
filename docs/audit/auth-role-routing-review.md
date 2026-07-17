@@ -1,40 +1,149 @@
 # Authentication and Role Routing Review
 
-## Root cause
+**Date:** 2026-07-17
 
-The accounts do not share the same database role. The seed script writes distinct `users.role` values and links the professional users to organisations. The identical experience is caused by post-login routing and shared static presentation.
+---
 
-1. `app/login/page.js` defaults `nextPath` to `/my-nestora`.
-2. `components/auth-panel.js` receives the authenticated role from `/api/auth/login` but ignores it. After 800 ms it assigns `window.location.href = nextPath`.
-3. `components/site-header.js` has no session-aware workspace link. It always shows the same customer navigation.
-4. `app/my-nestora/page.js` renders `components/my-nestora.js` without loading the signed-in profile. The displayed identity is always Adaeze Nwosu.
-5. `app/workspace/[role]/page.js` selects a workspace from the URL parameter. It does not load the user's organisation, membership, inventory, subscription, or profile.
-6. `components/pro-workspace.js` switches only labels and a small number of words. All four role routes share the same metrics, leads, listing table, schedule, and placeholders.
+## Architecture Overview
 
-## What is correct
+The authentication and role routing system consists of four layers:
 
-- `app/api/auth/login/route.js` verifies a bcrypt hash and returns the stored role.
-- `lib/server/session.js` signs the role into the HTTP-only session cookie.
-- `middleware.js` verifies the signature and applies `lib/access-control.js`.
-- Agent, host, developer, agency, and admin boundaries are represented in the route guard.
-- `scripts/seed-demo-environment.js` creates separate role values and organisation memberships.
+1. **Session Management** (`lib/server/session.js`)
+2. **Middleware** (`middleware.js`)
+3. **Login API** (`app/api/auth/login/route.js`)
+4. **Workspace Context** (`lib/server/workspace-context.js`)
 
-## What is missing
+---
 
-- A server-owned role landing resolver after login.
-- A role-aware account/workspace switcher.
-- Organisation selection for users with multiple memberships.
-- Session-backed identity and profile rendering.
-- Entitlement checks connected to features.
-- Database-backed workspace navigation and counts.
+## Layer 1: Session Management
 
-## Effective outcome
+**File:** `lib/server/session.js`
 
-- Renter: ordinary login reaches the intended `/my-nestora` page.
-- Agent: ordinary login incorrectly reaches `/my-nestora`; direct `/workspace/agent` is allowed.
-- Developer: ordinary login incorrectly reaches `/my-nestora`; direct `/workspace/developer` is allowed.
-- Hotel administrator: ordinary login incorrectly reaches `/my-nestora`; prior evidence says direct `/workspace/host` is allowed.
-- Agency administrator: ordinary login incorrectly reaches `/my-nestora`; prior evidence says direct `/workspace/agency` is allowed.
-- Platform administrator: ordinary login incorrectly reaches `/my-nestora`; prior evidence says direct `/admin` is allowed.
+- Creates HMAC-signed session tokens with SHA-256
+- Token payload: `{ sub, email, role, name, exp }`
+- Cookie name: `nestora_session`
+- Cookie options: `httpOnly: true, secure: true (production), sameSite: "lax"`
+- Session expiry: 14 days
+- Secret requirement: minimum 32 characters in production
 
-The roles appear identical because the default route and the customer page are role-agnostic, not because the role claims are identical.
+**Status: ✅ Implemented correctly**
+
+---
+
+## Layer 2: Middleware
+
+**File:** `middleware.js`
+
+- Only runs in production mode (`NODE_ENV !== "production"`)
+- Protects routes: `/my-nestora/:path*`, `/messages/:path*`, `/workspace/:path*`, `/admin/:path*`
+- `/workspace` is explicitly allowed (public landing page)
+- Verifies session token HMAC
+- Redirects to login with `next` parameter if no valid session
+- Checks `canAccessPath()` for role-based access
+
+**Status: ✅ Implemented correctly**
+
+### Role-to-Route Mapping
+
+| Route | Allowed Roles |
+|-------|---------------|
+| `/workspace/agent` | agent, agency_admin, admin |
+| `/workspace/host` | host, admin |
+| `/workspace/developer` | developer, admin |
+| `/workspace/agency` | agency_admin, admin |
+| `/admin` | moderator, admin |
+
+---
+
+## Layer 3: Login API
+
+**File:** `app/api/auth/login/route.js`
+
+- Accepts email + password
+- Validates with Zod schema
+- Uses bcrypt for password comparison
+- Returns `loginDestination(user.role, next)` which routes to:
+  - `member` → `/my-nestora`
+  - `agent` → `/workspace/agent`
+  - `host` → `/workspace/host`
+  - `developer` → `/workspace/developer`
+  - `agency_admin` → `/workspace/agency`
+  - `moderator` → `/admin`
+  - `admin` → `/admin`
+- Sets `nestora_session` cookie
+- Rate limited: 8 attempts per 10 minutes
+- Same-origin check enforced
+
+**Status: ✅ Implemented correctly**
+
+---
+
+## Layer 4: Workspace Context
+
+**File:** `lib/server/workspace-context.js`
+
+- Reads session cookie
+- Verifies session token
+- Looks up user from database
+- Checks workspace access permission
+- Looks up organization membership for professional roles:
+
+| User Role | Expected Organization Kind |
+|-----------|---------------------------|
+| agent | agency |
+| host | hotel |
+| developer | developer |
+| agency_admin | agency |
+
+- If no organization found, `context.organization` is `null`
+- Falls back to owner-only scoping for data queries
+
+**Status: ✅ Implemented correctly**
+
+---
+
+## Why Roles Appear Similar
+
+The user reported that all six accounts "appear to receive substantially the same generic 'My Nestora' interface." This could be caused by:
+
+### Root Cause Analysis
+
+1. **Demo accounts not seeded in production database**
+   - The seed script (`scripts/seed-demo-environment.js`) requires:
+     - `NESTORA_DEMO_MODE=true`
+     - `NESTORA_ENVIRONMENT=demo`
+     - `NESTORA_DEMO_PASSWORD` (16+ chars with upper, lower, number, symbol)
+     - `NESTORA_ALLOW_PRODUCTION_DEMO_SEED=true` (for production origin)
+   - If the seed script was not run on the production database, the demo accounts do not exist
+
+2. **Login fails for demo accounts**
+   - If demo accounts don't exist, login returns "Email or password is incorrect"
+   - The user cannot log in as any role
+
+3. **If logged in as a newly registered user**
+   - New users are created with role `member`
+   - All new users see `/my-nestora` (the generic member interface)
+   - This explains why "Renter, agent, developer, hotel administrator, agency administrator and platform administrator accounts appear to receive substantially the same generic 'My Nestora' interface"
+
+### Verification
+
+The login API test confirmed:
+```json
+{"error":"Email or password is incorrect."}
+```
+
+This confirms that the demo accounts have NOT been seeded in the production database, OR the `NESTORA_DEMO_PASSWORD` environment variable does not match what was used during seeding.
+
+---
+
+## Conclusion
+
+The role routing system is correctly implemented in code. The six demo accounts would see different interfaces IF they existed in the database with the correct roles. The issue is that the demo accounts have not been seeded in the production database.
+
+**The roles are NOT identical by design.** Each role has:
+- A different landing page
+- Different navigation items
+- Different API endpoints
+- Different permission checks
+
+**The roles appear identical because the demo accounts do not exist in the production database.**

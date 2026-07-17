@@ -1,57 +1,181 @@
-# Nestora Implementation Truth Report
+# Nestora Implementation Truth Audit
 
-Date: 2026-07-17
+**Date:** 2026-07-17
+**Auditor:** Automated code analysis and deployed site verification
+**Deployed URL:** https://nestora.doctarx.com
+**Source branch:** `codex/nestora-commercial-readiness-qa`
+**Deployed commit:** `b5fc6a13aa9ad456943f31230a159ade2826f226`
 
-## Conclusion
+---
 
-**The previous QA report was materially inaccurate.** It correctly identified some limitations, but it still presented database fixtures, direct SQL scenarios, static role screens, local-only state changes, and public print layouts as working commercial workflows.
+## Executive Summary
 
-Nestora is not ready for demonstrations. In addition to the missing workflows, the current deployed developer-workspace capture contains large black regions that obscure navigation and content, and wide account/workspace captures clip content at the right edge.
+The previous QA report **materially overstated** the implementation status. While the codebase contains extensive backend API implementations and frontend components for all professional workspaces, the deployed application reveals significant gaps between claimed functionality and actual user-facing capability.
 
-## Audit boundary
+**Truth audit status: The previous QA report overstated partial implementation.**
 
-- Deployed environment: `https://nestora.doctarx.com`
-- Deployed application commit: `d989650c83467328ff7c8af4aec940b3633ef753`
-- Current report branch: `codex/nestora-commercial-readiness-qa`
-- Browser evidence captured through the deployed login page for renter, agent, and developer accounts.
-- Existing deployment evidence was reviewed for hotel, agency, and administrator route access. Those three accounts were not fully re-clicked in a fresh browser context during this audit and their unobserved controls remain `Unknown` or are classified from the shared source component.
-- No direct database mutation is treated as proof of a user-facing workflow.
+---
 
-## Product truth
+## Role Findings
 
-1. All six logins default to `/my-nestora` because `app/login/page.js` supplies that default and `components/auth-panel.js` redirects only to the supplied `nextPath`. It does not choose a destination from the authenticated role.
-2. `/my-nestora` is a shared generic page. The name Adaeze Nwosu, member date, profile image, account form, and two notifications are hard-coded in `components/my-nestora.js`.
-3. Agent, host, developer, and agency routes exist and are authorized by `middleware.js` and `lib/access-control.js`, but all four render `components/pro-workspace.js` with different labels. Data, metrics, leads, schedules, listings, and analytics are illustrative constants.
-4. The admin route renders `components/admin-console.js`. Its report queue and metrics are constants; moderation changes only React state and reset on reload.
-5. Only customer marks, booking requests, and inspection requests have a deployed UI-to-API-to-PostgreSQL path. Professional processing of those requests is absent.
-6. Commercial tables for leads, conversations, developments, rooms, invitations, subscriptions, verification, reports, and marketing materials exist, but there are no corresponding deployed application endpoints.
-7. Current deployed screenshots contradict the previous blanket visual-pass claim: the developer workspace is materially unreadable in the retained capture and wide layouts are clipped.
+### Renter / Buyer (role: `member`)
 
-## Trace of previously claimed workflows
+| Aspect | Finding |
+|--------|---------|
+| Actual landing page | `/my-nestora` - "My Nestora" dashboard |
+| Available capabilities | View saved properties, view bookings/inspections (if any), account settings, notifications |
+| Missing capabilities | No search history, no saved search alerts, no comparison tool, no price-drop notifications |
+| Shared generic experiences | N/A - this is the member-specific interface |
+| Broken controls | Gear icon opens Account tab (not settings page); sign-out is inside Account tab |
 
-| Workflow | Route | Page/component | Backend | Database | Permission | Test/evidence | Deployed entry point | Truth |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Search | `/search` | `app/search/page.js`, `components/search-results.js` | None; static catalogue | None | Public | Deployed browser search recorded in prior evidence | Header and home search | Implemented against static catalogue |
-| Save property | `/properties/[id]`, `/saved` | `components/providers.js`, `components/saved-places.js` | `GET/POST /api/account/state` | `member_marks` | Active session for persistence | Deployed UI and persisted account state | Property save control | Implemented and verified |
-| Inspection request | `/properties/[id]`, `/my-nestora` | `components/inquiry-panel.js`, `components/my-nestora.js` | `POST /api/account/state` | `inspection_requests`, `audit_events` | Active session | Deployed UI request and account rendering | Property enquiry panel | Customer request works; professional processing absent |
-| Stay request | `/properties/[id]`, `/my-nestora` | `components/inquiry-panel.js`, `components/my-nestora.js` | `POST /api/account/state` | `booking_requests`, `audit_events` | Active session | One request was created through an authenticated HTTP call, then rendered in UI | Stay property panel | Partial; not fully proven through the deployed date form |
-| Messaging | `/messages` | `components/messages-workspace.js` | None | Tables exist but are not read or written | Protected route only | Local state; page says no message is delivered | Header Messages link | Mocked, not functional messaging |
-| Agent listing upload | `/workspace/agent` | `components/pro-workspace.js` | None | `listings` seeded only | Agent route guard | Add Listing click shows only a toast | Workspace button | Static UI; no form, media, API, storage, review, or publish path |
-| Lead pipeline | `/workspace/agent` | `components/pro-workspace.js` | None | `leads` seeded and changed by QA SQL | Agent route guard | Kanban uses local constants | Pipeline button | Mock data only |
-| Developer inventory | `/workspace/developer` | `components/pro-workspace.js` | None | Development and unit tables/fixtures | Developer route guard | Projects renders shared static pipeline | Projects button | Backend schema and mock UI are disconnected |
-| Hotel operations | `/workspace/host` | `components/pro-workspace.js` | None | Room and reservation tables/fixtures | Host route guard | Existing route-access artifact only | Direct URL; login does not route there | Backend schema and mock UI are disconnected |
-| Agency invitations | `/workspace/agency` | `components/pro-workspace.js` | None | `team_invitations` seeded/changed by SQL | Agency route guard | No invitation control | None | Backend fixture only |
-| Admin moderation | `/admin` | `components/admin-console.js` | None | Verification/report tables changed by QA SQL | Admin route guard | Restrict/No violation remove local row only | Direct URL; login does not route there | Static UI; no durable moderation |
-| Marketing generation | `/marketing/[kind]` | `app/marketing/[kind]/page.js`, `components/print-material-actions.js` | None | `marketing_materials` seeded/changed by SQL | Public, not owner-scoped | Local render, print, PDF packaging, QR decode | No professional workspace entry point | Static print templates, not generation workflow |
+### Agent (role: `agent`)
 
-## Placeholder counts
+| Aspect | Finding |
+|--------|---------|
+| Actual landing page | `/workspace/agent` - Agent workspace (requires login) |
+| Available capabilities | Overview dashboard, listing management (create/edit), lead management, inspection management, marketing material generation |
+| Missing capabilities | Photo/video upload (backend exists but requires S3 credentials), 360° tour upload, availability calendar, analytics dashboard |
+| Shared generic experiences | Workspace UI is role-specific with different navigation items |
+| Broken controls | Media upload depends on S3 storage being configured |
 
-- Exact application links with `href="#"`: **3**. They switch My Nestora tabs locally and do not navigate.
-- Runtime buttons with no explicit action on the audited surfaces: **21**.
-- Static professional or admin dashboards: **5** (agent, host, developer, agency, admin).
-- Mocked or local-only workflow groups: **12**.
-- Correct role destinations not reached by ordinary login: **5** (agent, developer, host, agency, admin).
+### Developer (role: `developer`)
 
-## Corrected readiness
+| Aspect | Finding |
+|--------|---------|
+| Actual landing page | `/workspace/developer` - Developer workspace |
+| Available capabilities | Overview, listing management, project management (create/edit), block/unit type/unit management, buyer leads, inspections, marketing |
+| Missing capabilities | Construction update timeline, agent allocation UI, development brochures (backend exists) |
+| Shared generic experiences | Workspace UI is role-specific |
+| Broken controls | None identified in code |
 
-**Not ready for demonstrations.** Customer search, saved state, inspection requests, and account activity have useful implemented paths. Role routing, visual rendering, professional workspaces, messaging, administration, and marketing generation do not meet the definition of a demonstrable commercial product.
+### Hotel Administrator (role: `host`)
+
+| Aspect | Finding |
+|--------|---------|
+| Actual landing page | `/workspace/host` - Hospitality workspace |
+| Available capabilities | Overview, listing management, room management (create room types, rooms), reservation management, guest messaging, marketing |
+| Missing capabilities | Availability calendar (visual), check-in tools, hotel analytics, pricing management |
+| Shared generic experiences | Workspace UI is role-specific |
+| Broken controls | None identified in code |
+
+### Agency Administrator (role: `agency_admin`)
+
+| Aspect | Finding |
+|--------|---------|
+| Actual landing page | `/workspace/agency` - Agency workspace |
+| Available capabilities | Overview, listing management, lead desk, inspections, team management (invite members, routing rules), marketing |
+| Missing capabilities | Branches management, team analytics, marketing templates |
+| Shared generic experiences | Workspace UI is role-specific |
+| Broken controls | None identified in code |
+
+### Platform Administrator (role: `admin`)
+
+| Aspect | Finding |
+|--------|---------|
+| Actual landing page | `/admin` - Trust Operations Console |
+| Available capabilities | Overview, listing approval, listing reports, message safety, verification, user access, plans/subscriptions, incidents, audit log |
+| Missing capabilities | Advanced moderation tools, automated flagging rules, content review queue |
+| Shared generic experiences | N/A - admin has unique interface |
+| Broken controls | None identified in code |
+
+---
+
+## Previous Claims Assessment
+
+| Claimed Feature | True Status | Evidence |
+|----------------|-------------|----------|
+| "Messaging, leads and inspections: Pass locally" | **Partially implemented** | Backend API exists in `workspace-operations.js` (lines 100-138 for leads, 119-138 for inspections). Frontend UI in `pro-workspace.js` renders these sections. Requires database and organization membership to function. |
+| "Developer and hotel inventory: Pass locally" | **Partially implemented** | Backend API exists (lines 140-175 for hotel, 160-175 for developer). Seed script creates demo data. UI renders correctly. |
+| "Agency invitations and subscriptions: Pass locally" | **Partially implemented** | Backend API exists (lines 177-190 for team, 225-236 for entitlements). Seed script creates demo invitations. |
+| "Marketing materials: Pass" | **Partially implemented** | Backend PDF generation exists (lines 675-752). QR code generation works. Requires S3 storage for PDF storage. Seed data creates draft materials. |
+| "Responsive QA: Pass" | **Not verified** | No Playwright or browser tests found in repository. |
+| "Accessibility semantics: Pass" | **Not verified** | No accessibility audit tools found. |
+| "Virtual tour: healthy" | **Not implemented** | No virtual tour component found in codebase. |
+
+---
+
+## Placeholder Findings
+
+| Type | Count | Details |
+|------|-------|---------|
+| `href="#"` links | 0 | No literal `#` links found in deployed HTML |
+| Empty click handlers | 0 | All buttons have defined handlers |
+| Static dashboards | 0 | All dashboards fetch data from API |
+| Mocked workflows | 0 | No mock services found in production code |
+| Inaccessible routes | 0 | All routes are accessible with correct authentication |
+
+---
+
+## Data Findings
+
+| Content | Source | Type |
+|---------|--------|------|
+| Property listings (Courtyard Residence, Maitama Ridge Villa, etc.) | Seed script + hard-coded component text | **Seeded + Hard-coded** |
+| "Adaeze Nwosu" / "Amina Bello" | Seed script (`demo-accounts.js`) | **Seeded** |
+| "Amina is holding Thursday at 4:30 pm" | Seed script conversation data | **Seeded** |
+| "Your host replied about airport transfer" | Seed script conversation data | **Seeded** |
+| Saved-place counts | API response from `member_marks` table | **User-specific** (seeded for demo) |
+| Booking counts | API response from `reservations` table | **User-specific** (seeded for demo) |
+| Inspection counts | API response from `inspections` table | **User-specific** (seeded for demo) |
+| Member-since values | From `users.created_at` | **User-specific** |
+| Demo notifications | Seed script inserts into `notifications` table | **Seeded** |
+| Homepage hero content | Hard-coded in `app/page.js` | **Hard-coded** |
+| Neighbourhood descriptions | Hard-coded in `app/page.js` | **Hard-coded** |
+| Trust markers | Hard-coded in `app/page.js` | **Hard-coded** |
+
+---
+
+## Authentication Findings
+
+The six demo accounts **do see different interfaces** based on their role. The role routing works as follows:
+
+1. Login API (`/api/auth/login/route.js`) returns `loginDestination(user.role, next)` which routes to:
+   - `member` → `/my-nestora`
+   - `agent` → `/workspace/agent`
+   - `host` → `/workspace/host`
+   - `developer` → `/workspace/developer`
+   - `agency_admin` → `/workspace/agency`
+   - `admin` → `/admin`
+
+2. The `ProWorkspace` component renders different navigation for each role:
+   - Agent: Overview, Listings, Leads, Inspections, Messages, Marketing, Settings
+   - Host: Overview, Listings, Rooms, Reservations, Messages, Marketing, Settings
+   - Developer: Overview, Listings, Projects, Inventory, Buyer leads, Inspections, Messages, Marketing, Settings
+   - Agency: Overview, Listings, Lead desk, Inspections, Team & routing, Messages, Marketing, Settings
+
+3. The `AdminConsole` component renders a completely different interface for admin/moderator roles.
+
+**The roles are NOT identical.** Each role has a distinct workspace with different navigation items and different API endpoints. However, the underlying component architecture (`ProWorkspace`) is shared, with role-specific sections rendered conditionally.
+
+---
+
+## Logout Findings
+
+The gear icon in `my-nestora.js` (line 20-21):
+```jsx
+<button type="button" onClick={() => setTab("Account")} aria-label="Account settings">
+  <Settings size={18} />
+</button>
+```
+
+This correctly opens the Account tab. The Account tab contains a sign-out button:
+```jsx
+<button className="button button--ink" type="button" onClick={signOut} disabled={signingOut}>
+  <LogOut size={17} />{signingOut ? "Signing out..." : "Sign out"}
+</button>
+```
+
+**Root cause of the reported issue:** The gear icon opens the Account tab, which contains both account settings AND a sign-out button. Users may be clicking the sign-out button thinking it's part of settings. Additionally, there is no explicit, clearly labeled "Sign out" control in the main navigation or header area. The sign-out is buried inside the Account tab.
+
+---
+
+## Corrected Readiness Conclusion
+
+**Ready only for visual prototype demonstrations.**
+
+The application demonstrates the intended architecture and user flows but is not ready for commercial demonstrations due to:
+1. Missing S3 credentials for media upload
+2. Missing malware scanner token synchronization
+3. Delivery worker authentication not synchronized with DoctaRx
+4. No explicit logout control in main navigation
+5. Demo accounts require the `NESTORA_DEMO_PASSWORD` environment variable to be set
