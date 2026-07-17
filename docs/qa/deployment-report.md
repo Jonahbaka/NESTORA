@@ -6,7 +6,7 @@ Date: 2026-07-16
 
 - Nestora repository: `https://github.com/Jonahbaka/NESTORA.git`
 - Nestora release branch: `codex/nestora-commercial-readiness-qa`
-- Deployed Nestora commit: `d989650c83467328ff7c8af4aec940b3633ef753`
+- Deployed Nestora commit: `b5fc6a13aa9ad456943f31230a159ade2826f226`
 - Deployment owner: `Jonahbaka/zuma-teledoc`
 - Deployment commit: `ddb89d6cbc369e969f0e8305d6f900d06346f036`
 - Production URL: `https://nestora.doctarx.com`
