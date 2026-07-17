@@ -4,8 +4,9 @@ import { z } from "zod";
 import { findUserByEmail } from "@/lib/server/users";
 import { createSessionToken, SESSION_COOKIE, sessionCookieOptions } from "@/lib/server/session";
 import { assertSameOrigin, rateLimit, securityError } from "@/lib/server/request-security";
+import { loginDestination } from "@/lib/role-destination";
 
-const schema = z.object({ email: z.string().trim().email().max(254), password: z.string().min(1).max(128) });
+const schema = z.object({ email: z.string().trim().email().max(254), password: z.string().min(1).max(128), next: z.string().max(500).optional() });
 export async function POST(request) {
   try {
     assertSameOrigin(request); rateLimit(request, "login", { limit: 8, windowMs: 10 * 60_000 });
@@ -14,7 +15,10 @@ export async function POST(request) {
     const user = await findUserByEmail(parsed.data.email);
     const valid = user?.password_hash ? await bcrypt.compare(parsed.data.password, user.password_hash) : false;
     if (!user || !valid || user.status !== "active") return NextResponse.json({ error: "Email or password is incorrect." }, { status: 401 });
-    const response = NextResponse.json({ user: { id: user.id, name: user.name, email: user.email, role: user.role } });
+    const response = NextResponse.json({
+      user: { id: user.id, name: user.name, email: user.email, role: user.role },
+      destination: loginDestination(user.role, parsed.data.next),
+    });
     response.cookies.set(SESSION_COOKIE, createSessionToken(user), sessionCookieOptions);
     return response;
   } catch (error) {

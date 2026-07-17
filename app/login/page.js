@@ -1,9 +1,9 @@
 import { AuthPanel } from "@/components/auth-panel";
+import { safeInternalPath } from "@/lib/role-destination";
 export const metadata = { title: "Sign in" };
 export default async function LoginPage({ searchParams }) {
   const params = await searchParams;
-  const requested = typeof params?.next === "string" ? params.next : "";
-  const nextPath = requested.startsWith("/") && !requested.startsWith("//") ? requested : "/my-nestora";
+  const nextPath = safeInternalPath(params?.next);
   const initialMode = params?.mode === "register" ? "register" : "signin";
   return <AuthPanel nextPath={nextPath} initialMode={initialMode} />;
 }

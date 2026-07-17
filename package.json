@@ -18,6 +18,7 @@
     "qa:marketing-qr": "node scripts/verify-marketing-qr.js",
     "qa:marketing-pdf": "node scripts/package-marketing-pdfs.js",
     "qa:commercial": "node scripts/run-commercial-qa.js",
+    "qa:e2e": "node scripts/run-deployed-e2e.js",
     "verify": "npm run lint && npm run typecheck && npm test && npm run build"
   },
   "engines": {

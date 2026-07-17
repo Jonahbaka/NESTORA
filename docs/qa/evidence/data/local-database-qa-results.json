@@ -1,13 +1,14 @@
 {
-  "generatedAt": "2026-07-16T12:19:33.927Z",
+  "generatedAt": "2026-07-17T14:38:20.463Z",
   "adapter": "pg-mem PostgreSQL-compatible in-memory adapter",
   "scope": "isolated local commercial data QA",
   "migrations": [
     "001_core.sql",
     "002_member_activity.sql",
-    "003_commercial_operations.sql"
+    "003_commercial_operations.sql",
+    "004_production_operations.sql"
   ],
-  "tableCount": 27,
+  "tableCount": 36,
   "limitations": [
     "PostgreSQL GiST exclusion constraints require validation against the isolated staging PostgreSQL service."
   ],

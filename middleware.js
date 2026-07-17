@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { canAccessPath } from "@/lib/access-control";
 import { buildPublicUrl } from "@/lib/public-origin";
+import { roleDestination } from "@/lib/role-destination";
 
 function decodeBase64Url(value) {
   const base64 = value.replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(value.length / 4) * 4, "=");
@@ -36,7 +37,7 @@ export async function middleware(request) {
   }
 
   if (!canAccessPath(request.nextUrl.pathname, session.role)) {
-    const account = buildPublicUrl("/my-nestora", request.url);
+    const account = buildPublicUrl(roleDestination(session.role), request.url);
     account.searchParams.set("notice", "access");
     return NextResponse.redirect(account);
   }

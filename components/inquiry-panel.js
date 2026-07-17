@@ -43,7 +43,7 @@ export function InquiryPanel({ property }) {
 
   return (
     <form className="inquiry-panel" onSubmit={submit}>
-      <div className="inquiry-price"><strong>{priceLabel(property)}</strong>{stay ? <span><b>{property.rating}</b> · {property.illustrative ? "Illustrative rating" : `${property.reviews} reviews`}</span> : <span>{property.illustrative ? "Illustrative price" : "Published price"}</span>}</div>
+      <div className="inquiry-price"><strong>{priceLabel(property)}</strong><span>{stay ? "Published nightly rate" : "Published price"}</span></div>
       <label><span><CalendarDays size={16} />{stay ? "Check-in" : "Preferred viewing date"}</span><input name="date" type="date" aria-label={stay ? "Check-in date" : "Preferred viewing date"} value={date} min={new Date().toISOString().split("T")[0]} onChange={(event) => setDate(event.target.value)} required /></label>
       {stay ? <div className="inquiry-pair"><label><span><CalendarDays size={16} />Nights</span><input name="nights" type="number" aria-label="Number of nights" min="1" max="30" value={nights} onChange={(event) => setNights(Math.max(1, Number(event.target.value)))} /></label><label><span><UsersRound size={16} />Guests</span><select name="guests" aria-label="Number of guests" value={guests} onChange={(event) => setGuests(event.target.value)}><option value="1">1 guest</option><option value="2">2 guests</option><option value="3">3 guests</option><option value="4">4 guests</option></select></label></div> : null}
       <button className="button button--coral inquiry-submit" type="submit" disabled={submitting}>{submitting ? "Sending request..." : stay ? "Request to book" : "Request an inspection"}</button>

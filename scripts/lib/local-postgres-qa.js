@@ -3,7 +3,7 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { newDb, DataType } from "pg-mem";
 
-export const migrationFiles = ["001_core.sql", "002_member_activity.sql", "003_commercial_operations.sql"];
+export const migrationFiles = ["001_core.sql", "002_member_activity.sql", "003_commercial_operations.sql", "004_production_operations.sql"];
 
 export async function createLocalQaDatabase(root = process.cwd()) {
   const database = newDb({ autoCreateForeignKeyIndices: true });

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowRight, Check, Eye, EyeOff, LockKeyhole, Mail, ShieldCheck, UserRound } from "lucide-react";
 import { useState } from "react";
 
-export function AuthPanel({ nextPath = "/my-nestora", initialMode = "signin" }) {
+export function AuthPanel({ nextPath = null, initialMode = "signin" }) {
   const [mode, setMode] = useState(initialMode === "register" ? "register" : "signin");
   const [show, setShow] = useState(false);
   const [status, setStatus] = useState(null);
@@ -16,6 +16,7 @@ export function AuthPanel({ nextPath = "/my-nestora", initialMode = "signin" }) 
     setLoading(true);
     setStatus(null);
     const body = Object.fromEntries(new FormData(event.currentTarget));
+    if (nextPath) body.next = nextPath;
     try {
       const response = await fetch(`/api/auth/${mode === "signin" ? "login" : "register"}`, {
         method: "POST",
@@ -24,8 +25,8 @@ export function AuthPanel({ nextPath = "/my-nestora", initialMode = "signin" }) 
       });
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.error || "We could not complete that request.");
-      setStatus({ ok: true, text: mode === "signin" ? "Welcome back. Returning you to your journey..." : "Your account is ready. Returning you to your journey..." });
-      window.setTimeout(() => { window.location.href = nextPath; }, 800);
+      setStatus({ ok: true, text: mode === "signin" ? "Welcome back. Opening your workspace..." : "Your account is ready. Opening My Nestora..." });
+      window.setTimeout(() => { window.location.assign(payload.destination || "/my-nestora"); }, 500);
     } catch (error) {
       setStatus({ ok: false, text: error.message });
     } finally {

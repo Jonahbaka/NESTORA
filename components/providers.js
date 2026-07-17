@@ -11,8 +11,11 @@ const initialState = {
   joinedCommunities: [],
   following: [],
   reactions: [],
-  notifications: 3,
+  notifications: 0,
+  notificationItems: [],
 };
+
+const guestStorageKey = "nestora-guest-state-v2";
 
 export function NestoraProvider({ children }) {
   const [state, setState] = useState(initialState);
@@ -26,17 +29,18 @@ export function NestoraProvider({ children }) {
 
   useEffect(() => {
     try {
-      const stored = window.localStorage.getItem("nestora-state-v1");
+      window.localStorage.removeItem("nestora-state-v1");
+      const stored = window.localStorage.getItem(guestStorageKey);
       if (stored) setState({ ...initialState, ...JSON.parse(stored), bookings: [], inspections: [] });
     } catch {
-      window.localStorage.removeItem("nestora-state-v1");
+      window.localStorage.removeItem(guestStorageKey);
     }
     setHydrated(true);
   }, []);
 
   useEffect(() => {
-    if (hydrated) window.localStorage.setItem("nestora-state-v1", JSON.stringify({ ...state, bookings: [], inspections: [] }));
-  }, [hydrated, state]);
+    if (hydrated && accountReady && !account) window.localStorage.setItem(guestStorageKey, JSON.stringify({ ...state, bookings: [], inspections: [] }));
+  }, [account, accountReady, hydrated, state]);
 
   useEffect(() => {
     if (!hydrated) return undefined;
@@ -48,16 +52,15 @@ export function NestoraProvider({ children }) {
         const { user } = await sessionResponse.json();
         if (!user || cancelled) return;
         setAccount(user);
-        const stateResponse = await fetch("/api/account/state", { cache: "no-store" });
+        const [stateResponse, notificationResponse] = await Promise.all([
+          fetch("/api/account/state", { cache: "no-store" }),
+          fetch("/api/notifications", { cache: "no-store" }),
+        ]);
         if (!stateResponse.ok) return;
         const { state: serverState } = await stateResponse.json();
+        const notificationPayload = notificationResponse.ok ? await notificationResponse.json() : { notifications: [], unread: 0 };
         if (cancelled) return;
-        const localState = stateRef.current;
-        const markKeys = ["saved", "following", "joinedCommunities", "reactions"];
-        const mergedMarks = Object.fromEntries(markKeys.map((key) => [key, [...new Set([...(serverState[key] || []), ...(localState[key] || [])])]]));
-        const missingMarks = markKeys.flatMap((key) => (localState[key] || []).filter((value) => !(serverState[key] || []).includes(value)).map((value) => ({ type: "mark", key, value, enabled: true })));
-        await Promise.all(missingMarks.map((body) => writeAccountActivity(body).catch(() => null)));
-        if (!cancelled) setState((current) => ({ ...current, ...serverState, ...mergedMarks, notifications: current.notifications }));
+        if (!cancelled) setState({ ...initialState, ...serverState, notifications: notificationPayload.unread, notificationItems: notificationPayload.notifications });
       } catch {
         // Guest and temporarily offline sessions retain their local discovery state.
       } finally {
@@ -102,6 +105,14 @@ export function NestoraProvider({ children }) {
     return record;
   }, [account, accountReady, notify]);
 
+  const logout = useCallback(async () => {
+    const response = await fetch("/api/auth/logout", { method: "POST" });
+    if (!response.ok) throw new Error("We could not sign you out. Please try again.");
+    setAccount(null);
+    setState(initialState);
+    window.location.assign("/login");
+  }, []);
+
   const value = useMemo(() => ({
     ...state,
     account,
@@ -114,8 +125,12 @@ export function NestoraProvider({ children }) {
     addBooking: (booking) => createRequest("booking", booking),
     addInspection: (inspection) => createRequest("inspection", inspection),
     notify,
-    clearNotifications: () => setState((current) => ({ ...current, notifications: 0 })),
-  }), [account, accountReady, createRequest, hydrated, notify, state, toggleIn]);
+    logout,
+    clearNotifications: async () => {
+      if (account) await fetch("/api/notifications", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ all: true }) });
+      setState((current) => ({ ...current, notifications: 0, notificationItems: current.notificationItems.map((item) => ({ ...item, read_at: item.read_at || new Date().toISOString() })) }));
+    },
+  }), [account, accountReady, createRequest, hydrated, logout, notify, state, toggleIn]);
 
   return (
     <NestoraContext.Provider value={value}>

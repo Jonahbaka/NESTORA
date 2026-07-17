@@ -1,4 +1,5 @@
-import { SocialFeed } from "@/components/social-feed";
+import { notFound } from "next/navigation";
 
-export const metadata = { title: "Nestora Community", description: "Neighbourhood knowledge, property stories and trusted voices across Abuja." };
-export default function SocialPage() { return <SocialFeed />; }
+export default function SocialPage() {
+  notFound();
+}
