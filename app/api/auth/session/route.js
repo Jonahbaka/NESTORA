@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { SESSION_COOKIE, verifySessionToken } from "@/lib/server/session";
+import { shouldUseSecureCookies } from "@/lib/server/demo-environment";
 import { findUserById } from "@/lib/server/users";
 
 export const dynamic = "force-dynamic";
@@ -23,6 +24,6 @@ export async function GET() {
 
 function unauthorized() {
   const response = NextResponse.json({ user: null }, { status: 401, headers: { "Cache-Control": "no-store" } });
-  response.cookies.set(SESSION_COOKIE, "", { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: 0 });
+  response.cookies.set(SESSION_COOKIE, "", { httpOnly: true, secure: shouldUseSecureCookies(), sameSite: "lax", path: "/", maxAge: 0 });
   return response;
 }

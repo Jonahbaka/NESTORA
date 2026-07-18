@@ -1,0 +1,28 @@
+{
+  "generatedAt": "2026-07-18T17:44:34.456Z",
+  "baseUrl": "http://localhost:3040",
+  "invitationEmail": "agency-invite-rqnp8d0@example.test",
+  "routingRuleName": "Abuja rental routing rqnp8d0",
+  "results": [
+    {
+      "name": "agency manages team access invitations and routing through UI",
+      "status": "pass",
+      "durationMs": 4858
+    },
+    {
+      "name": "agency assigns a lead and accesses shared listings inspections and marketing through UI",
+      "status": "pass",
+      "durationMs": 1665
+    },
+    {
+      "name": "administrator resolves a listing report and approves verification through UI",
+      "status": "pass",
+      "durationMs": 2936
+    },
+    {
+      "name": "administrator suspends and reinstates user access with durable audit evidence through UI",
+      "status": "pass",
+      "durationMs": 1740
+    }
+  ]
+}

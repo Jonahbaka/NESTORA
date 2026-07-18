@@ -9,16 +9,53 @@ import { readWorkspaceResource, writeWorkspaceResource } from "@/lib/server/work
 
 export const dynamic = "force-dynamic";
 
+const profileSchema = z.object({
+  action: z.literal("update"),
+  headline: z.string().trim().min(3).max(140),
+  biography: z.string().trim().min(20).max(3000),
+  serviceAreas: z.array(z.string().trim().min(1).max(80)).max(30),
+  languages: z.array(z.string().trim().min(1).max(80)).max(20),
+  specialisations: z.array(z.string().trim().min(1).max(100)).max(30),
+  isPublic: z.boolean(),
+});
+const feesSchema = z.object({
+  serviceCharge: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),
+  cautionDeposit: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),
+  agencyFee: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),
+  legalFee: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),
+  cleaningFee: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),
+});
+const listingFields = {
+  title: z.string().trim().min(3).max(140),
+  propertyType: z.string().trim().min(2).max(80),
+  addressLine1: z.string().trim().min(3).max(180),
+  addressLine2: z.string().trim().max(180),
+  city: z.string().trim().min(2).max(100),
+  stateRegion: z.string().trim().min(2).max(100),
+  postalCode: z.string().trim().max(24),
+  priceAmount: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),
+  description: z.string().trim().min(20).max(5000),
+  bedrooms: z.number().int().min(0).max(100).nullable(),
+  bathrooms: z.number().min(0).max(100).nullable(),
+  areaSqm: z.number().positive().max(10_000_000).nullable(),
+  features: z.array(z.string().trim().min(1).max(100)).max(80),
+  fees: feesSchema,
+  availabilityStatus: z.enum(["available", "coming_soon", "occupied", "unavailable"]),
+  availableFrom: z.iso.date().nullable(),
+  tourEnabled: z.boolean(),
+};
 const listingSchema = z.discriminatedUnion("action", [
-  z.object({ action: z.literal("create"), title: z.string().trim().min(3).max(140), category: z.enum(["rent", "sale", "stay", "development"]), location: z.string().trim().min(3).max(180), priceAmount: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER), description: z.string().trim().max(5000).optional(), bedrooms: z.number().int().min(0).max(100).nullable().optional(), bathrooms: z.number().min(0).max(100).nullable().optional() }),
-  z.object({ action: z.literal("update"), id: z.string().trim().min(1).max(160), title: z.string().trim().min(3).max(140), location: z.string().trim().min(3).max(180), priceAmount: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER), description: z.string().trim().max(5000).optional(), status: z.enum(["draft", "active", "stale", "expired", "archived"]) }),
+  z.object({ action: z.literal("create"), category: z.enum(["rent", "sale", "stay", "development"]), ...listingFields }),
+  z.object({ action: z.literal("update"), id: z.string().trim().min(1).max(160), ...listingFields }),
+  z.object({ action: z.literal("submit"), id: z.string().trim().min(1).max(160) }),
+  z.object({ action: z.literal("archive"), id: z.string().trim().min(1).max(160) }),
 ]);
 const leadSchema = z.object({ action: z.literal("update"), id: z.uuid(), stage: z.enum(["new", "contacted", "qualified", "inspection", "reservation", "won", "lost"]), priority: z.enum(["low", "normal", "high", "urgent"]), nextAction: z.string().trim().max(500).optional(), ownerUserId: z.uuid().nullable().optional() });
 const inspectionSchema = z.object({ action: z.literal("update"), id: z.uuid(), status: z.enum(["proposed", "confirmed", "reschedule_requested", "cancelled", "completed"]), scheduledAt: z.iso.datetime(), notes: z.string().trim().max(2000).optional() });
 const hotelSchema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("reservation"), id: z.uuid(), status: z.enum(["requested", "confirmed", "declined", "cancelled", "completed"]), paymentStatus: z.enum(["unpaid", "pending", "paid", "refunded", "failed"]) }),
   z.object({ action: z.literal("room"), id: z.uuid(), status: z.enum(["available", "occupied", "maintenance", "inactive"]) }),
-  z.object({ action: z.literal("roomType"), code: z.string().trim().min(1).max(30).regex(/^[A-Za-z0-9-]+$/), name: z.string().trim().min(2).max(100), capacity: z.number().int().min(1).max(30), nightlyRate: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER) }),
+  z.object({ action: z.literal("roomType"), listingId: z.string().trim().min(1).max(160), code: z.string().trim().min(1).max(30).regex(/^[A-Za-z0-9-]+$/), name: z.string().trim().min(2).max(100), capacity: z.number().int().min(1).max(30), nightlyRate: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER) }),
   z.object({ action: z.literal("roomCreate"), roomTypeId: z.uuid(), code: z.string().trim().min(1).max(30).regex(/^[A-Za-z0-9-]+$/) }),
 ]);
 const developerSchema = z.discriminatedUnion("action", [
@@ -45,7 +82,7 @@ const adminSchema = z.discriminatedUnion("action", [
 ]);
 const marketingSchema = z.object({ action: z.literal("generate"), kind: z.enum(["agent_profile", "rental_flyer", "sale_brochure", "development_brochure", "hotel_flyer", "payment_plan", "qr_poster", "comparison_sheet"]), listingId: z.string().trim().min(1).max(160).nullable().optional(), developmentId: z.uuid().nullable().optional(), qrTarget: z.string().trim().max(500).refine((value) => !value || (value.startsWith("/") && !value.startsWith("//")), "Use a Nestora path beginning with one slash.").nullable().optional() });
 
-const writeSchemas = { listings: listingSchema, leads: leadSchema, inspections: inspectionSchema, hotel: hotelSchema, developer: developerSchema, team: teamSchema, admin: adminSchema, marketing: marketingSchema };
+const writeSchemas = { profile: profileSchema, listings: listingSchema, leads: leadSchema, inspections: inspectionSchema, hotel: hotelSchema, developer: developerSchema, team: teamSchema, admin: adminSchema, marketing: marketingSchema };
 
 export async function GET(request, { params }) {
   const { resource } = await params;

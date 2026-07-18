@@ -1,5 +1,7 @@
 .next/
+.next-*/
 node_modules/
+docs/qa/evidence/data/local-*.pdf
 .env
 .env.local
 .env.*.local

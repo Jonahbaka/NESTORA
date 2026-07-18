@@ -45,6 +45,18 @@ export function NestoraProvider({ children }) {
   useEffect(() => {
     if (!hydrated) return undefined;
     let cancelled = false;
+    let idleHandle = null;
+    let timeoutHandle = null;
+
+    function scheduleSync() {
+      if (cancelled) return;
+      if ("requestIdleCallback" in window) {
+        idleHandle = window.requestIdleCallback(syncAccount, { timeout: 1500 });
+      } else {
+        timeoutHandle = window.setTimeout(syncAccount, 0);
+      }
+    }
+
     async function syncAccount() {
       try {
         const sessionResponse = await fetch("/api/auth/session", { cache: "no-store" });
@@ -67,8 +79,16 @@ export function NestoraProvider({ children }) {
         if (!cancelled) setAccountReady(true);
       }
     }
-    syncAccount();
-    return () => { cancelled = true; };
+
+    if (document.readyState === "complete") scheduleSync();
+    else window.addEventListener("load", scheduleSync, { once: true });
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener("load", scheduleSync);
+      if (idleHandle != null) window.cancelIdleCallback(idleHandle);
+      if (timeoutHandle != null) window.clearTimeout(timeoutHandle);
+    };
   }, [hydrated]);
 
   const notify = useCallback((message) => {
@@ -77,8 +97,12 @@ export function NestoraProvider({ children }) {
   }, []);
 
   const toggleIn = useCallback((key, value, labels, { guestAllowed = false } = {}) => {
+    if (!accountReady) {
+      notify("Checking your account access. Please try again in a moment.");
+      return;
+    }
     if (!account && !guestAllowed) {
-      notify(accountReady ? "Sign in to keep this activity with your account." : "Checking your account access. Please try again in a moment.");
+      notify("Sign in to keep this activity with your account.");
       return;
     }
     const exists = stateRef.current[key].includes(value);

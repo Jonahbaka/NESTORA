@@ -1,0 +1,52 @@
+{
+  "generatedAt": "2026-07-18T17:43:27.030Z",
+  "baseUrl": "http://localhost:3040",
+  "projectName": "Katampe QA Terraces rqnliia",
+  "developerListingId": "katampe-buyer-residence-rqnliia-a81de2",
+  "developerListingTitle": "Katampe Buyer Residence rqnliia",
+  "hotelListingId": "jabi-executive-stay-rqnliia-41fae9",
+  "hotelListingTitle": "Jabi Executive Stay rqnliia",
+  "roomCode": "EX-liia",
+  "results": [
+    {
+      "name": "developer creates project inventory and review-ready listing through UI",
+      "status": "pass",
+      "durationMs": 7121
+    },
+    {
+      "name": "administrator publishes the developer listing through UI",
+      "status": "pass",
+      "durationMs": 2982
+    },
+    {
+      "name": "buyer requests developer inspection and starts a conversation through UI",
+      "status": "pass",
+      "durationMs": 5915
+    },
+    {
+      "name": "developer processes buyer lead inspection messaging and marketing through UI",
+      "status": "pass",
+      "durationMs": 6703
+    },
+    {
+      "name": "hotel creates a stay listing and listing-specific room inventory through UI",
+      "status": "pass",
+      "durationMs": 31775
+    },
+    {
+      "name": "administrator publishes the hotel listing through UI",
+      "status": "pass",
+      "durationMs": 13469
+    },
+    {
+      "name": "guest selects room type books and receives overlap protection through UI",
+      "status": "pass",
+      "durationMs": 24550
+    },
+    {
+      "name": "hotel confirms reservation updates room replies and generates marketing through UI",
+      "status": "pass",
+      "durationMs": 24248
+    }
+  ]
+}

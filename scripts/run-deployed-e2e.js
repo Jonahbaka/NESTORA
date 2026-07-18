@@ -16,6 +16,7 @@ const expectedDestinations = { member: "/my-nestora", agent: "/workspace/agent",
 const workspaceChecks = { agent: ["overview", "listings", "leads", "inspections", "marketing", "entitlements"], host: ["overview", "listings", "hotel", "marketing", "entitlements"], developer: ["overview", "listings", "developer", "leads", "inspections", "marketing", "entitlements"], agency_admin: ["overview", "listings", "leads", "inspections", "team", "marketing", "entitlements"], admin: ["admin"] };
 const results = [];
 const mutatingRun = ["local", "test", "staging"].includes(environment);
+const roleSessions = new Map();
 
 await scenario("deep health", async () => {
   const response = await fetch(`${baseUrl}/api/health?deep=1`, { headers: { accept: "application/json" } });
@@ -26,6 +27,7 @@ await scenario("deep health", async () => {
 for (const account of demoAccounts) {
   await scenario(`${account.role} identity and role landing`, async () => {
     const session = await login(account.email);
+    roleSessions.set(account.role, session);
     assert(session.payload.user.role === account.role, `expected ${account.role}, received ${session.payload.user.role}`);
     assert(session.payload.destination === expectedDestinations[account.role], `unexpected destination ${session.payload.destination}`);
     const identity = await request("/api/auth/session", { cookie: session.cookie });
@@ -37,10 +39,6 @@ for (const account of demoAccounts) {
     }
     const messages = await request("/api/messages", { cookie: session.cookie });
     assert(messages.response.ok, `messages returned HTTP ${messages.response.status}`);
-    const logout = await request("/api/auth/logout", { method: "POST", cookie: session.cookie, body: {} });
-    assert(logout.response.ok, `logout returned HTTP ${logout.response.status}`);
-    const afterLogout = await request("/api/auth/session", { cookie: logout.cookie || session.cookie });
-    assert(afterLogout.response.status === 401, `session remained active after logout (${afterLogout.response.status})`);
   });
 }
 
@@ -62,13 +60,15 @@ if (mutatingRun) {
   await scenario("listing media approval enquiry and inspection persist end to end", async () => {
     const suffix = Date.now().toString(36);
     const agent = await loginRole("agent");
-    const created = await request("/api/workspace/listings?workspace=agent", { method: "POST", cookie: agent.cookie, body: { action: "create", title: `E2E Wuye Residence ${suffix}`, category: "rent", location: "Wuye, Abuja", priceAmount: 8500000, description: "Automated staging workflow listing.", bedrooms: 3, bathrooms: 3.5 } });
+    const title = `E2E Wuye Residence ${suffix}`;
+    const listing = listingInput({ title, category: "rent", propertyType: "Three-bedroom apartment", addressLine1: "18 Wuye E2E Crescent", priceAmount: 8500000, description: "A complete automated staging workflow listing with disclosed costs and availability.", bedrooms: 3, bathrooms: 3.5, areaSqm: 176, serviceCharge: 450000 });
+    const created = await request("/api/workspace/listings?workspace=agent", { method: "POST", cookie: agent.cookie, body: { action: "create", ...listing } });
     assert(created.response.status === 201, `listing creation returned ${created.response.status}`);
     const listingId = created.payload.listing?.id;
     assert(listingId, "listing creation did not return an id");
     await uploadListingImage({ listingId, cookie: agent.cookie });
-    const activated = await request("/api/workspace/listings?workspace=agent", { method: "POST", cookie: agent.cookie, body: { action: "update", id: listingId, title: `E2E Wuye Residence ${suffix}`, location: "Wuye, Abuja", priceAmount: 8500000, description: "Automated staging workflow listing.", status: "active" } });
-    assert(activated.response.ok, `listing activation returned ${activated.response.status}`);
+    const submitted = await request("/api/workspace/listings?workspace=agent", { method: "POST", cookie: agent.cookie, body: { action: "submit", id: listingId } });
+    assert(submitted.response.ok && submitted.payload.listing?.verification_status === "pending", `listing submission returned ${submitted.response.status}`);
 
     const admin = await loginRole("admin");
     const approval = await request("/api/workspace/admin", { method: "POST", cookie: admin.cookie, body: { action: "listingDecision", id: listingId, status: "approved", reason: "Automated staging publication check passed." } });
@@ -86,7 +86,7 @@ if (mutatingRun) {
     const agentLeads = await request("/api/workspace/leads?workspace=agent", { cookie: agent.cookie });
     const agentInspections = await request("/api/workspace/inspections?workspace=agent", { cookie: agent.cookie });
     assert(agentLeads.payload.leads?.some((item) => item.listing_id === listingId), "customer enquiry did not reach the agent lead desk");
-    const professionalInspection = agentInspections.payload.inspections?.find((item) => item.listing_title === `E2E Wuye Residence ${suffix}`);
+    const professionalInspection = agentInspections.payload.inspections?.find((item) => item.listing_title === title);
     assert(professionalInspection, "customer inspection did not reach the agent calendar");
     const confirmedAt = `${tomorrow}T11:00:00.000Z`;
     const confirmedInspection = await request("/api/workspace/inspections?workspace=agent", { method: "POST", cookie: agent.cookie, body: { action: "update", id: professionalInspection.id, status: "confirmed", scheduledAt: confirmedAt, notes: "Confirmed by the staging workflow." } });
@@ -103,30 +103,31 @@ if (mutatingRun) {
     assert(material.response.status === 201 && material.payload.previewPath, `marketing generation returned ${material.response.status}`);
     const preview = await fetch(`${baseUrl}${material.payload.previewPath}`, { headers: { cookie: agent.cookie }, redirect: "manual" });
     assert(preview.ok && (preview.headers.get("content-type") || "").includes("application/pdf"), "generated PDF could not be opened");
-    const archived = await request("/api/workspace/listings?workspace=agent", { method: "POST", cookie: agent.cookie, body: { action: "update", id: listingId, title: `E2E Wuye Residence ${suffix}`, location: "Wuye, Abuja", priceAmount: 8500000, description: "Automated staging workflow listing.", status: "archived" } });
+    const archived = await request("/api/workspace/listings?workspace=agent", { method: "POST", cookie: agent.cookie, body: { action: "archive", id: listingId } });
     assert(archived.response.ok, "test listing cleanup failed");
   });
 
   await scenario("hotel developer and agency inventory creation persists", async () => {
     const suffix = Date.now().toString(36).slice(-8);
     const host = await loginRole("host");
-    const roomType = await request("/api/workspace/hotel?workspace=host", { method: "POST", cookie: host.cookie, body: { action: "roomType", code: `E2E-${suffix}`, name: `E2E Suite ${suffix}`, capacity: 2, nightlyRate: 150000 } });
-    assert(roomType.response.status === 201, `room type creation returned ${roomType.response.status}`);
-    const room = await request("/api/workspace/hotel?workspace=host", { method: "POST", cookie: host.cookie, body: { action: "roomCreate", roomTypeId: roomType.payload.roomType.id, code: `R-${suffix}` } });
-    assert(room.response.status === 201, `room creation returned ${room.response.status}`);
-
-    const stay = await request("/api/workspace/listings?workspace=host", { method: "POST", cookie: host.cookie, body: { action: "create", title: `E2E Jabi Stay ${suffix}`, category: "stay", location: "Jabi, Abuja", priceAmount: 150000, description: "Automated staging reservation workflow.", bedrooms: 1, bathrooms: 1 } });
+    const stayTitle = `E2E Jabi Stay ${suffix}`;
+    const stayInput = listingInput({ title: stayTitle, category: "stay", propertyType: "Executive serviced suite", addressLine1: "21 Jabi E2E Avenue", priceAmount: 150000, description: "A complete automated staging reservation workflow with listing-specific room inventory.", bedrooms: 1, bathrooms: 1, areaSqm: 64, serviceCharge: 15000, cleaningFee: 25000 });
+    const stay = await request("/api/workspace/listings?workspace=host", { method: "POST", cookie: host.cookie, body: { action: "create", ...stayInput } });
     assert(stay.response.status === 201, `stay listing creation returned ${stay.response.status}`);
     const stayId = stay.payload.listing.id;
     await uploadListingImage({ listingId: stayId, cookie: host.cookie });
-    const activatedStay = await request("/api/workspace/listings?workspace=host", { method: "POST", cookie: host.cookie, body: { action: "update", id: stayId, title: `E2E Jabi Stay ${suffix}`, location: "Jabi, Abuja", priceAmount: 150000, description: "Automated staging reservation workflow.", status: "active" } });
-    assert(activatedStay.response.ok, `stay listing activation returned ${activatedStay.response.status}`);
+    const submittedStay = await request("/api/workspace/listings?workspace=host", { method: "POST", cookie: host.cookie, body: { action: "submit", id: stayId } });
+    assert(submittedStay.response.ok, `stay listing submission returned ${submittedStay.response.status}`);
     const admin = await loginRole("admin");
     const approvedStay = await request("/api/workspace/admin?workspace=admin", { method: "POST", cookie: admin.cookie, body: { action: "listingDecision", id: stayId, status: "approved", reason: "Automated staging stay publication check passed." } });
     assert(approvedStay.response.ok, `stay listing approval returned ${approvedStay.response.status}`);
+    const roomType = await request("/api/workspace/hotel?workspace=host", { method: "POST", cookie: host.cookie, body: { action: "roomType", listingId: stayId, code: `E2E-${suffix}`, name: `E2E Suite ${suffix}`, capacity: 2, nightlyRate: 150000 } });
+    assert(roomType.response.status === 201, `room type creation returned ${roomType.response.status}`);
+    const room = await request("/api/workspace/hotel?workspace=host", { method: "POST", cookie: host.cookie, body: { action: "roomCreate", roomTypeId: roomType.payload.roomType.id, code: `R-${suffix}` } });
+    assert(room.response.status === 201, `room creation returned ${room.response.status}`);
     const member = await loginRole("member");
     const checkIn = new Date(Date.now() + 3 * 86_400_000).toISOString().slice(0, 10);
-    const booking = await request("/api/account/state", { method: "POST", cookie: member.cookie, body: { type: "booking", propertyId: stayId, date: checkIn, guests: 2, nights: 2 } });
+    const booking = await request("/api/account/state", { method: "POST", cookie: member.cookie, body: { type: "booking", propertyId: stayId, roomTypeId: roomType.payload.roomType.id, date: checkIn, guests: 2, nights: 2 } });
     assert(booking.response.status === 201, `reservation request returned ${booking.response.status}`);
     const hotelDesk = await request("/api/workspace/hotel?workspace=host", { cookie: host.cookie });
     const reservation = hotelDesk.payload.reservations?.find((item) => item.guest_email === demoAccounts.find((account) => account.role === "member").email && String(item.check_in).startsWith(checkIn));
@@ -135,7 +136,7 @@ if (mutatingRun) {
     assert(confirmedReservation.response.ok, `reservation confirmation returned ${confirmedReservation.response.status}`);
     const bookingState = await request("/api/account/state", { cookie: member.cookie });
     assert(bookingState.payload.state?.bookings?.some((item) => item.propertyId === stayId && item.status === "Confirmed"), "hotel reservation status did not reach the customer account");
-    const archivedStay = await request("/api/workspace/listings?workspace=host", { method: "POST", cookie: host.cookie, body: { action: "update", id: stayId, title: `E2E Jabi Stay ${suffix}`, location: "Jabi, Abuja", priceAmount: 150000, description: "Automated staging reservation workflow.", status: "archived" } });
+    const archivedStay = await request("/api/workspace/listings?workspace=host", { method: "POST", cookie: host.cookie, body: { action: "archive", id: stayId } });
     assert(archivedStay.response.ok, "stay listing cleanup failed");
 
     const developer = await loginRole("developer");
@@ -156,13 +157,24 @@ if (mutatingRun) {
   await scenario("cross tenant listing mutation is denied", async () => {
     const suffix = Date.now().toString(36).slice(-8);
     const host = await loginRole("host");
-    const hostListing = await request("/api/workspace/listings?workspace=host", { method: "POST", cookie: host.cookie, body: { action: "create", title: `E2E Host Listing ${suffix}`, category: "stay", location: "Jabi, Abuja", priceAmount: 120000, description: "Cross tenant authorization record.", bedrooms: 1, bathrooms: 1 } });
+    const hostListing = await request("/api/workspace/listings?workspace=host", { method: "POST", cookie: host.cookie, body: { action: "create", ...listingInput({ title: `E2E Host Listing ${suffix}`, category: "stay", propertyType: "Serviced suite", addressLine1: "3 Jabi Tenant Test Close", priceAmount: 120000, description: "A complete cross-tenant authorization test record for staging verification.", bedrooms: 1, bathrooms: 1, areaSqm: 52 }) } });
     assert(hostListing.response.status === 201, "host listing setup failed");
     const agent = await loginRole("agent");
-    const denied = await request("/api/workspace/listings?workspace=agent", { method: "POST", cookie: agent.cookie, body: { action: "update", id: hostListing.payload.listing.id, title: `E2E Host Listing ${suffix}`, location: "Jabi, Abuja", priceAmount: 1, description: "Unauthorized update", status: "archived" } });
+    const denied = await request("/api/workspace/listings?workspace=agent", { method: "POST", cookie: agent.cookie, body: { action: "archive", id: hostListing.payload.listing.id } });
     assert([403, 404].includes(denied.response.status), `cross-tenant update returned ${denied.response.status}`);
+    const cleaned = await request("/api/workspace/listings?workspace=host", { method: "POST", cookie: host.cookie, body: { action: "archive", id: hostListing.payload.listing.id } });
+    assert(cleaned.response.ok, "cross-tenant test listing cleanup failed");
   });
 }
+
+await scenario("explicit logout invalidates every role session", async () => {
+  for (const [role, session] of roleSessions) {
+    const logout = await request("/api/auth/logout", { method: "POST", cookie: session.cookie, body: {} });
+    assert(logout.response.ok, `${role} logout returned HTTP ${logout.response.status}`);
+    const afterLogout = await request("/api/auth/session", { cookie: logout.cookie || session.cookie });
+    assert(afterLogout.response.status === 401, `${role} session remained active after logout (${afterLogout.response.status})`);
+  }
+});
 
 const output = { generatedAt: new Date().toISOString(), baseUrl, environment, results };
 const evidencePath = path.resolve("docs", "qa", "evidence", "data", "deployed-e2e-results.json");
@@ -179,9 +191,12 @@ async function login(email) {
 }
 
 async function loginRole(role) {
+  if (roleSessions.has(role)) return roleSessions.get(role);
   const account = demoAccounts.find((item) => item.role === role);
   assert(account, `missing ${role} QA account`);
-  return login(account.email);
+  const session = await login(account.email);
+  roleSessions.set(role, session);
+  return session;
 }
 
 async function request(pathname, { method = "GET", cookie, body } = {}) {
@@ -204,10 +219,34 @@ async function uploadListingImage({ listingId, cookie }) {
   const image = await sharp({ create: { width: 96, height: 96, channels: 3, background: { r: 43, g: 83, b: 68 } } }).png().toBuffer();
   const form = new FormData();
   form.set("listingId", listingId);
+  form.set("mediaRole", "cover");
   form.set("file", new Blob([image], { type: "image/png" }), "e2e-property.png");
   const uploaded = await requestForm("/api/media", { cookie, form });
   assert(uploaded.response.status === 201, `media upload returned ${uploaded.response.status}`);
   return uploaded.payload.media;
+}
+
+function listingInput({ title, category, propertyType, addressLine1, priceAmount, description, bedrooms, bathrooms, areaSqm, serviceCharge = 0, cleaningFee = 0 }) {
+  return {
+    title,
+    category,
+    propertyType,
+    addressLine1,
+    addressLine2: "",
+    city: "Abuja",
+    stateRegion: "FCT",
+    postalCode: "900108",
+    priceAmount,
+    description,
+    bedrooms,
+    bathrooms,
+    areaSqm,
+    features: ["Backup power", "Secure parking", "Managed access"],
+    fees: { serviceCharge, cautionDeposit: 0, agencyFee: 0, legalFee: 0, cleaningFee },
+    availabilityStatus: "available",
+    availableFrom: null,
+    tourEnabled: false,
+  };
 }
 
 async function json(response) { return response.json().catch(() => ({})); }

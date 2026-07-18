@@ -8,14 +8,17 @@ test("all PostgreSQL migrations load in order", async () => {
     const tables = database.public.many(
       "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name",
     );
-    assert.equal(migrationFiles.length, 4);
-    assert.equal(tables.length, 36);
+    assert.equal(migrationFiles.length, 6);
+    assert.equal(tables.length, 39);
     assert.ok(tables.some((row) => row.table_name === "organizations"));
     assert.ok(tables.some((row) => row.table_name === "reservations"));
     assert.ok(tables.some((row) => row.table_name === "marketing_materials"));
     assert.ok(tables.some((row) => row.table_name === "listing_media"));
     assert.ok(tables.some((row) => row.table_name === "delivery_jobs"));
     assert.ok(tables.some((row) => row.table_name === "monitoring_events"));
+    assert.ok(tables.some((row) => row.table_name === "professional_profile_media"));
+    assert.ok(tables.some((row) => row.table_name === "marketing_attribution_links"));
+    assert.ok(tables.some((row) => row.table_name === "marketing_attribution_events"));
   } finally {
     await client.end();
   }

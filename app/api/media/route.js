@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { accessErrorResponse } from "@/lib/server/authorization";
 import { hasDatabase } from "@/lib/server/db";
-import { createListingMedia, listListingMedia, removeListingMedia } from "@/lib/server/media-operations";
+import { createListingMedia, listListingMedia, removeListingMedia, updateListingMedia } from "@/lib/server/media-operations";
 import { assertSameOrigin, rateLimit, securityError } from "@/lib/server/request-security";
 import { getWorkspaceContext } from "@/lib/server/workspace-context";
 import { validateUploadMetadata } from "@/lib/file-upload-policy";
@@ -28,14 +28,37 @@ export async function POST(request) {
     rateLimit(request, "media-upload", { limit: 20, windowMs: 60_000 });
     const form = await request.formData();
     const listingId = form.get("listingId")?.toString() || "";
+    const mediaRole = form.get("mediaRole")?.toString() || "";
+    const sceneLabel = form.get("sceneLabel")?.toString() || "";
     const file = form.get("file");
     if (!listingId || listingId.length > 160 || !(file instanceof File)) return NextResponse.json({ error: "Choose a listing and file to upload." }, { status: 400 });
     const category = categoryForMime(file.type);
     const validation = validateUploadMetadata({ category, filename: file.name, mimeType: file.type, size: file.size });
     if (!validation.valid) return NextResponse.json({ error: uploadError(validation.code) }, { status: 400 });
     const context = await getWorkspaceContext();
-    const media = await createListingMedia({ context, listingId, file, category });
+    const media = await createListingMedia({ context, listingId, file, category, mediaRole, sceneLabel });
     return NextResponse.json({ media }, { status: 201, headers: { "Cache-Control": "no-store" } });
+  } catch (error) {
+    const known = securityError(error);
+    if (known) return NextResponse.json({ error: known.message }, { status: known.status });
+    return routeError(error);
+  }
+}
+
+const patchSchema = z.discriminatedUnion("action", [
+  z.object({ action: z.literal("setRole"), id: z.uuid(), mediaRole: z.enum(["gallery", "cover", "walkthrough", "floor_plan", "panorama"]), sceneLabel: z.string().trim().max(80).optional() }),
+  z.object({ action: z.literal("move"), id: z.uuid(), direction: z.enum(["up", "down"]) }),
+]);
+
+export async function PATCH(request) {
+  if (!hasDatabase()) return unavailable();
+  try {
+    assertSameOrigin(request);
+    rateLimit(request, "media-update", { limit: 80, windowMs: 60_000 });
+    const parsed = patchSchema.safeParse(await request.json());
+    if (!parsed.success) return NextResponse.json({ error: "Choose a valid media update." }, { status: 400 });
+    const context = await getWorkspaceContext();
+    return NextResponse.json({ media: await updateListingMedia({ context, mediaId: parsed.data.id, ...parsed.data }) }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     const known = securityError(error);
     if (known) return NextResponse.json({ error: known.message }, { status: known.status });

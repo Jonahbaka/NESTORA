@@ -59,10 +59,10 @@ try {
   await membership(organizations.developer, users.developer, "owner");
   await membership(organizations.hotel, users.hotel, "owner");
 
-  await profile(users.agent, organizations.agency, "Independent Abuja property advisor", "Fictional QA profile for rental and buyer demonstrations.", ["Wuye", "Maitama", "Guzape"]);
-  await profile(users.developer, organizations.developer, "Developer sales administrator", "Fictional QA profile for development inventory and buyer enquiries.", ["Katampe"]);
-  await profile(users.hotel, organizations.hotel, "Hotel operations administrator", "Fictional QA profile for room inventory and guest reservations.", ["Jabi"]);
-  await profile(users.agency, organizations.agency, "Agency administrator", "Fictional QA profile for team, lead assignment, and performance workflows.", ["Abuja"]);
+  await profile(users.agent, organizations.agency, "amina-demo-agent", "Independent Abuja property advisor", "Fictional QA profile for rental and buyer demonstrations.", ["Wuye", "Maitama", "Guzape"], ["English", "Hausa"], ["Residential rentals", "Buyer representation"]);
+  await profile(users.developer, organizations.developer, "chinedu-demo-developer", "Developer sales administrator", "Fictional QA profile for development inventory and buyer enquiries.", ["Katampe"], ["English", "Igbo"], ["New developments", "Payment plans"]);
+  await profile(users.hotel, organizations.hotel, "zainab-demo-host", "Hotel operations administrator", "Fictional QA profile for room inventory and guest reservations.", ["Jabi"], ["English", "Hausa"], ["Serviced stays", "Guest operations"]);
+  await profile(users.agency, organizations.agency, "kemi-demo-agency", "Agency administrator", "Fictional QA profile for team, lead assignment, and performance workflows.", ["Abuja"], ["English"], ["Agency operations", "Lead routing"]);
 
   await listing("wuye-courtyard-residence", users.agent, organizations.agency, "The Courtyard Residence - Demonstration", "rent", "Wuye, Abuja", 8500000, "active");
   await listing("guzape-garden-duplex", users.agent, organizations.agency, "Guzape Garden Duplex - Demonstration", "rent", "Guzape, Abuja", 15000000, "expired");
@@ -103,9 +103,9 @@ try {
   }
 
   const suiteType = await upsertOne(
-    `INSERT INTO hotel_room_types (organization_id, code, name, capacity, nightly_rate)
-     VALUES ($1, 'LAKE-SUITE', 'Lake Suite', 2, 185000)
-     ON CONFLICT (organization_id, code) DO UPDATE SET nightly_rate = EXCLUDED.nightly_rate RETURNING id`,
+    `INSERT INTO hotel_room_types (organization_id, listing_id, code, name, capacity, nightly_rate)
+     VALUES ($1, 'jabi-lake-serviced-suite', 'LAKE-SUITE', 'Lake Suite', 2, 185000)
+     ON CONFLICT (organization_id, code) DO UPDATE SET listing_id = EXCLUDED.listing_id, nightly_rate = EXCLUDED.nightly_rate RETURNING id`,
     [organizations.hotel],
   );
   const room = await upsertOne(
@@ -260,12 +260,12 @@ async function membership(organizationId, userId, role) {
   );
 }
 
-async function profile(userId, organizationId, headline, biography, serviceAreas) {
+async function profile(userId, organizationId, slug, headline, biography, serviceAreas, languages, specialisations) {
   await client.query(
-    `INSERT INTO professional_profiles (user_id, organization_id, headline, biography, service_areas, verification_status, is_demo)
-     VALUES ($1, $2, $3, $4, $5, 'pending', TRUE)
-     ON CONFLICT (user_id) DO UPDATE SET organization_id = EXCLUDED.organization_id, headline = EXCLUDED.headline, biography = EXCLUDED.biography, service_areas = EXCLUDED.service_areas, verification_status = 'pending', is_demo = TRUE, updated_at = NOW()`,
-    [userId, organizationId, headline, biography, serviceAreas],
+    `INSERT INTO professional_profiles (user_id, organization_id, slug, headline, biography, service_areas, languages, specialisations, verification_status, is_public, is_demo)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'pending', TRUE, TRUE)
+     ON CONFLICT (user_id) DO UPDATE SET organization_id = EXCLUDED.organization_id, slug = EXCLUDED.slug, headline = EXCLUDED.headline, biography = EXCLUDED.biography, service_areas = EXCLUDED.service_areas, languages = EXCLUDED.languages, specialisations = EXCLUDED.specialisations, verification_status = 'pending', is_public = TRUE, is_demo = TRUE, updated_at = NOW()`,
+    [userId, organizationId, slug, headline, biography, serviceAreas, languages, specialisations],
   );
 }
 

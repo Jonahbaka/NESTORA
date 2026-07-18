@@ -19,6 +19,9 @@
     "qa:marketing-pdf": "node scripts/package-marketing-pdfs.js",
     "qa:commercial": "node scripts/run-commercial-qa.js",
     "qa:e2e": "node scripts/run-deployed-e2e.js",
+    "qa:browser": "node scripts/run-local-product-browser-qa.js",
+    "qa:browser:specialists": "node scripts/run-local-specialist-browser-qa.js",
+    "qa:browser:operations": "node scripts/run-local-agency-admin-browser-qa.js",
     "verify": "npm run lint && npm run typecheck && npm test && npm run build"
   },
   "engines": {
@@ -46,6 +49,7 @@
     "autoprefixer": "^10.4.21",
     "eslint": "^8.57.1",
     "eslint-config-next": "15.5.20",
+    "playwright": "^1.61.1",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.19",
     "typescript": "^5.9.3"

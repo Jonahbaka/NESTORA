@@ -1,0 +1,72 @@
+{
+  "generatedAt": "2026-07-18T17:45:39.707Z",
+  "baseUrl": "http://localhost:3040",
+  "environment": "local",
+  "results": [
+    {
+      "name": "deep health",
+      "status": "pass",
+      "durationMs": 162
+    },
+    {
+      "name": "member identity and role landing",
+      "status": "pass",
+      "durationMs": 915
+    },
+    {
+      "name": "agent identity and role landing",
+      "status": "pass",
+      "durationMs": 988
+    },
+    {
+      "name": "developer identity and role landing",
+      "status": "pass",
+      "durationMs": 647
+    },
+    {
+      "name": "host identity and role landing",
+      "status": "pass",
+      "durationMs": 629
+    },
+    {
+      "name": "agency_admin identity and role landing",
+      "status": "pass",
+      "durationMs": 668
+    },
+    {
+      "name": "admin identity and role landing",
+      "status": "pass",
+      "durationMs": 632
+    },
+    {
+      "name": "cross-role workspace access is denied",
+      "status": "pass",
+      "durationMs": 479
+    },
+    {
+      "name": "member cannot enter professional resources",
+      "status": "pass",
+      "durationMs": 592
+    },
+    {
+      "name": "listing media approval enquiry and inspection persist end to end",
+      "status": "pass",
+      "durationMs": 623
+    },
+    {
+      "name": "hotel developer and agency inventory creation persists",
+      "status": "pass",
+      "durationMs": 317
+    },
+    {
+      "name": "cross tenant listing mutation is denied",
+      "status": "pass",
+      "durationMs": 29
+    },
+    {
+      "name": "explicit logout invalidates every role session",
+      "status": "pass",
+      "durationMs": 55
+    }
+  ]
+}

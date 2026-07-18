@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { Compass, Heart, MessageCircle, UserRound, UsersRound } from "lucide-react";
+import { Compass, Heart, MessageCircle, Search, UserRound } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 const items = [
   { href: "/", label: "Explore", icon: Compass },
-  { href: "/social", label: "Social", icon: UsersRound },
+  { href: "/search", label: "Search", icon: Search },
   { href: "/saved", label: "Saved", icon: Heart },
   { href: "/messages", label: "Messages", icon: MessageCircle },
   { href: "/my-nestora", label: "Profile", icon: UserRound },

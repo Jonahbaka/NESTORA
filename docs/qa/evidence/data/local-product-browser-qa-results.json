@@ -1,0 +1,49 @@
+{
+  "generatedAt": "2026-07-18T17:40:04.295Z",
+  "baseUrl": "http://localhost:3040",
+  "listingId": "wuye-qa-residence-rqnifgj-d594c2",
+  "listingTitle": "Wuye QA Residence rqnifgj",
+  "qrTarget": "http://localhost:3040/r/tqJ9FHmVchcqWZVwinXqRNYZ",
+  "results": [
+    {
+      "name": "developer login and role landing",
+      "status": "pass",
+      "durationMs": 3902
+    },
+    {
+      "name": "hotel login and role landing",
+      "status": "pass",
+      "durationMs": 2645
+    },
+    {
+      "name": "agency login and role landing",
+      "status": "pass",
+      "durationMs": 2755
+    },
+    {
+      "name": "agent profile listing media and submission through UI",
+      "status": "pass",
+      "durationMs": 6599
+    },
+    {
+      "name": "administrator reviews and publishes through UI",
+      "status": "pass",
+      "durationMs": 2880
+    },
+    {
+      "name": "member saves enquires and books inspection through UI",
+      "status": "pass",
+      "durationMs": 19480
+    },
+    {
+      "name": "agent receives lead replies confirms inspection and generates marketing",
+      "status": "pass",
+      "durationMs": 9469
+    },
+    {
+      "name": "member receives reply and state persists after reauthentication",
+      "status": "pass",
+      "durationMs": 11362
+    }
+  ]
+}

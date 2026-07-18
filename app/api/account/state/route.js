@@ -18,7 +18,7 @@ const markSchema = z.object({
 });
 const futureDate = z.iso.date().refine((value) => value >= new Date().toISOString().slice(0, 10), "Date must not be in the past");
 const requestBase = { propertyId: z.string().trim().min(1).max(160), date: futureDate };
-const bookingSchema = z.object({ type: z.literal("booking"), ...requestBase, guests: z.number().int().min(1).max(30), nights: z.number().int().min(1).max(365) });
+const bookingSchema = z.object({ type: z.literal("booking"), ...requestBase, roomTypeId: z.uuid(), guests: z.number().int().min(1).max(30), nights: z.number().int().min(1).max(365) });
 const inspectionSchema = z.object({ type: z.literal("inspection"), ...requestBase });
 const writeSchema = z.discriminatedUnion("type", [markSchema, bookingSchema, inspectionSchema]);
 

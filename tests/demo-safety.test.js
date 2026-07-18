@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { demoAccounts } from "../lib/demo-accounts.js";
+import { allowDemoContent, isLocalRuntime, shouldUseSecureCookies } from "../lib/server/demo-environment.js";
 import { assertDemoPassword, assertSafeDemoTarget } from "../scripts/lib/demo-safety.js";
 
 const safeEnvironment = {
@@ -39,4 +40,21 @@ test("required demo roles are unique and visibly use the demo domain", () => {
   assert.deepEqual(new Set(demoAccounts.map((account) => account.role)), expectedRoles);
   assert.equal(new Set(demoAccounts.map((account) => account.email)).size, demoAccounts.length);
   assert.ok(demoAccounts.every((account) => account.email.endsWith("@demo.nestora.local")));
+});
+
+test("local runtime adapters require loopback app and database origins", () => {
+  const local = {
+    NODE_ENV: "production",
+    NESTORA_ENVIRONMENT: "local",
+    NESTORA_DEMO_MODE: "true",
+    NEXT_PUBLIC_APP_ORIGIN: "http://localhost:3040",
+    DATABASE_URL: "postgresql://postgres@127.0.0.1:55432/nestora_local",
+  };
+  assert.equal(isLocalRuntime(local), true);
+  assert.equal(allowDemoContent(local), true);
+  assert.equal(shouldUseSecureCookies(local), false);
+  assert.equal(isLocalRuntime({ ...local, NEXT_PUBLIC_APP_ORIGIN: "https://nestora.doctarx.com" }), false);
+  assert.equal(isLocalRuntime({ ...local, DATABASE_URL: "postgresql://db.internal/nestora" }), false);
+  assert.equal(allowDemoContent({ ...local, NESTORA_DEMO_MODE: "false" }), false);
+  assert.equal(shouldUseSecureCookies({ ...local, NEXT_PUBLIC_APP_ORIGIN: "https://nestora.doctarx.com" }), true);
 });

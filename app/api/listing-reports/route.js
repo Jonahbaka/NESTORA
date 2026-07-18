@@ -4,6 +4,7 @@ import { z } from "zod";
 import { accessErrorResponse, AccessError } from "@/lib/server/authorization";
 import { recordAuditEvent, recordMonitoringEvent } from "@/lib/server/audit";
 import { getPool, hasDatabase } from "@/lib/server/db";
+import { allowDemoContent } from "@/lib/server/demo-environment";
 import { assertSameOrigin, rateLimit, securityError } from "@/lib/server/request-security";
 import { getWorkspaceContext } from "@/lib/server/workspace-context";
 
@@ -43,9 +44,9 @@ async function createListingReport({ user, listingId, reason }) {
     const runQuery = client.query.bind(client);
     const listingResult = await runQuery(
       `SELECT id, title, owner_user_id FROM listings
-       WHERE id = $1 AND status = 'active' AND verification_status = 'verified' AND is_demo = FALSE
+       WHERE id = $1 AND status = 'active' AND verification_status = 'verified' AND (is_demo = FALSE OR $2::boolean)
        LIMIT 1 FOR UPDATE`,
-      [listingId],
+      [listingId, allowDemoContent()],
     );
     const listing = listingResult.rows[0];
     if (!listing) throw new AccessError("NOT_FOUND", "Listing not found.");
