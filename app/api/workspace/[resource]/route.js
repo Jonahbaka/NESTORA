@@ -78,7 +78,11 @@ const adminSchema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("incident"), id: z.uuid() }),
   z.object({ action: z.literal("listingDecision"), id: z.string().trim().min(1).max(160), status: z.enum(["approved", "rejected", "suspended"]), reason: z.string().trim().min(5).max(2000) }),
   z.object({ action: z.literal("userStatus"), id: z.uuid(), status: z.enum(["active", "suspended"]), reason: z.string().trim().min(5).max(2000) }),
-  z.object({ action: z.literal("subscription"), subjectType: z.enum(["user", "organization"]), subjectId: z.uuid(), planId: z.enum(["basic", "pilot", "pro", "team", "agency", "developer-studio", "hotel-operations", "host-centre", "enterprise"]), status: z.enum(["active", "trial", "grace"]), endsAt: z.iso.datetime().nullable().optional(), reason: z.string().trim().min(5).max(2000) }),
+  z.object({ action: z.literal("subscription"), subjectType: z.enum(["user", "organization"]), subjectId: z.uuid(), planId: z.string().trim().min(1).max(80), status: z.enum(["active", "trial", "grace", "founding_partner"]), endsAt: z.iso.datetime().nullable().optional(), billingInterval: z.enum(["monthly", "annual", "founding_partner", "trial", "promotional"]).optional(), reason: z.string().trim().min(5).max(2000) }),
+  z.object({ action: z.literal("planDefinition"), planId: z.string().trim().min(1).max(80), name: z.string().trim().min(2).max(100), audience: z.string().trim().max(200).optional(), monthlyPriceNgn: z.number().int().nonnegative(), annualPriceNgn: z.number().int().nonnegative().nullable().optional(), limits: z.record(z.any()), features: z.array(z.string()), isActive: z.boolean().optional() }),
+  z.object({ action: z.literal("suspendWebsite"), websiteId: z.uuid(), reason: z.string().trim().min(5).max(2000) }),
+  z.object({ action: z.literal("reinstateWebsite"), websiteId: z.uuid() }),
+  z.object({ action: z.literal("approveTemplate"), designId: z.uuid() }),
 ]);
 const marketingSchema = z.object({ action: z.literal("generate"), kind: z.enum(["agent_profile", "rental_flyer", "sale_brochure", "development_brochure", "hotel_flyer", "payment_plan", "qr_poster", "comparison_sheet"]), listingId: z.string().trim().min(1).max(160).nullable().optional(), developmentId: z.uuid().nullable().optional(), qrTarget: z.string().trim().max(500).refine((value) => !value || (value.startsWith("/") && !value.startsWith("//")), "Use a Nestora path beginning with one slash.").nullable().optional() });
 

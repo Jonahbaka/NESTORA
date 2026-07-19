@@ -1,72 +1,83 @@
 {
-  "generatedAt": "2026-07-18T17:45:39.707Z",
-  "baseUrl": "http://localhost:3040",
-  "environment": "local",
+  "generatedAt": "2026-07-19T09:17:25.266Z",
+  "baseUrl": "https://nestora.doctarx.com",
+  "environment": "staging",
   "results": [
     {
       "name": "deep health",
       "status": "pass",
-      "durationMs": 162
+      "durationMs": 1382
     },
     {
       "name": "member identity and role landing",
-      "status": "pass",
-      "durationMs": 915
+      "status": "fail",
+      "durationMs": 993,
+      "error": "login for renter.qa@demo.nestora.local returned HTTP 429"
     },
     {
       "name": "agent identity and role landing",
-      "status": "pass",
-      "durationMs": 988
+      "status": "fail",
+      "durationMs": 287,
+      "error": "login for agent.qa@demo.nestora.local returned HTTP 429"
     },
     {
       "name": "developer identity and role landing",
-      "status": "pass",
-      "durationMs": 647
+      "status": "fail",
+      "durationMs": 316,
+      "error": "login for developer.qa@demo.nestora.local returned HTTP 429"
     },
     {
       "name": "host identity and role landing",
-      "status": "pass",
-      "durationMs": 629
+      "status": "fail",
+      "durationMs": 278,
+      "error": "login for hotel.qa@demo.nestora.local returned HTTP 429"
     },
     {
       "name": "agency_admin identity and role landing",
-      "status": "pass",
-      "durationMs": 668
+      "status": "fail",
+      "durationMs": 292,
+      "error": "login for agency.qa@demo.nestora.local returned HTTP 429"
     },
     {
       "name": "admin identity and role landing",
-      "status": "pass",
-      "durationMs": 632
+      "status": "fail",
+      "durationMs": 277,
+      "error": "login for admin.qa@demo.nestora.local returned HTTP 429"
     },
     {
       "name": "cross-role workspace access is denied",
-      "status": "pass",
-      "durationMs": 479
+      "status": "fail",
+      "durationMs": 297,
+      "error": "login for agent.qa@demo.nestora.local returned HTTP 429"
     },
     {
       "name": "member cannot enter professional resources",
-      "status": "pass",
-      "durationMs": 592
+      "status": "fail",
+      "durationMs": 420,
+      "error": "login for renter.qa@demo.nestora.local returned HTTP 429"
     },
     {
       "name": "listing media approval enquiry and inspection persist end to end",
-      "status": "pass",
-      "durationMs": 623
+      "status": "fail",
+      "durationMs": 627,
+      "error": "login for agent.qa@demo.nestora.local returned HTTP 429"
     },
     {
       "name": "hotel developer and agency inventory creation persists",
-      "status": "pass",
-      "durationMs": 317
+      "status": "fail",
+      "durationMs": 309,
+      "error": "login for hotel.qa@demo.nestora.local returned HTTP 429"
     },
     {
       "name": "cross tenant listing mutation is denied",
-      "status": "pass",
-      "durationMs": 29
+      "status": "fail",
+      "durationMs": 586,
+      "error": "login for hotel.qa@demo.nestora.local returned HTTP 429"
     },
     {
       "name": "explicit logout invalidates every role session",
       "status": "pass",
-      "durationMs": 55
+      "durationMs": 0
     }
   ]
 }
