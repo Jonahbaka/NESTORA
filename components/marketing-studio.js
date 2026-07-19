@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { useNestora } from "@/components/providers";
 import { Plus, Save, FileText, Copy, Archive, Type, Image, Square, QrCode, Check } from "lucide-react";
+import Image from "next/image";
 
 const TEMPLATE_KINDS = [
   { value: "rental_flyer", label: "Rental flyer" },
@@ -108,6 +109,18 @@ export function MarketingStudio({ data, reload }) {
     setSelectedDesignId(null); setEditing(null); setMode("gallery");
   }
 
+  function addTextElement() {
+    setEditing((d) => ({ ...d, elements: [...(d?.elements || []), { type: "text", x: 40, y: 40, width: 200, height: 30, content: "Sample text", style: { fontSize: 18, color: "#173b31", fontFamily: "Inter", textAlign: "left", fontWeight: "bold" } }] }));
+  }
+
+  function addShapeElement() {
+    setEditing((d) => ({ ...d, elements: [...(d?.elements || []), { type: "shape", x: 40, y: 220, width: 160, height: 80, style: { fillColor: "#e98d7e", shapeType: "rectangle" } }] }));
+  }
+
+  function addQrElement() {
+    setEditing((d) => ({ ...d, elements: [...(d?.elements || []), { type: "qr_code", x: 330, y: 620, width: 120, height: 120, content: "https://nestora.doctarx.com", style: {} }] }));
+  }
+
   return (
     <div className="marketing-studio">
       <header className="studio-header">
@@ -181,9 +194,9 @@ export function MarketingStudio({ data, reload }) {
               <h3>Elements</h3>
               <p className="panel-empty">Element controls are available in the full editor. This compact view supports canvas preview, naming, and exports.</p>
               <div className="studio-quick-actions">
-                <button type="button" onClick={() => setEditing((d) => ({ ...d, elements: [...(d.elements || []), { type: "text", x: 40, y: 40, width: 200, height: 30, content: "Sample text", style: { fontSize: 18, color: "#173b31", fontFamily: "Inter", textAlign: "left", fontWeight: "bold" } }] })}><Type size={16} />Add heading</button>
-                <button type="button" onClick={() => setEditing((d) => ({ ...d, elements: [...(d.elements || []), { type: "shape", x: 40, y: 220, width: 160, height: 80, style: { fillColor: "#e98d7e", shapeType: "rectangle" } }] })}><Square size={16} />Add shape</button>
-                <button type="button" onClick={() => setEditing((d) => ({ ...d, elements: [...(d.elements || []), { type: "qr_code", x: 330, y: 620, width: 120, height: 120, content: "https://nestora.doctarx.com", style: {}} } })}><QrCode size={16} />Add QR</button>
+                <button type="button" onClick={addTextElement}><Type size={16} />Add heading</button>
+                <button type="button" onClick={addShapeElement}><Square size={16} />Add shape</button>
+                <button type="button" onClick={addQrElement}><QrCode size={16} />Add QR</button>
               </div>
             </aside>
           </div>
