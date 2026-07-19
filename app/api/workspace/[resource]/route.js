@@ -84,9 +84,32 @@ const adminSchema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("reinstateWebsite"), websiteId: z.uuid() }),
   z.object({ action: z.literal("approveTemplate"), designId: z.uuid() }),
 ]);
-const marketingSchema = z.object({ action: z.literal("generate"), kind: z.enum(["agent_profile", "rental_flyer", "sale_brochure", "development_brochure", "hotel_flyer", "payment_plan", "qr_poster", "comparison_sheet"]), listingId: z.string().trim().min(1).max(160).nullable().optional(), developmentId: z.uuid().nullable().optional(), qrTarget: z.string().trim().max(500).refine((value) => !value || (value.startsWith("/") && !value.startsWith("//")), "Use a Nestora path beginning with one slash.").nullable().optional() });
+const marketingSchema = z.discriminatedUnion("action", [
+  z.object({ action: z.literal("generate"), kind: z.enum(["agent_profile", "rental_flyer", "sale_brochure", "development_brochure", "hotel_flyer", "payment_plan", "qr_poster", "comparison_sheet"]), listingId: z.string().trim().min(1).max(160).nullable().optional(), developmentId: z.uuid().nullable().optional(), qrTarget: z.string().trim().max(500).refine((value) => !value || (value.startsWith("/") && !value.startsWith("//")), "Use a Nestora path beginning with one slash.").nullable().optional() }),
+  z.object({ action: z.literal("save"), elements: z.array(z.any()).optional() }),
+  z.object({ action: z.literal("export"), format: z.enum(["pdf", "png", "jpeg"]), elements: z.array(z.any()).optional() }),
+]);
 
-const writeSchemas = { profile: profileSchema, listings: listingSchema, leads: leadSchema, inspections: inspectionSchema, hotel: hotelSchema, developer: developerSchema, team: teamSchema, admin: adminSchema, marketing: marketingSchema };
+const brandKitSchema = z.object({
+  action: z.enum(["create", "update", "delete", "lock"]),
+  name: z.string().trim().min(2).max(120).optional(),
+  brandColors: z.record(z.string()).optional(),
+  fonts: z.record(z.string()).optional(),
+  contactFooter: z.string().trim().max(500).optional(),
+  websiteUrl: z.string().trim().max(200).optional(),
+  socialHandles: z.record(z.string()).optional(),
+  disclaimer: z.string().trim().max(2000).optional(),
+  defaultQrStyle: z.record(z.any()).optional(),
+  isOrganizationKit: z.boolean().optional(),
+  brandKitId: z.uuid().optional(),
+});
+const templateSchema = z.object({
+  action: z.enum(["create", "duplicate"]),
+  designId: z.uuid().optional(),
+  kind: z.enum(["agent_profile", "rental_flyer", "sale_brochure", "development_brochure", "hotel_flyer", "payment_plan", "qr_poster", "comparison_sheet"]).optional(),
+  listingId: z.string().trim().max(160).optional(),
+});
+const writeSchemas = { profile: profileSchema, listings: listingSchema, leads: leadSchema, inspections: inspectionSchema, hotel: hotelSchema, developer: developerSchema, team: teamSchema, admin: adminSchema, marketing: marketingSchema, subscription: z.object({ action: z.enum(["requestUpgrade"]), planId: z.string().trim().min(1).max(80) }), "brand-kits": brandKitSchema, templates: templateSchema };
 
 export async function GET(request, { params }) {
   const { resource } = await params;

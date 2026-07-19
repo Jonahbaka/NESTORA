@@ -2,18 +2,23 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Archive, ArrowDown, ArrowUp, BarChart3, Bell, Building2, CalendarCheck2, Camera, Check, ChevronRight, CircleDollarSign, Eye, FileImage, FileText, Globe2, Hotel, Images, Landmark, LayoutDashboard, LogOut, Menu, MessageCircle, Plus, RefreshCw, ScanLine, Search, Send, Settings, ShieldCheck, Trash2, Upload, UserRound, UsersRound, Video, X } from "lucide-react";
+import { Archive, ArrowDown, ArrowUp, ArrowRight, BarChart3, Bell, Building2, CalendarCheck2, Camera, Check, ChevronRight, CircleDollarSign, Eye, FileImage, FileText, Globe2, Hotel, Images, Landmark, LayoutDashboard, LogOut, Menu, MessageCircle, Plus, RefreshCw, ScanLine, Search, Settings, ShieldCheck, Trash2, Upload, UserRound, UsersRound, Video, X, Palette, LayoutTemplate } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNestora } from "@/components/providers";
 import { formatNaira } from "@/lib/platform";
+import { PartnerWebsites } from "@/components/partner-websites";
+import { SubscriptionManager } from "@/components/subscription-manager";
+import { MarketingStudio } from "@/components/marketing-studio";
+import { BrandKitManager } from "@/components/brand-kit-manager";
+import { TemplateGallery } from "@/components/template-gallery";
 
 const roleLabels = { agent: "Agent", host: "Hospitality", developer: "Developer", agency: "Agency" };
 
 const navigationByRole = {
-  agent: [nav("Overview", "overview", LayoutDashboard), nav("Professional profile", "profile", UserRound), nav("Listings", "listings", Building2), nav("Leads", "leads", UsersRound), nav("Inspections", "inspections", CalendarCheck2), nav("Messages", "messages", MessageCircle), nav("Marketing", "marketing", FileImage), nav("Plan & settings", "entitlements", Settings)],
-  host: [nav("Overview", "overview", LayoutDashboard), nav("Professional profile", "profile", UserRound), nav("Listings", "listings", Building2), nav("Rooms", "hotel-rooms", Hotel), nav("Reservations", "hotel-reservations", CalendarCheck2), nav("Messages", "messages", MessageCircle), nav("Marketing", "marketing", FileImage), nav("Plan & settings", "entitlements", Settings)],
-  developer: [nav("Overview", "overview", LayoutDashboard), nav("Professional profile", "profile", UserRound), nav("Listings", "listings", Building2), nav("Projects", "developer-projects", Landmark), nav("Inventory", "developer-units", Building2), nav("Buyer leads", "leads", UsersRound), nav("Inspections", "inspections", CalendarCheck2), nav("Messages", "messages", MessageCircle), nav("Marketing", "marketing", FileImage), nav("Plan & settings", "entitlements", Settings)],
-  agency: [nav("Overview", "overview", LayoutDashboard), nav("Professional profile", "profile", UserRound), nav("Listings", "listings", Building2), nav("Lead desk", "leads", UsersRound), nav("Inspections", "inspections", CalendarCheck2), nav("Team & routing", "team", UsersRound), nav("Messages", "messages", MessageCircle), nav("Marketing", "marketing", FileImage), nav("Plan & settings", "entitlements", Settings)],
+  agent: [nav("Overview", "overview", LayoutDashboard), nav("Professional profile", "profile", UserRound), nav("Listings", "listings", Building2), nav("Leads", "leads", UsersRound), nav("Inspections", "inspections", CalendarCheck2), nav("Messages", "messages", MessageCircle), nav("Marketing Studio", "marketing-studio", FileImage), nav("Brand kits", "brand-kits", Palette), nav("Template gallery", "templates", LayoutTemplate), nav("Websites", "websites", Globe2), nav("Subscription", "subscription", Settings)],
+  host: [nav("Overview", "overview", LayoutDashboard), nav("Professional profile", "profile", UserRound), nav("Listings", "listings", Building2), nav("Rooms", "hotel-rooms", Hotel), nav("Reservations", "hotel-reservations", CalendarCheck2), nav("Messages", "messages", MessageCircle), nav("Marketing Studio", "marketing-studio", FileImage), nav("Brand kits", "brand-kits", Palette), nav("Template gallery", "templates", LayoutTemplate), nav("Websites", "websites", Globe2), nav("Subscription", "subscription", Settings)],
+  developer: [nav("Overview", "overview", LayoutDashboard), nav("Professional profile", "profile", UserRound), nav("Listings", "listings", Building2), nav("Projects", "developer-projects", Landmark), nav("Inventory", "developer-units", Building2), nav("Buyer leads", "leads", UsersRound), nav("Inspections", "inspections", CalendarCheck2), nav("Messages", "messages", MessageCircle), nav("Marketing Studio", "marketing-studio", FileImage), nav("Brand kits", "brand-kits", Palette), nav("Template gallery", "templates", LayoutTemplate), nav("Websites", "websites", Globe2), nav("Subscription", "subscription", Settings)],
+  agency: [nav("Overview", "overview", LayoutDashboard), nav("Professional profile", "profile", UserRound), nav("Listings", "listings", Building2), nav("Lead desk", "leads", UsersRound), nav("Inspections", "inspections", CalendarCheck2), nav("Team & routing", "team", UsersRound), nav("Messages", "messages", MessageCircle), nav("Marketing Studio", "marketing-studio", FileImage), nav("Brand kits", "brand-kits", Palette), nav("Template gallery", "templates", LayoutTemplate), nav("Websites", "websites", Globe2), nav("Subscription", "subscription", Settings)],
 };
 
 export function ProWorkspace({ role }) {
@@ -96,7 +101,21 @@ function WorkspaceSection({ section, role, data, query, reload, notify, logout }
   if (section === "developer-units") return <DeveloperOperations data={data} mode="units" role={role} reload={reload} notify={notify} />;
   if (section === "team") return <TeamOperations data={data} role={role} reload={reload} notify={notify} />;
   if (section === "marketing") return <Marketing data={data} role={role} reload={reload} notify={notify} />;
+  if (section === "marketing-studio") return <MarketingStudio />;
+  if (section === "brand-kits") return <BrandKitManager data={data} role={role} reload={reload} notify={notify} />;
+  if (section === "templates") return <TemplateGallery data={data} />;
+  if (section === "websites") return <PartnerWebsites data={data} role={role} reload={reload} notify={notify} />;
+  if (section === "subscription") return <SubscriptionManager data={data} role={role} reload={reload} notify={notify} />;
   return <PlanSettings data={data} logout={logout} />;
+}
+
+function resourceForSection(section) {
+  if (section === "marketing-studio") return "marketing";
+  if (section === "brand-kits") return "brand-kits";
+  if (section === "templates") return "templates";
+  if (section.startsWith("hotel-")) return "hotel";
+  if (section.startsWith("developer-")) return "developer";
+  return section;
 }
 
 function ProfessionalProfile({ data, role, reload, notify }) {
@@ -162,7 +181,7 @@ function Listings({ data, role, query, reload, notify }) {
     const result = await performWrite("listings", role, { action, id: item.id }, notify);
     if (result) await reload();
   }
-  return <><Title eyebrow="Portfolio" title="Listings and media" copy="Build complete property records, submit them for review, and publish only after approval." action={<button className="button button--coral" type="button" onClick={() => setCreating((value) => !value)}><Plus size={17} />Add listing</button>} />{creating ? <form className="workspace-form listing-editor listing-editor--create" onSubmit={create}><label>Category<select name="category" defaultValue={role === "host" ? "stay" : role === "developer" ? "development" : "rent"}><option value="rent">Rental</option><option value="sale">Sale</option><option value="stay">Stay</option><option value="development">Development</option></select></label><ListingFields /><div className="form-actions form-wide"><button type="button" onClick={() => setCreating(false)}>Cancel</button><button className="button button--ink" type="submit">Create draft</button></div></form> : null}<div className="workspace-records listing-records">{listings.length ? listings.map((item) => <article className="workspace-record listing-record" key={item.id}><header className="listing-record__head"><div className="record-primary"><strong>{item.title}</strong><small>{humanize(item.category)} | {item.location}</small></div><div className="listing-status"><span className={`status-pill status-pill--${item.verification_status}`}>{listingStatus(item)}</span><small>{item.media_count} media | {item.panorama_count} scenes</small></div></header>{item.review_note && item.verification_status === "rejected" ? <p className="listing-review-note"><ShieldCheck size={16} /><span><strong>Review feedback</strong>{item.review_note}</span></p> : null}<form className="workspace-form listing-editor" onSubmit={(event) => { event.preventDefault(); update(item, event); }}><ListingFields item={item} /><div className="form-actions form-wide listing-actions"><button type="button" onClick={() => setMediaListing(mediaListing === item.id ? null : item.id)}><FileImage size={16} />Media ({item.media_count})</button><Link href={`/properties/${item.id}?preview=1`} target="_blank"><Eye size={16} />Preview</Link><button type="button" onClick={() => listingAction(item, "archive")}><Archive size={16} />Archive</button><button className="button button--outline" type="submit">Save draft</button><button className="button button--coral" type="button" disabled={item.verification_status === "pending"} onClick={() => listingAction(item, "submit")}><Send size={16} />{item.verification_status === "pending" ? "Review pending" : "Submit for review"}</button></div></form>{mediaListing === item.id ? <MediaManager listingId={item.id} notify={notify} onChanged={reload} /> : null}</article>) : <EmptyState title="No listings yet" copy="Create the first complete draft to begin building your portfolio." />}</div></>;
+  return <><Title eyebrow="Portfolio" title="Listings and media" copy="Build complete property records, submit them for review, and publish only after approval." action={<button className="button button--coral" type="button" onClick={() => setCreating((value) => !value)}><Plus size={17} />Add listing</button>} />{creating ? <form className="workspace-form listing-editor listing-editor--create" onSubmit={create}><label>Category<select name="category" defaultValue={role === "host" ? "stay" : role === "developer" ? "development" : "rent"}><option value="rent">Rental</option><option value="sale">Sale</option><option value="stay">Stay</option><option value="development">Development</option></select></label><ListingFields /><div className="form-actions form-wide"><button type="button" onClick={() => setCreating(false)}>Cancel</button><button className="button button--ink" type="submit">Create draft</button></div></form> : null}<div className="workspace-records listing-records">{listings.length ? listings.map((item) => <article className="workspace-record listing-record" key={item.id}><header className="listing-record__head"><div className="record-primary"><strong>{item.title}</strong><small>{humanize(item.category)} | {item.location}</small></div><div className="listing-status"><span className={`status-pill status-pill--${item.verification_status}`}>{listingStatus(item)}</span><small>{item.media_count} media | {item.panorama_count} scenes</small></div></header>{item.review_note && item.verification_status === "rejected" ? <p className="listing-review-note"><ShieldCheck size={16} /><span><strong>Review feedback</strong>{item.review_note}</span></p> : null}<form className="workspace-form listing-editor" onSubmit={(event) => { event.preventDefault(); update(item, event); }}><ListingFields item={item} /><div className="form-actions form-wide listing-actions"><button type="button" onClick={() => setMediaListing(mediaListing === item.id ? null : item.id)}><FileImage size={16} />Media ({item.media_count})</button><Link href={`/properties/${item.id}?preview=1`} target="_blank"><Eye size={16} />Preview</Link><button type="button" onClick={() => listingAction(item, "archive")}><Archive size={16} />Archive</button><button className="button button--outline" type="submit">Save draft</button><button className="button button--coral" type="button" disabled={item.verification_status === "pending"} onClick={() => listingAction(item, "submit")}><ArrowRight size={16} />{item.verification_status === "pending" ? "Review pending" : "Submit for review"}</button></div></form>{mediaListing === item.id ? <MediaManager listingId={item.id} notify={notify} onChanged={reload} /> : null}</article>) : <EmptyState title="No listings yet" copy="Create the first complete draft to begin building your portfolio." />}</div></>;
 }
 
 function ListingFields({ item = {} }) {
@@ -219,8 +238,6 @@ function DeveloperCreateForm({ mode, data, submit, cancel }) {
   return <form className="workspace-form" onSubmit={(event) => submit(mode, event)}><label>Development<select name="developmentId" required><option value="">Select project</option>{developmentOptions}</select></label><label>Block<select name="blockId" required><option value="">Select block</option>{(data.blocks || []).map((item) => <option value={item.id} key={item.id}>{item.development_name} · {item.name}</option>)}</select></label><label>Unit type<select name="unitTypeId" required><option value="">Select unit type</option>{(data.unitTypes || []).map((item) => <option value={item.id} key={item.id}>{item.development_name} · {item.name}</option>)}</select></label><label>Unit code<input name="code" required pattern="[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*" /></label><label>Floor<input name="floor" type="number" min="0" required /></label><label>Price<input name="priceAmount" type="number" min="0" required /></label><FormButtons cancel={cancel} label="Create unit" /></form>;
 }
 
-function FormButtons({ cancel, label }) { return <div className="form-actions form-wide"><button type="button" onClick={cancel}>Cancel</button><button className="button button--ink" type="submit">{label}</button></div>; }
-
 function TeamOperations({ data, role, reload, notify }) {
   const [mode, setMode] = useState(null);
   async function invite(event) { event.preventDefault(); const formElement = event.currentTarget; const form = new FormData(formElement); const result = await performWrite("team", role, { action: "invite", email: form.get("email"), role: form.get("role") }, notify); if (!result) return; formElement.reset(); setMode(null); await reload(); }
@@ -236,7 +253,7 @@ function Marketing({ data, role, reload, notify }) {
 
 function PlanSettings({ data, logout }) {
   const subscription = data.subscription;
-  return <><Title eyebrow="Account" title="Plan and settings" copy="Review the active commercial subscription and account access." /><div className="settings-grid"><section className="workspace-panel settings-panel"><CircleDollarSign size={22} /><h2>{subscription ? humanize(subscription.planId) : "No active subscription"}</h2><p>{subscription ? `${humanize(subscription.status)} access${subscription.endsAt ? ` through ${formatDate(subscription.endsAt)}` : ""}.` : "Choose a professional plan to unlock commercial capacity."}</p><Link className="button button--outline" href="/pricing">Review plans</Link></section><section className="workspace-panel settings-panel"><ShieldCheck size={22} /><h2>Account access</h2><p>Sign out on shared devices and review Nestora&apos;s trust controls regularly.</p><button className="button button--ink" type="button" onClick={logout}><LogOut size={17} />Sign out</button></section></div></>;
+  return <><Title eyebrow="Account" title="Plan and settings" copy="Review the active commercial subscription and account access." /><div className="settings-grid"><section className="workspace-panel settings-panel"><CircleDollarSign size={22} /><h2>{subscription ? humanize(subscription.planId) : "No active subscription"}</h2><p>{subscription ? `${humanize(subscription.status)} access${subscription.endsAt ? ` through ${formatDate(subscription.endsAt)}` : ""}.` : "Choose a professional plan to unlock commercial capacity."}</p><Link className="button button--outline" href="/pricing">Review plans</Link></section><section className="workspace-panel settings-panel"><ShieldCheck size={22} /><h2>Account access</h2><p>Sign out on shared devices and review Nestora&#39;s trust controls regularly.</p><button className="button button--ink" type="button" onClick={logout}><LogOut size={17} />Sign out</button></section></div></>;
 }
 
 function Title({ eyebrow, title, copy, action }) { return <div className="pro-title"><div><p className="eyebrow">{eyebrow}</p><h1>{title}</h1><p>{copy}</p></div>{action}</div>; }
@@ -245,7 +262,6 @@ function WorkspaceError({ message, retry }) { return <div className="workspace-p
 function EmptyState({ title, copy }) { return <div className="workspace-placeholder small"><Building2 size={26} /><h2>{title}</h2><p>{copy}</p></div>; }
 function Initials({ name = "Nestora" }) { const text = name.split(/\s+/).filter(Boolean).slice(0,2).map((part) => part[0]).join("").toUpperCase(); return <span className="pro-initials">{text}</span>; }
 function nav(label, key, Icon) { return { label, key, Icon }; }
-function resourceForSection(section) { if (section.startsWith("hotel-")) return "hotel"; if (section.startsWith("developer-")) return "developer"; return section; }
 function roleIcon(role) { const Icon = role === "host" ? Hotel : role === "developer" ? Landmark : role === "agency" ? UsersRound : Building2; return <Icon size={19} />; }
 function humanize(value) { return String(value || "").replaceAll("_", " ").replaceAll("-", " ").replace(/^./, (letter) => letter.toUpperCase()); }
 function nullableNumber(value) { return value === "" || value == null ? null : Number(value); }
@@ -281,6 +297,10 @@ function normalizedMediaRole(item) {
   const options = mediaRoleOptions(item.kind).map(([value]) => value);
   return options.includes(item.media_role) ? item.media_role : options[0];
 }
+function FormButtons({ cancel, label }) {
+  return <div className="form-actions form-wide"><button type="button" onClick={cancel}>Cancel</button><button className="button button--ink" type="submit">{label}</button></div>;
+}
+
 function mediaIcon(item) {
   if (item.media_role === "panorama") return <ScanLine size={17} />;
   if (item.kind === "video") return <Video size={17} />;
