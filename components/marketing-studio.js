@@ -6,6 +6,8 @@ import { Type, Save, Download, Undo, Redo, Trash2, Lock, Unlock, ChevronUp, Chev
 const INITIAL_WIDTH = 595;
 const INITIAL_HEIGHT = 420;
 const SNAP = 12;
+const MIN_ELEMENT_SIZE = 20;
+const HANDLE_SIZE = 8;
 
 export function MarketingStudio({ data, reload }) {
   const canvasRef = useRef(null);
@@ -19,8 +21,23 @@ export function MarketingStudio({ data, reload }) {
   const [exporting, setExporting] = useState(false);
   const [notice, setNotice] = useState("");
   const [uploadingImage, setUploadingImage] = useState(null);
+  const [resizing, setResizing] = useState(null);
+  const dragSnapshotRef = useRef(null);
 
   const selectedElement = elements.find((item) => item.id === selectedId) || null;
+
+  // Initialize history from loaded data once
+  const initialisedRef = useRef(false);
+  useEffect(() => {
+    if (data?.elements && !initialisedRef.current) {
+      initialisedRef.current = true;
+      const loaded = data.elements;
+      setElements(loaded);
+      setHistory([JSON.stringify(loaded)]);
+      setHistoryIndex(0);
+      if (data.designId) setDesignId(data.designId);
+    }
+  }, [data]);
 
   const pushHistory = useCallback((next) => {
     setHistory((current) => {
@@ -32,6 +49,13 @@ export function MarketingStudio({ data, reload }) {
     });
   }, [historyIndex]);
 
+  const commitTransaction = useCallback((snapshotBefore, elementsAfter) => {
+    const before = JSON.parse(snapshotBefore);
+    const after = elementsAfter;
+    if (JSON.stringify(before) === JSON.stringify(after)) return;
+    pushHistory(after);
+  }, [pushHistory]);
+
   const createElement = useCallback((kind) => {
     const base = { id: `element-${Date.now()}-${Math.random().toString(16).slice(2, 7)}`, kind, x: 80, y: 80, width: 220, height: 140, rotation: 0, locked: false, zIndex: 1 };
     if (kind === "text") return { ...base, text: "Double-click to edit", font: "Helvetica-Bold", fontSize: 26, color: "#17231f" };
@@ -42,24 +66,25 @@ export function MarketingStudio({ data, reload }) {
   }, []);
 
   const addElement = useCallback((kind) => {
+    const before = JSON.stringify(elements);
     const next = [...elements, createElement(kind)];
     setElements(next);
-    pushHistory(next);
+    commitTransaction(before, next);
     setSelectedId(next[next.length - 1].id);
-  }, [createElement, elements, pushHistory]);
+  }, [createElement, elements, commitTransaction]);
 
   const updateElement = useCallback((id, patch) => {
     const next = elements.map((item) => item.id === id ? { ...item, ...patch } : item);
     setElements(next);
-    pushHistory(next);
-  }, [elements, pushHistory]);
+  }, [elements]);
 
   const removeElement = useCallback((id) => {
+    const before = JSON.stringify(elements);
     const next = elements.filter((item) => item.id !== id);
     setElements(next);
     setSelectedId(null);
-    pushHistory(next);
-  }, [elements, pushHistory]);
+    commitTransaction(before, next);
+  }, [elements, commitTransaction]);
 
   const handleUndo = useCallback(() => {
     if (historyIndex <= 0) return;
@@ -87,18 +112,16 @@ export function MarketingStudio({ data, reload }) {
     return () => window.removeEventListener("keydown", handler);
   }, [selectedId, handleUndo, handleRedo, removeElement]);
 
-  useEffect(() => {
-    pushHistory(elements);
-  }, [elements, pushHistory]);
-
   async function saveDraft() {
     if (saving) return;
     setSaving(true);
     try {
+      const body = { action: "save", elements };
+      if (designId) body.designId = designId;
       const response = await fetch("/api/workspace/marketing", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ action: "save", designId, elements }),
+        body: JSON.stringify(body),
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload.error || "Draft could not be saved.");
@@ -113,19 +136,23 @@ export function MarketingStudio({ data, reload }) {
     }
   }
 
-  async function exportPdf() {
-    if (exporting) return;
+  async function exportDesign(format) {
+    if (exporting || !designId) {
+      if (!designId) { setNotice("Save the design before exporting."); setTimeout(() => setNotice(""), 4000); }
+      return;
+    }
     setExporting(true);
     try {
       const response = await fetch("/api/workspace/marketing", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ action: "export", format: "pdf", designId, elements }),
+        body: JSON.stringify({ action: "export", designId, format }),
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload.error || "Export failed.");
       if (payload.downloadUrl) window.open(payload.downloadUrl, "_blank");
-      else setNotice("Export completed. Download will begin shortly.");
+      else if (payload.exportId) setNotice("Export completed.");
+      else setNotice("Export completed.");
       setTimeout(() => setNotice(""), 4000);
     } catch (error) {
       setNotice(error.message);
@@ -181,6 +208,52 @@ export function MarketingStudio({ data, reload }) {
     window.addEventListener("pointerup", onUp);
   }
 
+  function startResize(elementId, handle, event) {
+    if (event.button !== 0) return;
+    const element = elements.find((e) => e.id === elementId);
+    if (!element || element.locked) return;
+    event.stopPropagation();
+    event.preventDefault();
+    const rect = canvasRef.current.getBoundingClientRect();
+    const startX = event.clientX - rect.left;
+    const startY = event.clientY - rect.top;
+    const startW = element.width;
+    const startH = element.height;
+    const startElemX = element.x;
+    const startElemY = element.y;
+    const snapshotBefore = JSON.stringify(elements);
+
+    function onMove(e) {
+      const dx = (e.clientX - rect.left - startX) / zoom;
+      const dy = (e.clientY - rect.top - startY) / zoom;
+      let newW = startW, newH = startH, newX = startElemX, newY = startElemY;
+
+      if (handle.includes("e")) { newW = Math.max(MIN_ELEMENT_SIZE, startW + dx); }
+      if (handle.includes("w")) { newW = Math.max(MIN_ELEMENT_SIZE, startW - dx); newX = startElemX + startW - newW; }
+      if (handle.includes("s")) { newH = Math.max(MIN_ELEMENT_SIZE, startH + dy); }
+      if (handle.includes("n")) { newH = Math.max(MIN_ELEMENT_SIZE, startH - dy); newY = startElemY + startH - newH; }
+
+      newX = Math.max(0, Math.min(INITIAL_WIDTH - newW, newX));
+      newY = Math.max(0, Math.min(INITIAL_HEIGHT - newH, newY));
+      if (newW !== startW) newW = snap(newW);
+      if (newH !== startH) newH = snap(newH);
+
+      setElements((current) => current.map((item) => item.id === elementId ? { ...item, x: snap(newX), y: snap(newY), width: newW, height: newH } : item));
+    }
+
+    function onUp() {
+      const snapshotAfter = JSON.stringify(elements);
+      if (snapshotBefore !== snapshotAfter) pushHistory(JSON.parse(snapshotAfter));
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+    }
+
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+  }
+
+  const RESIZE_HANDLES = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
+
   return (
     <div className="marketing-studio">
       {notice ? <div className="workspace-toast">{notice}</div> : null}
@@ -206,7 +279,7 @@ export function MarketingStudio({ data, reload }) {
             <label>Rotation<input type="number" value={selectedElement.rotation || 0} onChange={(e) => updateElement(selectedElement.id, { rotation: Number(e.target.value) })} /></label>
             {selectedElement.kind === "text" ? <label className="form-wide">Text<textarea value={selectedElement.text || ""} onChange={(e) => updateElement(selectedElement.id, { text: e.target.value })} rows={2} /></label> : null}
             {selectedElement.kind === "image" && !selectedElement.src ? <label className="studio-upload"><Upload size={14} /><span>Upload image</span><input type="file" accept="image/jpeg,image/png,image/webp" onChange={(e) => { const file = e.target.files?.[0]; if (file) uploadImage(selectedElement.id, file); }} /></label> : null}
-            <button type="button" onClick={() => updateElement(selectedElement.id, { locked: !selectedElement.locked })}>{selectedElement.locked ? <><Lock size={16} />Locked</> : <><Unlock size={16} />Unlocked</>}</button>
+            <button type="button" onClick={() => { const before = JSON.stringify(elements); updateElement(selectedElement.id, { locked: !selectedElement.locked }); commitTransaction(before, elements.map((el) => el.id === selectedElement.id ? { ...el, locked: !el.locked } : el)); }}>{selectedElement.locked ? <><Lock size={16} />Locked</> : <><Unlock size={16} />Unlocked</>}</button>
             <div className="studio-actions">
               <button type="button" onClick={() => { updateElement(selectedElement.id, { zIndex: (selectedElement.zIndex || 1) + 1 }); }}><ChevronUp size={16} />Bring forward</button>
               <button type="button" onClick={() => { updateElement(selectedElement.id, { zIndex: Math.max(0, (selectedElement.zIndex || 1) - 1) }); }}><ChevronDown size={16} />Send backward</button>
@@ -231,6 +304,24 @@ export function MarketingStudio({ data, reload }) {
                     {element.kind === "image" ? <div style={{ width: "100%", height: "100%", position: "relative" }}>{element.src ? <img alt="design element" src={element.src} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <div style={{ background: "#eef3f1", color: "#5f6965", display: "grid", placeItems: "center", height: "100%", fontSize: 12 }}>Image{uploadingImage === element.id ? " (uploading...)" : ""}</div>}</div> : null}
                     {element.kind === "qr" ? <div style={{ background: "#eef3f1", height: "100%", display: "grid", placeItems: "center", fontFamily: "monospace", fontSize: 10 }}>QR</div> : null}
                     {element.kind === "property" ? <div style={{ background: "#fffdf9", border: "1px solid #d6ded9", padding: 12, fontSize: 12 }}>Property card</div> : null}
+                    {isSelected && !element.locked ? RESIZE_HANDLES.map((handle) => {
+                      const hStyle = {
+                        position: "absolute",
+                        width: HANDLE_SIZE,
+                        height: HANDLE_SIZE,
+                        background: "#173b31",
+                        border: "1px solid #fff",
+                        zIndex: 10,
+                        cursor: `${handle}-resize`,
+                      };
+                      if (handle.includes("n")) hStyle.top = -HANDLE_SIZE / 2;
+                      if (handle.includes("s")) hStyle.bottom = -HANDLE_SIZE / 2;
+                      if (handle.includes("w")) hStyle.left = -HANDLE_SIZE / 2;
+                      if (handle.includes("e")) hStyle.right = -HANDLE_SIZE / 2;
+                      if (handle === "n" || handle === "s") { hStyle.left = "50%"; hStyle.marginLeft = -HANDLE_SIZE / 2; }
+                      if (handle === "e" || handle === "w") { hStyle.top = "50%"; hStyle.marginTop = -HANDLE_SIZE / 2; }
+                      return <div key={handle} style={hStyle} onPointerDown={(e) => startResize(element.id, handle, e)} />;
+                    }) : null}
                   </div>
                 );
               })}
@@ -240,7 +331,9 @@ export function MarketingStudio({ data, reload }) {
       </div>
       <div className="studio-footer">
         <button type="button" onClick={saveDraft} disabled={saving}><Save size={16} />{saving ? "Saving..." : "Save draft"}</button>
-        <button type="button" onClick={exportPdf} disabled={exporting}><Download size={16} />{exporting ? "Exporting..." : "Export PDF"}</button>
+        <button type="button" onClick={() => exportDesign("pdf")} disabled={exporting || !designId}><Download size={16} />{exporting ? "Exporting..." : "Export PDF"}</button>
+        <button type="button" onClick={() => exportDesign("png")} disabled={exporting || !designId}><Download size={16} />PNG</button>
+        <button type="button" onClick={() => exportDesign("jpeg")} disabled={exporting || !designId}><Download size={16} />JPEG</button>
       </div>
     </div>
   );

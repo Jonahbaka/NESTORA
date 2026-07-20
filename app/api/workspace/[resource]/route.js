@@ -84,14 +84,88 @@ const adminSchema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("reinstateWebsite"), websiteId: z.uuid() }),
   z.object({ action: z.literal("approveTemplate"), designId: z.uuid() }),
 ]);
+const VALID_MARKETING_KINDS = [
+  "rental_flyer", "sale_brochure", "development_brochure", "hotel_flyer",
+  "payment_plan", "qr_poster", "comparison_sheet", "agent_profile",
+  "open_house_poster", "agent_profile_sheet", "agency_brochure",
+  "payment_plan_sheet", "construction_update", "room_promotion",
+  "short_stay_flyer", "weekend_offer", "social_square", "social_portrait",
+  "social_story", "whatsapp_status", "facebook_post", "linkedin_post",
+  "youtube_thumbnail", "digital_sign", "email_header",
+];
+
+const VALID_CANVAS_PRESETS = [
+  "a4", "us_letter", "square", "portrait", "story", "landscape",
+  "social_square", "social_portrait", "social_story",
+];
+
+const ELEMENT_VALID_TYPES = ["text", "image", "shape", "qr_code", "dynamic_field", "line", "group"];
+const ELEMENT_VALID_FONTS = ["Inter", "Helvetica", "Times New Roman", "Georgia", "Arial", "system-ui", "sans-serif", "serif", "monospace"];
+
+const elementSchema = z.object({
+  id: z.string().trim().min(1).max(200),
+  type: z.enum(ELEMENT_VALID_TYPES),
+  x: z.number().int().nonnegative(),
+  y: z.number().int().nonnegative(),
+  width: z.number().int().positive(),
+  height: z.number().int().positive(),
+  rotation: z.number().min(-360).max(360).default(0),
+  locked: z.boolean().default(false),
+  zIndex: z.number().int().min(0).max(9999).default(1),
+  content: z.string().max(10000).default(""),
+  style: z.object({
+    fontFamily: z.enum(ELEMENT_VALID_FONTS).optional(),
+    fontSize: z.number().int().min(4).max(200).optional(),
+    fontWeight: z.string().optional(),
+    color: z.string().regex(/^#[0-9a-fA-F]{3,6}$|^#[0-9a-fA-F]{8}$/).optional(),
+    textAlign: z.enum(["left", "center", "right"]).optional(),
+    fillColor: z.string().regex(/^#[0-9a-fA-F]{3,6}$|^#[0-9a-fA-F]{8}$/).optional(),
+    lineWidth: z.number().int().min(1).max(20).optional(),
+    shapeType: z.enum(["rectangle", "circle", "ellipse"]).optional(),
+  }).optional(),
+  mediaId: z.string().trim().max(200).nullable().optional(),
+  src: z.string().trim().max(2000).nullable().optional(),
+  payload: z.string().trim().max(500).nullable().optional(),
+  listingId: z.string().trim().max(160).nullable().optional(),
+}).passthrough().partial({
+  content: true, style: true, mediaId: true, src: true, payload: true, listingId: true,
+});
+
+const marketingSaveSchema = z.object({
+  action: z.literal("save"),
+  designId: z.string().trim().uuid().nullable().optional(),
+  name: z.string().trim().min(1).max(200).optional(),
+  kind: z.enum(VALID_MARKETING_KINDS).optional(),
+  canvasPreset: z.enum(VALID_CANVAS_PRESETS).optional(),
+  canvasWidth: z.number().int().positive().max(10000).optional(),
+  canvasHeight: z.number().int().positive().max(10000).optional(),
+  brandKitId: z.string().trim().uuid().nullable().optional(),
+  elements: z.array(elementSchema).default([]),
+  dynamicBindings: z.record(z.string()).default({}),
+});
+
+const marketingExportSchema = z.object({
+  action: z.literal("export"),
+  designId: z.string().trim().uuid(),
+  format: z.enum(["pdf", "png", "jpeg"]),
+});
+
+const marketingGenerateSchema = z.object({
+  action: z.literal("generate"),
+  kind: z.enum(VALID_MARKETING_KINDS),
+  listingId: z.string().trim().min(1).max(160).nullable().optional(),
+  developmentId: z.string().trim().uuid().nullable().optional(),
+  qrTarget: z.string().trim().max(500).refine((value) => !value || (value.startsWith("/") && !value.startsWith("//")), "Use a Nestora path beginning with one slash.").nullable().optional(),
+});
+
 const marketingSchema = z.discriminatedUnion("action", [
-  z.object({ action: z.literal("generate"), kind: z.enum(["agent_profile", "rental_flyer", "sale_brochure", "development_brochure", "hotel_flyer", "payment_plan", "qr_poster", "comparison_sheet"]), listingId: z.string().trim().min(1).max(160).nullable().optional(), developmentId: z.uuid().nullable().optional(), qrTarget: z.string().trim().max(500).refine((value) => !value || (value.startsWith("/") && !value.startsWith("//")), "Use a Nestora path beginning with one slash.").nullable().optional() }),
-  z.object({ action: z.literal("save"), elements: z.array(z.any()).optional() }),
-  z.object({ action: z.literal("export"), format: z.enum(["pdf", "png", "jpeg"]), elements: z.array(z.any()).optional() }),
+  marketingGenerateSchema,
+  marketingSaveSchema,
+  marketingExportSchema,
 ]);
 
 const brandKitSchema = z.object({
-  action: z.enum(["create", "update", "delete", "lock"]),
+  action: z.enum(["create", "update", "delete", "lock", "unlock"]),
   name: z.string().trim().min(2).max(120).optional(),
   brandColors: z.record(z.string()).optional(),
   fonts: z.record(z.string()).optional(),
@@ -102,13 +176,27 @@ const brandKitSchema = z.object({
   defaultQrStyle: z.record(z.any()).optional(),
   isOrganizationKit: z.boolean().optional(),
   brandKitId: z.uuid().optional(),
+  logoMediaId: z.uuid().nullable().optional(),
+  alternateLogoMediaId: z.uuid().nullable().optional(),
 });
-const templateSchema = z.object({
-  action: z.enum(["create", "duplicate"]),
-  designId: z.uuid().optional(),
-  kind: z.enum(["agent_profile", "rental_flyer", "sale_brochure", "development_brochure", "hotel_flyer", "payment_plan", "qr_poster", "comparison_sheet"]).optional(),
-  listingId: z.string().trim().max(160).optional(),
-});
+const templateSchema = z.discriminatedUnion("action", [
+  z.object({
+    action: z.literal("create"),
+    name: z.string().trim().min(1).max(200),
+    kind: z.enum(VALID_MARKETING_KINDS),
+    templateId: z.string().trim().uuid().nullable().optional(),
+    canvasPreset: z.enum(VALID_CANVAS_PRESETS).optional(),
+    brandKitId: z.string().trim().uuid().nullable().optional(),
+    elements: z.array(elementSchema).default([]),
+    dynamicBindings: z.record(z.string()).default({}),
+    isTemplate: z.boolean().optional(),
+    isOrganizationTemplate: z.boolean().optional(),
+  }),
+  z.object({
+    action: z.literal("duplicate"),
+    designId: z.string().trim().uuid(),
+  }),
+]);
 const writeSchemas = { profile: profileSchema, listings: listingSchema, leads: leadSchema, inspections: inspectionSchema, hotel: hotelSchema, developer: developerSchema, team: teamSchema, admin: adminSchema, marketing: marketingSchema, subscription: z.object({ action: z.enum(["requestUpgrade"]), planId: z.string().trim().min(1).max(80) }), "brand-kits": brandKitSchema, templates: templateSchema };
 
 export async function GET(request, { params }) {
