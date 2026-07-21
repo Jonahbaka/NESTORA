@@ -101,7 +101,7 @@ function WorkspaceSection({ section, role, data, query, reload, notify, logout }
   if (section === "developer-units") return <DeveloperOperations data={data} mode="units" role={role} reload={reload} notify={notify} />;
   if (section === "team") return <TeamOperations data={data} role={role} reload={reload} notify={notify} />;
   if (section === "marketing") return <Marketing data={data} role={role} reload={reload} notify={notify} />;
-  if (section === "marketing-studio") return <MarketingStudio data={data} reload={reload} />;
+  if (section === "marketing-studio") return <MarketingStudio />;
   if (section === "brand-kits") return <BrandKitManager data={data} role={role} reload={reload} notify={notify} />;
   if (section === "templates") return <TemplateGallery data={data} />;
   if (section === "websites") return <PartnerWebsites data={data} role={role} reload={reload} notify={notify} />;
