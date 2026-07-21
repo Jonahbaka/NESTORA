@@ -77,10 +77,12 @@ export function BrandKitManager({ data }) {
   async function toggleLock(id) {
     const kit = kits.find((k) => k.id === id);
     if (!kit) return;
-    const result = await performWrite({ action: kit.locked ? "unlock" : "lock", brandKitId: id }, kit.locked ? "Brand kit unlocked." : "Brand kit locked.");
+    const nextAction = kit.isLocked ? "unlock" : "lock";
+    const result = await performWrite({ action: nextAction, brandKitId: id }, nextAction === "unlock" ? "Brand kit unlocked." : "Brand kit locked.");
     if (result) {
-      setKits((current) => current.map((k) => k.id === id ? { ...k, locked: !k.locked } : k));
-      if (editing?.id === id) setEditing((k) => ({ ...k, locked: !k.locked }));
+      const update = { ...kit, isLocked: nextAction === "lock", locked: nextAction === "lock" };
+      setKits((current) => current.map((k) => k.id === id ? update : k));
+      if (editing?.id === id) setEditing(update);
     }
   }
 
