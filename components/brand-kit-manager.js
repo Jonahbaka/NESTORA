@@ -120,7 +120,7 @@ export function BrandKitManager({ data }) {
         </form>
       ) : null}
 
-      <section className="kit-gallery">
+<section className="kit-gallery">
         {kits.length ? kits.map((kit) => (
           <article key={kit.id} className="kit-card">
             <div><strong>{kit.name}</strong><small>{kit.fonts?.heading || "Helvetica-Bold"} / {kit.fonts?.body || "Helvetica"}</small></div>
@@ -135,7 +135,7 @@ export function BrandKitManager({ data }) {
               <button type="button" onClick={() => removeKit(kit.id)}><Trash2 size={16} />Remove</button>
             </div>
           </article>
-        )) : <p className="panel-empty">No brand kits yet.</p>}
+        )) : <div className="kit-empty-state"><Palette size={42} /><h3>No brand kits yet</h3><p>Create your first brand kit to apply consistent colors, fonts, and styling across your marketing materials.</p><button className="button button--coral" type="button" onClick={() => setEditing({ name: "", brandColors: { primary: "#173b31", secondary: "#9b4d42", accent: "#e98d7e" }, fonts: { heading: "Helvetica-Bold", body: "Helvetica" }, contactFooter: "", websiteUrl: "", socialHandles: {}, disclaimer: "" })}><Plus size={16} />Create brand kit</button></div>}
       </section>
     </div>
   );

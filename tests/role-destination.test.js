@@ -7,6 +7,7 @@ test("each account role lands in its owned workspace", () => {
   assert.equal(roleDestination("agent"), "/workspace/agent");
   assert.equal(roleDestination("host"), "/workspace/host");
   assert.equal(roleDestination("developer"), "/workspace/developer");
+  assert.equal(roleDestination("agency"), "/workspace/agency");
   assert.equal(roleDestination("agency_admin"), "/workspace/agency");
   assert.equal(roleDestination("moderator"), "/admin");
   assert.equal(roleDestination("admin"), "/admin");

@@ -121,24 +121,23 @@ export function PartnerWebsites({ data }) {
         </form>
       ) : null}
 
-      {!creating && !editing && (
+{!creating && !editing && (
         <section className="website-gallery">
           {websites.length ? websites.map((site) => <article key={site.id} className="website-card">
             <div>
               <strong>{site.name}</strong>
               <small>{site.kind} · {site.subdomain}.nestora.doctarx.com</small>
-              <span className={`status-pill status-pill--${site.status}`}>{site.status}</span>
             </div>
-            <div className="website-card__metrics">
-              <span><Eye size={16} />{site.visitCount || 0} visits</span>
-              <span><BarChart3 size={16} />{site.visitsLast30Days || 0} last 30 days</span>
+            <div className="website-metrics">
+              <span><Eye size={15} />{site.visitCount || 0}</span>
+              <span><BarChart3 size={15} />{site.visitsLast30Days || 0}</span>
             </div>
-            <div className="website-card__actions">
-              <button type="button" onClick={() => setPreviewing(site)}><ExternalLink size={16} />Preview</button>
-              <button type="button" onClick={() => setEditing(site)}>Edit</button>
-              {site.status === "published" ? <button type="button" onClick={() => unpublish(site.id)}><XCircle size={16} />Unpublish</button> : <button type="button" onClick={() => publish(site.id)}><Globe2 size={16} />Publish</button>}
+            <div className="website-actions">
+              <button type="button" onClick={() => setPreviewing(site)}><ExternalLink size={15} />Preview</button>
+              <button type="button" onClick={() => setEditing(site)}><Palette size={15} />Customize</button>
+              {site.status === "published" ? <button type="button" onClick={() => unpublish(site.id)} className="website-action--danger"><XCircle size={15} />Unpublish</button> : <button type="button" onClick={() => publish(site.id)}><Globe2 size={15} />Publish</button>}
             </div>
-          </article>) : <p className="panel-empty">No partner websites yet.</p>}
+          </article>) : <div className="website-empty-state"><Globe2 size={42} /><h3>No partner websites yet</h3><p>Create a public website to showcase your portfolio, developments, or hospitality brand.</p>{isProfessional ? <button className="button button--coral" type="button" onClick={() => setCreating(true)}><Plus size={16} />Create website</button> : null}</div>}
         </section>
       )}
 

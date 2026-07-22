@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Archive, ArrowDown, ArrowUp, ArrowRight, BarChart3, Bell, Building2, CalendarCheck2, Camera, Check, ChevronRight, CircleDollarSign, Eye, FileImage, FileText, Globe2, Hotel, Images, Landmark, LayoutDashboard, LogOut, Menu, MessageCircle, Plus, RefreshCw, ScanLine, Search, Settings, ShieldCheck, Trash2, Upload, UserRound, UsersRound, Video, X, Palette, LayoutTemplate } from "lucide-react";
+import { Archive, ArrowDown, ArrowUp, ArrowRight, BarChart3, Bell, Building2, CalendarCheck2, Camera, Check, ChevronRight, CircleDollarSign, Eye, FileImage, FileText, Globe2, Home, Hotel, Images, Landmark, LayoutDashboard, LogOut, Menu, MessageCircle, Plus, RefreshCw, ScanLine, Search, Settings, ShieldCheck, Trash2, Upload, UserRound, UsersRound, Video, X, Palette, LayoutTemplate } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNestora } from "@/components/providers";
+import { roleDestination } from "@/lib/role-destination";
 import { formatNaira } from "@/lib/platform";
 import { PartnerWebsites } from "@/components/partner-websites";
 import { SubscriptionManager } from "@/components/subscription-manager";
@@ -30,6 +31,7 @@ export function ProWorkspace({ role }) {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [query, setQuery] = useState("");
+  const [signingOut, setSigningOut] = useState(false);
   const { account: sessionAccount, logout } = useNestora();
   const apiResource = resourceForSection(section);
 
@@ -59,6 +61,19 @@ export function ProWorkspace({ role }) {
     setMobileNav(false);
   }
 
+  async function handleLogout() {
+    if (signingOut) return;
+    setSigningOut(true);
+    setMobileNav(false);
+    setError("");
+    try {
+      await logout();
+    } catch (logoutError) {
+      setError(logoutError.message);
+      setSigningOut(false);
+    }
+  }
+
   const showNotice = useCallback((message) => {
     setNotice(message);
     window.setTimeout(() => setNotice(""), 2600);
@@ -73,23 +88,24 @@ export function ProWorkspace({ role }) {
       <aside className={`pro-sidebar ${mobileNav ? "open" : ""}`}>
         <button className="pro-mobile-close" type="button" onClick={() => setMobileNav(false)} aria-label="Close workspace menu"><X size={19} /></button>
         <Link href="/" className="pro-brand"><span>{roleIcon(role)}</span><div><strong>{organizationName}</strong><small>{roleLabels[role]} workspace</small></div></Link>
-        <nav>{navItems.map(({ key, label, Icon }) => <button type="button" className={section === key ? "active" : ""} onClick={() => changeSection(key)} key={key}><Icon size={18} />{label}</button>)}</nav>
-        <div className="pro-sidebar__bottom"><Link href="/trust"><ShieldCheck size={17} />Trust centre</Link><button type="button" onClick={() => changeSection("entitlements")}><Settings size={17} />Settings</button><button type="button" onClick={() => logout()}><LogOut size={17} />Sign out</button></div>
+        <nav><Link href="/" onClick={() => setMobileNav(false)}><Home size={18} />Home</Link><Link href={roleDestination(role)} onClick={() => { setSection("overview"); setMobileNav(false); }} aria-current={section === "overview" ? "page" : undefined}><LayoutDashboard size={18} />Dashboard</Link>{navItems.filter(({ key }) => key !== "overview").map(({ key, label, Icon }) => <button type="button" className={section === key ? "active" : ""} onClick={() => changeSection(key)} key={key}><Icon size={18} />{label}</button>)}</nav>
+        <div className="pro-sidebar__bottom"><Link href="/trust" onClick={() => setMobileNav(false)}><ShieldCheck size={17} />Trust centre</Link><button type="button" onClick={() => changeSection("entitlements")}><Settings size={17} />Settings</button><button type="button" onClick={handleLogout} disabled={signingOut}><LogOut size={17} />{signingOut ? "Logging out…" : "Logout"}</button></div>
       </aside>
       <div className="pro-main">
         <header className="pro-topbar"><button type="button" className="pro-menu" onClick={() => setMobileNav(true)} aria-label="Open workspace menu"><Menu size={20} /></button><label><Search size={17} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={`Search ${activeNav.label.toLowerCase()}`} /></label><button type="button" className="pro-alert" aria-label="Notifications"><Bell size={19} /></button><div className="pro-user"><Initials name={account?.name} /><div><strong>{account?.name || "Nestora professional"}</strong><small>{roleLabels[role]}</small></div></div></header>
         <div className="pro-content">
+          <nav className="breadcrumb" aria-label="Breadcrumb"><Link href="/">Home</Link><ChevronRight size={14} /><Link href={roleDestination(role)} onClick={() => setSection("overview")}>Dashboard</Link><ChevronRight size={14} /><span aria-current="page">{activeNav.label}</span></nav>
           {notice ? <div className="workspace-toast"><Check size={16} />{notice}</div> : null}
           {error ? <WorkspaceError message={error} retry={load} /> : null}
           {loading ? <WorkspaceLoading /> : null}
-          {!loading && !error ? <WorkspaceSection section={section} role={role} data={data || {}} query={query} reload={reload} notify={showNotice} logout={logout} /> : null}
+          {!loading && !error ? <WorkspaceSection section={section} role={role} data={data || {}} query={query} reload={reload} notify={showNotice} logout={handleLogout} signingOut={signingOut} /> : null}
         </div>
       </div>
     </div>
   );
 }
 
-function WorkspaceSection({ section, role, data, query, reload, notify, logout }) {
+function WorkspaceSection({ section, role, data, query, reload, notify, logout, signingOut }) {
   if (section === "overview") return <Overview role={role} data={data} />;
   if (section === "profile") return <ProfessionalProfile data={data} role={role} reload={reload} notify={notify} />;
   if (section === "listings") return <Listings data={data} role={role} query={query} reload={reload} notify={notify} />;
@@ -106,7 +122,7 @@ function WorkspaceSection({ section, role, data, query, reload, notify, logout }
   if (section === "templates") return <TemplateGallery data={data} />;
   if (section === "websites") return <PartnerWebsites data={data} role={role} reload={reload} notify={notify} />;
   if (section === "subscription") return <SubscriptionManager data={data} role={role} reload={reload} notify={notify} />;
-  return <PlanSettings data={data} logout={logout} />;
+  return <PlanSettings data={data} logout={logout} signingOut={signingOut} />;
 }
 
 function resourceForSection(section) {
@@ -251,9 +267,9 @@ function Marketing({ data, role, reload, notify }) {
   return <><Title eyebrow="Growth tools" title="Marketing generation" copy="Create traceable, QR-ready materials from your owned inventory." /><form className="workspace-form marketing-form" onSubmit={generate}><label>Material<select name="kind"><option value="rental_flyer">Rental flyer</option><option value="sale_brochure">Sale brochure</option><option value="development_brochure">Development brochure</option><option value="hotel_flyer">Hotel flyer</option><option value="qr_poster">QR poster</option><option value="comparison_sheet">Comparison sheet</option></select></label><label>Listing<select name="listingId"><option value="">Portfolio-wide material</option>{(data.listings || []).map((item) => <option value={item.id} key={item.id}>{item.title}</option>)}</select></label><label className="form-wide">QR destination<input name="qrTarget" placeholder="/properties/..." pattern="/.*" /></label><div className="form-actions form-wide"><button className="button button--coral" type="submit">Generate material</button></div></form><div className="workspace-records">{(data.materials || []).map((item) => <article className="workspace-record compact" key={item.id}><div className="record-primary"><strong>{humanize(item.kind)}</strong><small>{item.listing_title || item.development_name || "Portfolio material"}{item.destination_path ? ` | ${item.destination_path}` : ""}</small></div><span className="status-pill">{item.status}</span><span className="marketing-attribution">{item.qr_opens || 0} QR opens</span>{item.previewPath ? <div className="record-actions"><a href={item.previewPath} target="_blank" rel="noreferrer">Open</a><a href={`${item.previewPath}?download=1`}>Download</a></div> : null}</article>)}</div></>;
 }
 
-function PlanSettings({ data, logout }) {
+function PlanSettings({ data, logout, signingOut }) {
   const subscription = data.subscription;
-  return <><Title eyebrow="Account" title="Plan and settings" copy="Review the active commercial subscription and account access." /><div className="settings-grid"><section className="workspace-panel settings-panel"><CircleDollarSign size={22} /><h2>{subscription ? humanize(subscription.planId) : "No active subscription"}</h2><p>{subscription ? `${humanize(subscription.status)} access${subscription.endsAt ? ` through ${formatDate(subscription.endsAt)}` : ""}.` : "Choose a professional plan to unlock commercial capacity."}</p><Link className="button button--outline" href="/pricing">Review plans</Link></section><section className="workspace-panel settings-panel"><ShieldCheck size={22} /><h2>Account access</h2><p>Sign out on shared devices and review Nestora&#39;s trust controls regularly.</p><button className="button button--ink" type="button" onClick={logout}><LogOut size={17} />Sign out</button></section></div></>;
+  return <><Title eyebrow="Account" title="Plan and settings" copy="Review the active commercial subscription and account access." /><div className="settings-grid"><section className="workspace-panel settings-panel"><CircleDollarSign size={22} /><h2>{subscription ? humanize(subscription.planId) : "No active subscription"}</h2><p>{subscription ? `${humanize(subscription.status)} access${subscription.endsAt ? ` through ${formatDate(subscription.endsAt)}` : ""}.` : "Choose a professional plan to unlock commercial capacity."}</p><Link className="button button--outline" href="/pricing">Review plans</Link></section><section className="workspace-panel settings-panel"><ShieldCheck size={22} /><h2>Account access</h2><p>Log out on shared devices and review Nestora&#39;s trust controls regularly.</p><button className="button button--ink" type="button" onClick={logout} disabled={signingOut}><LogOut size={17} />{signingOut ? "Logging out…" : "Logout"}</button></section></div></>;
 }
 
 function Title({ eyebrow, title, copy, action }) { return <div className="pro-title"><div><p className="eyebrow">{eyebrow}</p><h1>{title}</h1><p>{copy}</p></div>{action}</div>; }
