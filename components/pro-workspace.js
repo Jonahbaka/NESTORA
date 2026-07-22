@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Archive, ArrowDown, ArrowUp, ArrowRight, BarChart3, Bell, Building2, CalendarCheck2, Camera, Check, ChevronRight, CircleDollarSign, Eye, FileImage, FileText, Globe2, Home, Hotel, Images, Landmark, LayoutDashboard, LogOut, Menu, MessageCircle, Plus, RefreshCw, ScanLine, Search, Settings, ShieldCheck, Trash2, Upload, UserRound, UsersRound, Video, X, Palette, LayoutTemplate } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNestora } from "@/components/providers";
 import { roleDestination } from "@/lib/role-destination";
 import { formatNaira } from "@/lib/platform";
@@ -16,10 +16,10 @@ import { TemplateGallery } from "@/components/template-gallery";
 const roleLabels = { agent: "Agent", host: "Hospitality", developer: "Developer", agency: "Agency" };
 
 const navigationByRole = {
-  agent: [nav("Overview", "overview", LayoutDashboard), nav("Professional profile", "profile", UserRound), nav("Listings", "listings", Building2), nav("Leads", "leads", UsersRound), nav("Inspections", "inspections", CalendarCheck2), nav("Messages", "messages", MessageCircle), nav("Marketing Studio", "marketing-studio", FileImage), nav("Brand kits", "brand-kits", Palette), nav("Template gallery", "templates", LayoutTemplate), nav("Websites", "websites", Globe2), nav("Subscription", "subscription", Settings)],
-  host: [nav("Overview", "overview", LayoutDashboard), nav("Professional profile", "profile", UserRound), nav("Listings", "listings", Building2), nav("Rooms", "hotel-rooms", Hotel), nav("Reservations", "hotel-reservations", CalendarCheck2), nav("Messages", "messages", MessageCircle), nav("Marketing Studio", "marketing-studio", FileImage), nav("Brand kits", "brand-kits", Palette), nav("Template gallery", "templates", LayoutTemplate), nav("Websites", "websites", Globe2), nav("Subscription", "subscription", Settings)],
-  developer: [nav("Overview", "overview", LayoutDashboard), nav("Professional profile", "profile", UserRound), nav("Listings", "listings", Building2), nav("Projects", "developer-projects", Landmark), nav("Inventory", "developer-units", Building2), nav("Buyer leads", "leads", UsersRound), nav("Inspections", "inspections", CalendarCheck2), nav("Messages", "messages", MessageCircle), nav("Marketing Studio", "marketing-studio", FileImage), nav("Brand kits", "brand-kits", Palette), nav("Template gallery", "templates", LayoutTemplate), nav("Websites", "websites", Globe2), nav("Subscription", "subscription", Settings)],
-  agency: [nav("Overview", "overview", LayoutDashboard), nav("Professional profile", "profile", UserRound), nav("Listings", "listings", Building2), nav("Lead desk", "leads", UsersRound), nav("Inspections", "inspections", CalendarCheck2), nav("Team & routing", "team", UsersRound), nav("Messages", "messages", MessageCircle), nav("Marketing Studio", "marketing-studio", FileImage), nav("Brand kits", "brand-kits", Palette), nav("Template gallery", "templates", LayoutTemplate), nav("Websites", "websites", Globe2), nav("Subscription", "subscription", Settings)],
+  agent: [nav("Overview", "overview", LayoutDashboard), nav("Professional profile", "profile", UserRound), nav("Listings", "listings", Building2), nav("Leads", "leads", UsersRound), nav("Inspections", "inspections", CalendarCheck2), nav("Messages", "messages", MessageCircle), nav("Marketing", "marketing", Images), nav("Marketing Studio", "marketing-studio", FileImage), nav("Brand kits", "brand-kits", Palette), nav("Template gallery", "templates", LayoutTemplate), nav("Websites", "websites", Globe2), nav("Subscription", "subscription", Settings)],
+  host: [nav("Overview", "overview", LayoutDashboard), nav("Professional profile", "profile", UserRound), nav("Listings", "listings", Building2), nav("Rooms", "hotel-rooms", Hotel), nav("Reservations", "hotel-reservations", CalendarCheck2), nav("Messages", "messages", MessageCircle), nav("Marketing", "marketing", Images), nav("Marketing Studio", "marketing-studio", FileImage), nav("Brand kits", "brand-kits", Palette), nav("Template gallery", "templates", LayoutTemplate), nav("Websites", "websites", Globe2), nav("Subscription", "subscription", Settings)],
+  developer: [nav("Overview", "overview", LayoutDashboard), nav("Professional profile", "profile", UserRound), nav("Listings", "listings", Building2), nav("Projects", "developer-projects", Landmark), nav("Inventory", "developer-units", Building2), nav("Buyer leads", "leads", UsersRound), nav("Inspections", "inspections", CalendarCheck2), nav("Messages", "messages", MessageCircle), nav("Marketing", "marketing", Images), nav("Marketing Studio", "marketing-studio", FileImage), nav("Brand kits", "brand-kits", Palette), nav("Template gallery", "templates", LayoutTemplate), nav("Websites", "websites", Globe2), nav("Subscription", "subscription", Settings)],
+  agency: [nav("Overview", "overview", LayoutDashboard), nav("Professional profile", "profile", UserRound), nav("Listings", "listings", Building2), nav("Lead desk", "leads", UsersRound), nav("Inspections", "inspections", CalendarCheck2), nav("Team & routing", "team", UsersRound), nav("Messages", "messages", MessageCircle), nav("Marketing", "marketing", Images), nav("Marketing Studio", "marketing-studio", FileImage), nav("Brand kits", "brand-kits", Palette), nav("Template gallery", "templates", LayoutTemplate), nav("Websites", "websites", Globe2), nav("Subscription", "subscription", Settings)],
 };
 
 export function ProWorkspace({ role }) {
@@ -32,10 +32,17 @@ export function ProWorkspace({ role }) {
   const [notice, setNotice] = useState("");
   const [query, setQuery] = useState("");
   const [signingOut, setSigningOut] = useState(false);
+  const loadRequestRef = useRef(0);
   const { account: sessionAccount, logout } = useNestora();
   const apiResource = resourceForSection(section);
 
+  useEffect(() => {
+    const saved = window.localStorage.getItem(`nestora-workspace-section-${role}`);
+    if (saved && navItems.some((item) => item.key === saved)) setSection(saved);
+  }, [navItems, role]);
+
   const load = useCallback(async ({ silent = false } = {}) => {
+    const requestId = ++loadRequestRef.current;
     if (section === "messages") return;
     if (!silent) setLoading(true);
     setError("");
@@ -43,12 +50,11 @@ export function ProWorkspace({ role }) {
       const response = await fetch(`/api/workspace/${apiResource}?workspace=${role}`, { cache: "no-store" });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload.error || "Workspace data could not be loaded.");
-      setData(payload);
+      if (requestId === loadRequestRef.current) setData(payload);
     } catch (loadError) {
-      setError(loadError.message);
-      setData(null);
+      if (requestId === loadRequestRef.current) { setError(loadError.message); setData(null); }
     } finally {
-      if (!silent) setLoading(false);
+      if (!silent && requestId === loadRequestRef.current) setLoading(false);
     }
   }, [apiResource, role, section]);
   const reload = useCallback(() => load({ silent: true }), [load]);
@@ -57,6 +63,7 @@ export function ProWorkspace({ role }) {
 
   function changeSection(next) {
     if (next === "messages") { window.location.assign("/messages"); return; }
+    window.localStorage.setItem(`nestora-workspace-section-${role}`, next);
     setSection(next);
     setMobileNav(false);
   }
@@ -98,14 +105,14 @@ export function ProWorkspace({ role }) {
           {notice ? <div className="workspace-toast"><Check size={16} />{notice}</div> : null}
           {error ? <WorkspaceError message={error} retry={load} /> : null}
           {loading ? <WorkspaceLoading /> : null}
-          {!loading && !error ? <WorkspaceSection section={section} role={role} data={data || {}} query={query} reload={reload} notify={showNotice} logout={handleLogout} signingOut={signingOut} /> : null}
+          {!loading && !error ? <WorkspaceSection section={section} role={role} data={data || {}} query={query} reload={reload} notify={showNotice} logout={handleLogout} signingOut={signingOut} openStudio={() => changeSection("marketing-studio")} /> : null}
         </div>
       </div>
     </div>
   );
 }
 
-function WorkspaceSection({ section, role, data, query, reload, notify, logout, signingOut }) {
+function WorkspaceSection({ section, role, data, query, reload, notify, logout, signingOut, openStudio }) {
   if (section === "overview") return <Overview role={role} data={data} />;
   if (section === "profile") return <ProfessionalProfile data={data} role={role} reload={reload} notify={notify} />;
   if (section === "listings") return <Listings data={data} role={role} query={query} reload={reload} notify={notify} />;
@@ -117,9 +124,9 @@ function WorkspaceSection({ section, role, data, query, reload, notify, logout, 
   if (section === "developer-units") return <DeveloperOperations data={data} mode="units" role={role} reload={reload} notify={notify} />;
   if (section === "team") return <TeamOperations data={data} role={role} reload={reload} notify={notify} />;
   if (section === "marketing") return <Marketing data={data} role={role} reload={reload} notify={notify} />;
-  if (section === "marketing-studio") return <MarketingStudio />;
+  if (section === "marketing-studio") return <MarketingStudio data={data} reload={reload} notify={notify} />;
   if (section === "brand-kits") return <BrandKitManager data={data} role={role} reload={reload} notify={notify} />;
-  if (section === "templates") return <TemplateGallery data={data} />;
+  if (section === "templates") return <TemplateGallery data={data} onOpenDesign={openStudio} />;
   if (section === "websites") return <PartnerWebsites data={data} role={role} reload={reload} notify={notify} />;
   if (section === "subscription") return <SubscriptionManager data={data} role={role} reload={reload} notify={notify} />;
   return <PlanSettings data={data} logout={logout} signingOut={signingOut} />;
@@ -263,7 +270,7 @@ function TeamOperations({ data, role, reload, notify }) {
 }
 
 function Marketing({ data, role, reload, notify }) {
-  async function generate(event) { event.preventDefault(); const form = new FormData(event.currentTarget); const payload = await performWrite("marketing", role, { action: "generate", kind: form.get("kind"), listingId: form.get("listingId") || null, developmentId: null, qrTarget: form.get("qrTarget") || null }, notify); if (!payload) return; await reload(); if (payload.previewPath) window.open(payload.previewPath, "_blank", "noopener,noreferrer"); }
+  async function generate(event) { event.preventDefault(); const form = new FormData(event.currentTarget); const payload = await performWrite("marketing", role, { action: "generate", kind: form.get("kind"), listingId: form.get("listingId") || null, developmentId: null, qrTarget: form.get("qrTarget") || null }, notify); if (!payload) return; await reload(); }
   return <><Title eyebrow="Growth tools" title="Marketing generation" copy="Create traceable, QR-ready materials from your owned inventory." /><form className="workspace-form marketing-form" onSubmit={generate}><label>Material<select name="kind"><option value="rental_flyer">Rental flyer</option><option value="sale_brochure">Sale brochure</option><option value="development_brochure">Development brochure</option><option value="hotel_flyer">Hotel flyer</option><option value="qr_poster">QR poster</option><option value="comparison_sheet">Comparison sheet</option></select></label><label>Listing<select name="listingId"><option value="">Portfolio-wide material</option>{(data.listings || []).map((item) => <option value={item.id} key={item.id}>{item.title}</option>)}</select></label><label className="form-wide">QR destination<input name="qrTarget" placeholder="/properties/..." pattern="/.*" /></label><div className="form-actions form-wide"><button className="button button--coral" type="submit">Generate material</button></div></form><div className="workspace-records">{(data.materials || []).map((item) => <article className="workspace-record compact" key={item.id}><div className="record-primary"><strong>{humanize(item.kind)}</strong><small>{item.listing_title || item.development_name || "Portfolio material"}{item.destination_path ? ` | ${item.destination_path}` : ""}</small></div><span className="status-pill">{item.status}</span><span className="marketing-attribution">{item.qr_opens || 0} QR opens</span>{item.previewPath ? <div className="record-actions"><a href={item.previewPath} target="_blank" rel="noreferrer">Open</a><a href={`${item.previewPath}?download=1`}>Download</a></div> : null}</article>)}</div></>;
 }
 

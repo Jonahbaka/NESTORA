@@ -1,122 +1,107 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useState, useEffect } from "react";
-import { Search, Plus, Star, FileText, Copy, Archive, Filter } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Copy, Eye, Search, Sparkles, Star, X, Zap } from "lucide-react";
 
-const TEMPLATES = [
-  { id: "property-flyer", name: "Property flyer", category: "sale", kind: "sale_brochure", description: "Single-page listing flyer with photo, features and agent contact." },
-  { id: "open-house-poster", name: "Open-house poster", category: "sale", kind: "qr_poster", description: "Event poster with QR check-in and map callout." },
-  { id: "agent-profile", name: "Agent profile", category: "profile", kind: "agent_profile", description: "Professional bio with listings, stats and call links." },
-  { id: "agency-brochure", name: "Agency brochure", category: "agency", kind: "sale_brochure", description: "Multi-listing agency overview with team callout." },
-  { id: "developer-brochure", name: "Developer brochure", category: "development", kind: "development_brochure", description: "Project brochure with phases, units and payment plan." },
-  { id: "payment-plan-sheet", name: "Payment-plan sheet", category: "development", kind: "payment_plan", description: "Installment breakdown with totals and due dates." },
-  { id: "construction-update", name: "Construction update", category: "development", kind: "development_brochure", description: "Progress update with milestones and imagery." },
-  { id: "hotel-flyer", name: "Hotel flyer", category: "hospitality", kind: "hotel_flyer", description: "Property flyer with rooms, amenities and booking QR." },
-  { id: "room-promotion", name: "Room promotion", category: "hospitality", kind: "hotel_flyer", description: "Single room offer with nightly rate and booking link." },
-  { id: "short-stay-promo", name: "Short-stay promotion", category: "hospitality", kind: "hotel_flyer", description: "Weekend or weekly stay offer with amenities." },
-  { id: "weekend-offer", name: "Weekend offer", category: "hospitality", kind: "hotel_flyer", description: "Limited-time package with inclusions." },
-  { id: "social-square", name: "Social square", category: "social", kind: "qr_poster", description: "1080x1080 social post with listing image and QR." },
-  { id: "social-portrait", name: "Social portrait", category: "social", kind: "qr_poster", description: "1080x1350 vertical social post." },
-  { id: "story", name: "Story", category: "social", kind: "qr_poster", description: "1080x1920 story format with swipe-up QR." },
-  { id: "whatsapp-status", name: "WhatsApp status", category: "social", kind: "qr_poster", description: "Vertical status video or image with QR." },
-  { id: "qr-poster", name: "QR poster", category: "general", kind: "qr_poster", description: "Generic print-ready QR poster." },
-];
+const CATEGORY_LABELS = {
+  rental_flyer: "Property marketing", sale_brochure: "Property marketing", open_house_poster: "Property marketing", comparison_sheet: "Property marketing",
+  agent_profile_sheet: "Agent marketing", agency_brochure: "Agency marketing",
+  development_brochure: "Developer marketing", payment_plan_sheet: "Developer marketing", construction_update: "Developer marketing",
+  hotel_flyer: "Hospitality", room_promotion: "Hospitality", weekend_offer: "Hospitality", short_stay_flyer: "Hospitality",
+  social_square: "Social", social_portrait: "Social", social_story: "Social", whatsapp_status: "Social", qr_poster: "Social",
+};
 
-export function TemplateGallery({ data }) {
+export function TemplateGallery({ data, onOpenDesign }) {
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("all");
+  const [category, setCategory] = useState("All");
   const [favorites, setFavorites] = useState([]);
-  const [duplicating, setDuplicating] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [creating, setCreating] = useState(null);
   const [notice, setNotice] = useState("");
-
-  const [templates, setTemplates] = useState(data?.templates || []);
-  const [designs, setDesigns] = useState(data?.designs || []);
+  const templates = useMemo(() => data?.templates || [], [data?.templates]);
 
   useEffect(() => {
-    if (data?.templates) setTemplates(data.templates);
-    if (data?.designs) setDesigns(data.designs);
-  }, [data]);
-
-  useEffect(() => {
-    const stored = typeof window !== "undefined" ? window.localStorage.getItem("nestora-template-favorites") : null;
-    if (stored) setFavorites(JSON.parse(stored));
+    try { setFavorites(JSON.parse(window.localStorage.getItem("nestora-template-favorites") || "[]")); } catch { setFavorites([]); }
   }, []);
 
-  useEffect(() => {
-    if (typeof window !== "undefined") window.localStorage.setItem("nestora-template-favorites", JSON.stringify(favorites));
-  }, [favorites]);
-
-  const categories = ["all", ...Array.from(new Set(TEMPLATES.map((item) => item.category)))];
-  const filtered = TEMPLATES.filter((item) => (category === "all" || item.category === category) && `${item.name} ${item.description}`.toLowerCase().includes(search.toLowerCase()));
+  const cards = useMemo(() => templates.map((template) => ({
+    ...template,
+    category: CATEGORY_LABELS[template.kind] || "Campaigns",
+    format: formatLabel(template.canvasWidth, template.canvasHeight),
+    description: templateDescription(template.kind),
+  })), [templates]);
+  const categories = ["All", ...new Set(cards.map((item) => item.category))];
+  const filtered = cards.filter((item) => (category === "All" || item.category === category) && `${item.name} ${item.description} ${item.kind}`.toLowerCase().includes(search.toLowerCase()));
 
   function toggleFavorite(id) {
-    setFavorites((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
+    const next = favorites.includes(id) ? favorites.filter((item) => item !== id) : [...favorites, id];
+    setFavorites(next);
+    window.localStorage.setItem("nestora-template-favorites", JSON.stringify(next));
   }
 
-  async function duplicate(template) {
-    setDuplicating(template.id);
+  async function applyTemplate(template) {
+    setCreating(template.id);
     try {
-      const response = await fetch("/api/workspace/templates", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ action: "create", kind: template.kind, name: template.name }),
-      });
+      const response = await fetch("/api/workspace/templates", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "duplicate", designId: template.id }) });
       const payload = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(payload.error || "Could not duplicate template.");
-      setNotice(`Created design from template: ${template.name}`);
-      setDesigns((current) => [payload.design, ...current]);
-      setTimeout(() => setNotice(""), 2600);
+      if (!response.ok) throw new Error(payload.error || "Could not create this design.");
+      setNotice(`${template.name} is ready in Marketing Studio.`);
+      onOpenDesign?.(payload.design);
     } catch (error) {
       setNotice(error.message);
-      setTimeout(() => setNotice(""), 4000);
     } finally {
-      setDuplicating(null);
+      setCreating(null);
+      window.setTimeout(() => setNotice(""), 4000);
     }
   }
 
   return (
-    <div className="template-gallery">
-      <header className="gallery-header">
-        <div>
-          <h1>Template gallery</h1>
-          <p>Start from an editable template, then apply brand kits and property data.</p>
-        </div>
+    <div className="template-gallery template-gallery--visual">
+      <header className="gallery-hero">
+        <div><span><Sparkles size={16} />Curated for property professionals</span><h1>Start brilliant. Make it unmistakably yours.</h1><p>Editable campaigns for listings, developments, teams and stays—with brand and live property data ready to connect.</p></div>
+        <div className="gallery-hero__stat"><strong>{cards.length}</strong><span>editable designs</span></div>
       </header>
-
-      {notice ? <div className="workspace-toast">{notice}</div> : null}
-
-      <div className="gallery-toolbar">
-        <label><Search size={16} /><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search templates..." /></label>
-        <div className="gallery-filters">
-          {categories.map((item) => <button key={item} type="button" className={category === item ? "active" : ""} onClick={() => setCategory(item)}>{humanize(item)}</button>)}
-        </div>
+      {notice ? <div className="workspace-toast" role="status">{notice}</div> : null}
+      <div className="gallery-toolbar gallery-toolbar--visual">
+        <label><Search size={18} /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search flyers, brochures, stories…" /></label>
+        <div className="gallery-filters" role="group" aria-label="Template categories">{categories.map((item) => <button key={item} type="button" className={category === item ? "active" : ""} onClick={() => setCategory(item)}>{item}</button>)}</div>
       </div>
-
-      <div className="gallery-grid">
-        {filtered.map((template) => (
-          <article key={template.id} className="gallery-card">
-            <div>
-              <strong>{template.name}</strong>
-              <p>{template.description}</p>
-              <span className="status-pill">{humanize(template.category)}</span>
-            </div>
-            <div className="gallery-actions">
-              <button type="button" onClick={() => toggleFavorite(template.id)} aria-label={favorites.includes(template.id) ? "Remove favorite" : "Add favorite"}>
-                <Star size={16} fill={favorites.includes(template.id) ? "currentColor" : "none"} />
-              </button>
-              <button type="button" onClick={() => duplicate(template)} disabled={duplicating === template.id}>
-                <Copy size={16} />{duplicating === template.id ? "Creating..." : "Duplicate"}
-              </button>
-            </div>
-          </article>
-        ))}
+      <div className="gallery-grid gallery-grid--visual">
+        {filtered.map((template) => <article key={template.id} className="template-card">
+          <button type="button" className="template-card__preview" onClick={() => setPreview(template)} aria-label={`Preview ${template.name}`}>
+            <DesignThumbnail template={template} />
+            <span className="template-card__hover"><Eye size={20} />Preview design</span>
+          </button>
+          <div className="template-card__body">
+            <div className="template-card__eyebrow"><span>{template.category}</span><button type="button" onClick={() => toggleFavorite(template.id)} aria-label={favorites.includes(template.id) ? "Remove favorite" : "Add favorite"}><Star size={17} fill={favorites.includes(template.id) ? "currentColor" : "none"} /></button></div>
+            <h2>{template.name}</h2><p>{template.description}</p>
+            <div className="template-card__meta"><span>{template.format}</span><span><Zap size={13} />Dynamic data</span><span>Brand-ready</span></div>
+            <div className="template-card__actions"><button type="button" onClick={() => setPreview(template)}><Eye size={16} />Preview</button><button className="button button--coral" type="button" onClick={() => applyTemplate(template)} disabled={creating === template.id}><Copy size={16} />{creating === template.id ? "Creating…" : "Use template"}</button></div>
+          </div>
+        </article>)}
       </div>
-
-      {designs.length ? <section className="template-designs"><h2>Your designs</h2><div>{designs.map((design) => <article key={design.id} className="workspace-record compact"><div><strong>{design.name}</strong><small>{humanize(design.kind)}</small></div><span className="status-pill">{design.status}</span></article>)}</div></section> : null}
+      {!filtered.length ? <div className="gallery-no-results"><Search size={32} /><h2>No templates found</h2><p>Try a broader search or another category.</p></div> : null}
+      {preview ? <div className="template-modal" role="dialog" aria-modal="true" aria-label={`${preview.name} preview`}><button className="template-modal__backdrop" type="button" onClick={() => setPreview(null)} aria-label="Close preview" /><div className="template-modal__panel"><button className="template-modal__close" type="button" onClick={() => setPreview(null)} aria-label="Close preview"><X size={20} /></button><div className="template-modal__canvas"><DesignThumbnail template={preview} large /></div><div className="template-modal__details"><span>{preview.category}</span><h2>{preview.name}</h2><p>{preview.description}</p><ul><li>Every headline and detail is editable</li><li>Connect a listing, unit, development or room</li><li>Apply any saved Brand Kit in one click</li></ul><button className="button button--coral" type="button" onClick={() => applyTemplate(preview)}><Sparkles size={17} />Use this template</button></div></div></div> : null}
     </div>
   );
 }
 
-function humanize(value) {
-  return String(value || "").replaceAll("_", " ").replaceAll("-", " ").replace(/^./, (letter) => letter.toUpperCase());
+export function DesignThumbnail({ template, large = false }) {
+  const width = template.canvasWidth || 595;
+  const height = template.canvasHeight || 842;
+  const scale = large ? Math.min(640 / width, 640 / height) : 320 / width;
+  return <div className={`design-thumbnail ${large ? "design-thumbnail--large" : ""}`} style={{ aspectRatio: `${width}/${height}` }}><div className="design-thumbnail__stage" style={{ width, height, transform: `scale(${scale})` }}>{(template.elements || []).slice().sort((a, b) => (a.zIndex || 0) - (b.zIndex || 0)).map((element) => <PreviewElement key={element.id} element={element} />)}</div></div>;
 }
+
+function PreviewElement({ element }) {
+  const style = { left: `${(element.x || 0)}px`, top: `${(element.y || 0)}px`, width: `${element.width || 100}px`, height: `${element.height || 40}px`, zIndex: element.zIndex || 1, transform: `rotate(${element.rotation || 0}deg)` };
+  if (element.type === "image") return <div className="preview-element" style={style}><img src={element.payload?.src || element.content} alt="" /></div>;
+  if (element.type === "shape") return <div className="preview-element" style={{ ...style, background: element.style?.fillColor || "#ddd", borderRadius: element.style?.shapeType === "circle" ? "50%" : element.style?.borderRadius || 0 }} />;
+  if (element.type === "qr_code") return <div className="preview-element preview-element--qr" style={style}><span /><span /><span /><i /><i /><i /></div>;
+  if (element.type === "text") return <div className="preview-element preview-element--text" style={{ ...style, color: element.style?.color, fontFamily: element.style?.fontFamily, fontSize: element.style?.fontSize, fontWeight: element.style?.fontWeight, textAlign: element.style?.textAlign, lineHeight: element.style?.lineHeight }}>{element.content}</div>;
+  return null;
+}
+
+function formatLabel(width, height) { if (width === height) return "Square"; if (height > width * 1.4) return "Portrait"; if (width > height) return "Landscape"; return "Print"; }
+function templateDescription(kind) { const descriptions = { sale_brochure: "Present a premium listing with confident hierarchy and a clear enquiry path.", rental_flyer: "Turn availability, price and essential facts into a polished one-page campaign.", open_house_poster: "Build anticipation for a viewing with date, location and scan-to-register action.", agent_profile_sheet: "Introduce your expertise, service areas and contact channels with authority.", agency_brochure: "Showcase a team, a market point of view and a curated property portfolio.", development_brochure: "Package a project story, specifications and buyer proposition beautifully.", payment_plan_sheet: "Explain deposits and milestones with clarity buyers can act on.", construction_update: "Transform progress milestones into a credible social update.", hotel_flyer: "Sell the feeling of the stay alongside rates, amenities and booking details.", room_promotion: "Make a room offer instantly understandable and easy to book.", weekend_offer: "Package an irresistible short-stay escape for mobile sharing.", comparison_sheet: "Help buyers compare a shortlist without losing the important details." }; return descriptions[kind] || "A flexible, editable campaign with connected property data and Brand Kit support."; }

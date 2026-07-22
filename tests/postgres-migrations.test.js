@@ -10,7 +10,7 @@ test("all PostgreSQL migrations load in order", async () => {
     const tables = database.public.many(
       "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name",
     );
-    assert.equal(migrationFiles.length, 9);
+    assert.equal(migrationFiles.length, 10);
     assert.ok(tables.length >= 30);
     assert.ok(tables.some((row) => row.table_name === "organizations"));
     assert.ok(tables.some((row) => row.table_name === "reservations"));

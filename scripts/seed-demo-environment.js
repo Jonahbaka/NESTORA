@@ -157,10 +157,10 @@ try {
   );
 
   for (const subscription of [
-    ["demo-agent-pilot", users.agent, null, "pilot"],
+    ["demo-agent-pilot", users.agent, null, "pro"],
     ["demo-agency-plan", null, organizations.agency, "agency"],
     ["demo-developer-plan", null, organizations.developer, "developer-studio"],
-    ["demo-hotel-plan", null, organizations.hotel, "hotel-operations"],
+    ["demo-hotel-plan", null, organizations.hotel, "host-centre"],
   ]) {
     await client.query(
       `INSERT INTO subscriptions (external_key, user_id, organization_id, plan_id, status, starts_at, ends_at, assigned_by, is_demo)
@@ -169,6 +169,59 @@ try {
       [subscription[0], subscription[1], subscription[2], subscription[3], users.admin],
     );
   }
+
+  const brandKits = {};
+  for (const kit of [
+    { key: "agent", externalKey: "demo-brand-amina-bello", owner: users.agent, org: organizations.agency, name: "Amina Bello Property Advisory", colors: { primary: "#123B33", secondary: "#F2C572", accent: "#E76F51" }, fonts: { heading: "Georgia", body: "Inter" }, footer: "Amina Bello · Abuja Property Advisor · +234 800 555 0101", website: "https://amina-bello.example", social: { instagram: "@aminabelloproperty", linkedin: "amina-bello-advisory", whatsapp: "+2348005550101" }, disclaimer: "Fictional demonstration. Verify price, title and availability before commitment.", qr: "rounded-coral", logos: [{ role: "primary", url: "/images/brands/amina-bello.svg" }, { role: "alternate", url: "/images/brands/amina-bello-mark.svg" }] },
+    { key: "agency", externalKey: "demo-brand-northstar-realty", owner: users.agency, org: organizations.agency, name: "Northstar Realty Abuja", colors: { primary: "#102A43", secondary: "#D9EAF3", accent: "#D4A72C" }, fonts: { heading: "Times New Roman", body: "Inter" }, footer: "Northstar Realty Abuja · Wuse II · +234 800 555 0142", website: "https://northstar-realty.example", social: { instagram: "@northstarrealtyabuja", linkedin: "northstar-realty-abuja", whatsapp: "+2348005550142" }, disclaimer: "Illustrative agency marketing. Terms are subject to documented confirmation.", qr: "navy-gold", logos: [{ role: "primary", url: "/images/brands/northstar.svg" }, { role: "alternate", url: "/images/brands/northstar-mark.svg" }] },
+    { key: "developer", externalKey: "demo-brand-katampe-court", owner: users.developer, org: organizations.developer, name: "Katampe Court Developments", colors: { primary: "#20231F", secondary: "#E8E0D2", accent: "#B78A52" }, fonts: { heading: "Georgia", body: "Helvetica" }, footer: "Katampe Court Developments · Katampe, Abuja · +234 800 555 0188", website: "https://katampe-court.example", social: { instagram: "@katampecourt", linkedin: "katampe-court-developments", whatsapp: "+2348005550188" }, disclaimer: "Renderings and delivery dates are illustrative and subject to signed contract.", qr: "architectural-bronze", logos: [{ role: "primary", url: "/images/brands/katampe-court.svg" }, { role: "alternate", url: "/images/brands/katampe-court-mark.svg" }] },
+    { key: "hospitality", externalKey: "demo-brand-jabi-house", owner: users.hotel, org: organizations.hotel, name: "Jabi House Collection", colors: { primary: "#4A3028", secondary: "#F6E8D5", accent: "#D97B59" }, fonts: { heading: "Georgia", body: "Inter" }, footer: "Jabi House Collection · Jabi Lake, Abuja · +234 800 555 0199", website: "https://jabi-house.example", social: { instagram: "@jabihousecollection", linkedin: "jabi-house-collection", whatsapp: "+2348005550199" }, disclaimer: "Fictional hospitality offer. Rates and availability require booking confirmation.", qr: "warm-terracotta", logos: [{ role: "primary", url: "/images/brands/jabi-house.svg" }, { role: "alternate", url: "/images/brands/jabi-house-mark.svg" }] },
+  ]) brandKits[kit.key] = await upsertBrandKit(kit);
+
+  const templateSpecs = [
+    ["premium-property-flyer", "Premium property flyer", "sale_brochure", 595, 842, "#173B31", "#E98D7E", "/images/nestora/katampe-residences.webp", "PROPERTY MARKETING"],
+    ["open-house-poster", "Open-house poster", "open_house_poster", 595, 842, "#412D3A", "#F2C572", "/images/nestora/maitama-villa.webp", "OPEN HOUSE"],
+    ["luxury-listing-brochure", "Luxury listing brochure", "sale_brochure", 800, 500, "#1B1D1C", "#C6A15B", "/images/nestora/maitama-villa.webp", "PRIVATE COLLECTION"],
+    ["rental-availability", "Rental availability sheet", "rental_flyer", 595, 842, "#16324F", "#60A5A8", "/images/nestora/wuye-apartment.webp", "NOW AVAILABLE"],
+    ["property-comparison", "Property comparison sheet", "comparison_sheet", 800, 500, "#233D4D", "#FE7F2D", "/images/nestora/guzape-duplex.webp", "COMPARE SHORTLIST"],
+    ["agent-profile-card", "Agent profile card", "agent_profile_sheet", 500, 500, "#123B33", "#E76F51", "/images/nestora/amina-bello-agent.webp", "TRUSTED ADVISOR"],
+    ["agent-introduction", "Agent introduction flyer", "agent_profile_sheet", 400, 600, "#253237", "#F0A868", "/images/nestora/amina-bello-agent.webp", "MEET YOUR ADVISOR"],
+    ["sold-announcement", "Sold-property announcement", "social_square", 500, 500, "#5B2333", "#F7C59F", "/images/nestora/asokoro-rooftop.webp", "SOLD"],
+    ["testimonial-card", "Client testimonial card", "social_square", 500, 500, "#102A43", "#D4A72C", "/images/nestora/hero-abuja-residence.webp", "CLIENT STORY"],
+    ["contact-qr-poster", "Contact and QR poster", "qr_poster", 400, 600, "#173B31", "#E98D7E", "/images/nestora/amina-bello-agent.webp", "LET'S FIND HOME"],
+    ["agency-brochure", "Agency brochure", "agency_brochure", 595, 842, "#102A43", "#D4A72C", "/images/nestora/hero-abuja-residence.webp", "ABUJA PROPERTY EXPERTS"],
+    ["team-showcase", "Team showcase", "agency_brochure", 800, 500, "#263238", "#80CBC4", "/images/nestora/amina-bello-agent.webp", "PEOPLE BEHIND THE MOVE"],
+    ["multi-listing-catalogue", "Multi-listing catalogue", "agency_brochure", 800, 500, "#2F3E46", "#CAD2C5", "/images/nestora/guzape-duplex.webp", "CURATED LISTINGS"],
+    ["market-update", "Monthly market update", "social_portrait", 400, 600, "#1D3557", "#E63946", "/images/nestora/maitama-villa.webp", "ABUJA MARKET PULSE"],
+    ["neighbourhood-guide", "Neighbourhood guide", "agency_brochure", 595, 842, "#4F5D2F", "#DDE5B6", "/images/nestora/jabi-community.webp", "LIVE JABI"],
+    ["development-brochure", "Development brochure", "development_brochure", 595, 842, "#20231F", "#B78A52", "/images/nestora/katampe-residences.webp", "KATAMPE COURT"],
+    ["unit-availability", "Unit availability sheet", "payment_plan_sheet", 800, 500, "#232323", "#D6B47A", "/images/nestora/katampe-residences.webp", "LIVE INVENTORY"],
+    ["payment-plan", "Payment-plan sheet", "payment_plan_sheet", 595, 842, "#20231F", "#B78A52", "/images/nestora/katampe-residences.webp", "OWN IN MILESTONES"],
+    ["construction-update", "Construction update", "construction_update", 500, 500, "#37474F", "#FFB300", "/images/nestora/katampe-residences.webp", "78% COMPLETE"],
+    ["investor-summary", "Investor summary", "development_brochure", 800, 500, "#111827", "#C99B43", "/images/nestora/asokoro-rooftop.webp", "INVESTMENT BRIEF"],
+    ["hotel-flyer", "Hotel flyer", "hotel_flyer", 595, 842, "#4A3028", "#D97B59", "/images/nestora/jabi-serviced-suite.webp", "STAY BY THE LAKE"],
+    ["room-promotion", "Room promotion", "room_promotion", 500, 500, "#3D405B", "#F2CC8F", "/images/nestora/jabi-serviced-suite.webp", "LAKE SUITE"],
+    ["weekend-package", "Weekend package", "weekend_offer", 400, 600, "#4A3028", "#E07A5F", "/images/nestora/abuja-weekend-retreat.webp", "WEEKEND, SLOWER"],
+    ["amenities-card", "Amenities card", "social_square", 500, 500, "#335C67", "#FFF3B0", "/images/nestora/jabi-serviced-suite.webp", "EVERY COMFORT"],
+    ["short-stay-promotion", "Short-stay promotion", "short_stay_flyer", 400, 600, "#50372F", "#F2B880", "/images/nestora/abuja-weekend-retreat.webp", "STAY A LITTLE LONGER"],
+    ["social-square", "Listing social square", "social_square", 500, 500, "#173B31", "#E98D7E", "/images/nestora/guzape-duplex.webp", "NEW TO MARKET"],
+    ["social-portrait", "Listing social portrait", "social_portrait", 400, 600, "#102A43", "#D4A72C", "/images/nestora/maitama-villa.webp", "AN ADDRESS OF NOTE"],
+    ["social-story", "Listing story", "social_story", 360, 640, "#173B31", "#E98D7E", "/images/nestora/maitama-villa.webp", "DISCOVER MAITAMA"],
+    ["whatsapp-status", "WhatsApp listing status", "whatsapp_status", 360, 640, "#153E35", "#70C1A3", "/images/nestora/wuye-apartment.webp", "AVAILABLE THIS WEEK"],
+    ["carousel-cover", "Listing carousel cover", "social_square", 500, 500, "#232323", "#E4BA69", "/images/nestora/asokoro-rooftop.webp", "5 REASONS TO LOOK CLOSER"],
+  ];
+  for (const spec of templateSpecs) await upsertDesign({ externalKey: `demo-template-${spec[0]}`, owner: users.admin, org: null, brandKitId: null, name: spec[1], kind: spec[2], width: spec[3], height: spec[4], elements: demoDesignElements(spec[3], spec[4], spec[5], spec[6], spec[7], spec[8]), bindings: { listingTitle: "listing.title", price: "listing.price", address: "listing.location", qrTarget: "listing.url" }, isTemplate: true, approved: true, status: "completed" });
+
+  await upsertDesign({ externalKey: "demo-design-agent-katampe", owner: users.agent, org: organizations.agency, brandKitId: brandKits.agent, name: "Katampe Court Residences — Premium Listing Flyer", kind: "sale_brochure", width: 595, height: 842, elements: demoDesignElements(595, 842, "#123B33", "#E76F51", "/images/nestora/katampe-residences.webp", "₦245,000,000 · KATAMPE"), bindings: { listingId: "katampe-court-residences", agent: "Amina Bello", qrTarget: "/properties/katampe-court-residences" }, status: "draft" });
+  await upsertDesign({ externalKey: "demo-design-developer-payment", owner: users.developer, org: organizations.developer, brandKitId: brandKits.developer, name: "Katampe Court Residences — Payment Plan", kind: "payment_plan_sheet", width: 595, height: 842, elements: demoDesignElements(595, 842, "#20231F", "#B78A52", "/images/nestora/katampe-residences.webp", "30% DEPOSIT · 50% BUILD · 20% HANDOVER"), bindings: { developmentId: String(development), unitType: "Three-bedroom residence", completion: "June 2027" }, status: "draft" });
+  await upsertDesign({ externalKey: "demo-design-hotel-weekend", owner: users.hotel, org: organizations.hotel, brandKitId: brandKits.hospitality, name: "Jabi House Collection — Weekend Offer", kind: "weekend_offer", width: 400, height: 600, elements: demoDesignElements(400, 600, "#4A3028", "#D97B59", "/images/nestora/abuja-weekend-retreat.webp", "₦185,000 / NIGHT · BREAKFAST INCLUDED"), bindings: { listingId: "jabi-lake-serviced-suite", qrTarget: "/properties/jabi-lake-serviced-suite" }, status: "draft" });
+
+  for (const site of [
+    { externalKey: "demo-site-amina-bello", owner: users.agent, org: organizations.agency, kind: "agent", template: "professional", brandKitId: brandKits.agent, name: "Amina Bello Property Advisory", slug: "amina-bello-advisory", sections: ["hero", "about", "featured", "testimonials", "contact", "social"], theme: { primaryColor: "#123B33", secondaryColor: "#F2C572", accentColor: "#E76F51", heroImage: "/images/nestora/maitama-villa.webp", portrait: "/images/nestora/amina-bello-agent.webp", tagline: "Abuja homes, advised with clarity." }, contact: { email: "amina@demo.nestora.local", phone: "+234 800 555 0101", whatsapp: "+2348005550101", address: "Wuse II, Abuja" } },
+    { externalKey: "demo-site-northstar", owner: users.agency, org: organizations.agency, kind: "agency", template: "agency", brandKitId: brandKits.agency, name: "Northstar Realty Abuja", slug: "northstar-realty-abuja", sections: ["hero", "about", "team", "featured", "areas_served", "contact", "social"], theme: { primaryColor: "#102A43", secondaryColor: "#D9EAF3", accentColor: "#D4A72C", heroImage: "/images/nestora/hero-abuja-residence.webp", tagline: "Local intelligence. Exceptional moves." }, contact: { email: "hello@northstar.demo", phone: "+234 800 555 0142", whatsapp: "+2348005550142", address: "Wuse II, Abuja" } },
+    { externalKey: "demo-site-katampe-court", owner: users.developer, org: organizations.developer, kind: "developer", template: "developer", brandKitId: brandKits.developer, name: "Katampe Court Residences", slug: "katampe-court-residences", sections: ["hero", "developments", "available_units", "gallery", "construction_updates", "contact", "social"], theme: { primaryColor: "#20231F", secondaryColor: "#E8E0D2", accentColor: "#B78A52", heroImage: "/images/nestora/katampe-residences.webp", tagline: "Considered residences above the city." }, contact: { email: "sales@katampecourt.demo", phone: "+234 800 555 0188", whatsapp: "+2348005550188", address: "Katampe, Abuja" } },
+    { externalKey: "demo-site-jabi-house", owner: users.hotel, org: organizations.hotel, kind: "hospitality", template: "hospitality", brandKitId: brandKits.hospitality, name: "Jabi House Collection", slug: "jabi-house-collection", sections: ["hero", "rooms_stays", "amenities", "gallery", "testimonials", "contact", "social"], theme: { primaryColor: "#4A3028", secondaryColor: "#F6E8D5", accentColor: "#D97B59", heroImage: "/images/nestora/jabi-serviced-suite.webp", tagline: "Warm stays beside Jabi Lake." }, contact: { email: "stay@jabihouse.demo", phone: "+234 800 555 0199", whatsapp: "+2348005550199", address: "Jabi Lake, Abuja" } },
+  ]) await upsertWebsite(site);
 
   await client.query(
     `INSERT INTO verification_cases (external_key, subject_user_id, kind, status, is_demo)
@@ -267,6 +320,49 @@ async function profile(userId, organizationId, slug, headline, biography, servic
      ON CONFLICT (user_id) DO UPDATE SET organization_id = EXCLUDED.organization_id, slug = EXCLUDED.slug, headline = EXCLUDED.headline, biography = EXCLUDED.biography, service_areas = EXCLUDED.service_areas, languages = EXCLUDED.languages, specialisations = EXCLUDED.specialisations, verification_status = 'pending', is_public = TRUE, is_demo = TRUE, updated_at = NOW()`,
     [userId, organizationId, slug, headline, biography, serviceAreas, languages, specialisations],
   );
+}
+
+async function upsertBrandKit(kit) {
+  return upsertOne(
+    `INSERT INTO brand_kits (external_key, owner_user_id, organization_id, name, is_organization_kit, brand_colors, fonts, contact_footer, website_url, social_handles, disclaimer, default_qr_style, approved_images)
+     VALUES ($1, $2, $3, $4, TRUE, $5::jsonb, $6::jsonb, $7, $8, $9::jsonb, $10, $11, $12::jsonb)
+     ON CONFLICT (external_key) DO UPDATE SET owner_user_id = EXCLUDED.owner_user_id, organization_id = EXCLUDED.organization_id, name = EXCLUDED.name, brand_colors = EXCLUDED.brand_colors, fonts = EXCLUDED.fonts, contact_footer = EXCLUDED.contact_footer, website_url = EXCLUDED.website_url, social_handles = EXCLUDED.social_handles, disclaimer = EXCLUDED.disclaimer, default_qr_style = EXCLUDED.default_qr_style, approved_images = EXCLUDED.approved_images, updated_at = NOW()
+     RETURNING id`,
+    [kit.externalKey, kit.owner, kit.org, kit.name, JSON.stringify(kit.colors), JSON.stringify(kit.fonts), kit.footer, kit.website, JSON.stringify(kit.social), kit.disclaimer, kit.qr, JSON.stringify(kit.logos || [])],
+  );
+}
+
+async function upsertDesign(design) {
+  return upsertOne(
+    `INSERT INTO marketing_designs (external_key, owner_user_id, organization_id, brand_kit_id, name, kind, is_template, is_approved_template, canvas_width, canvas_height, elements, dynamic_bindings, status)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11::jsonb, $12::jsonb, $13)
+     ON CONFLICT (external_key) DO UPDATE SET owner_user_id = EXCLUDED.owner_user_id, organization_id = EXCLUDED.organization_id, brand_kit_id = EXCLUDED.brand_kit_id, name = EXCLUDED.name, kind = EXCLUDED.kind, is_template = EXCLUDED.is_template, is_approved_template = EXCLUDED.is_approved_template, canvas_width = EXCLUDED.canvas_width, canvas_height = EXCLUDED.canvas_height, elements = EXCLUDED.elements, dynamic_bindings = EXCLUDED.dynamic_bindings, status = EXCLUDED.status, updated_at = NOW()
+     RETURNING id`,
+    [design.externalKey, design.owner, design.org, design.brandKitId, design.name, design.kind, Boolean(design.isTemplate), Boolean(design.approved), design.width, design.height, JSON.stringify(design.elements), JSON.stringify(design.bindings || {}), design.status || "draft"],
+  );
+}
+
+async function upsertWebsite(site) {
+  return upsertOne(
+    `INSERT INTO partner_websites (external_key, owner_user_id, organization_id, kind, template_id, brand_kit_id, name, slug, subdomain, status, sections, theme, contact, seo, published_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $8, 'published', $9::jsonb, $10::jsonb, $11::jsonb, $12::jsonb, NOW())
+     ON CONFLICT (external_key) DO UPDATE SET owner_user_id = EXCLUDED.owner_user_id, organization_id = EXCLUDED.organization_id, kind = EXCLUDED.kind, template_id = EXCLUDED.template_id, brand_kit_id = EXCLUDED.brand_kit_id, name = EXCLUDED.name, slug = EXCLUDED.slug, subdomain = EXCLUDED.subdomain, status = 'published', sections = EXCLUDED.sections, theme = EXCLUDED.theme, contact = EXCLUDED.contact, seo = EXCLUDED.seo, published_at = COALESCE(partner_websites.published_at, NOW()), updated_at = NOW()
+     RETURNING id`,
+    [site.externalKey, site.owner, site.org, site.kind, site.template, site.brandKitId, site.name, site.slug, JSON.stringify(site.sections), JSON.stringify(site.theme), JSON.stringify(site.contact), JSON.stringify({ title: site.name, description: site.theme.tagline })],
+  );
+}
+
+function demoDesignElements(width, height, primary, accent, image, eyebrow) {
+  const imageHeight = Math.round(height * 0.52);
+  return [
+    { id: "background", type: "shape", x: 0, y: 0, width, height, rotation: 0, locked: true, zIndex: 0, content: "", style: { fillColor: "#FFFDF8", shapeType: "rectangle" }, mediaId: null, listingId: null, payload: {} },
+    { id: "hero", type: "image", x: 0, y: 0, width, height: imageHeight, rotation: 0, locked: false, zIndex: 1, content: image, style: { objectFit: "cover" }, mediaId: null, listingId: null, payload: { src: image } },
+    { id: "accent", type: "shape", x: 0, y: imageHeight - 12, width, height: 18, rotation: 0, locked: true, zIndex: 2, content: "", style: { fillColor: accent, shapeType: "rectangle" }, mediaId: null, listingId: null, payload: {} },
+    { id: "eyebrow", type: "text", x: 34, y: imageHeight + 34, width: width - 68, height: 32, rotation: 0, locked: false, zIndex: 3, content: eyebrow, style: { fontFamily: "Inter", fontSize: Math.max(13, Math.round(width / 38)), fontWeight: "bold", color: accent, letterSpacing: 1.4 }, mediaId: null, listingId: null, payload: {} },
+    { id: "title", type: "text", x: 34, y: imageHeight + 74, width: width - 68, height: Math.round(height * 0.14), rotation: 0, locked: false, zIndex: 3, content: "Katampe Court Residences", style: { fontFamily: "Georgia", fontSize: Math.max(26, Math.round(width / 14)), fontWeight: "bold", color: primary, lineHeight: 1.05 }, mediaId: null, listingId: null, payload: { binding: "listing.title" } },
+    { id: "details", type: "text", x: 34, y: height - 128, width: width - 180, height: 74, rotation: 0, locked: false, zIndex: 3, content: "3 bedrooms  ·  4 bathrooms  ·  242 sqm\nPrivate terraces · Smart energy · Concierge", style: { fontFamily: "Inter", fontSize: Math.max(12, Math.round(width / 42)), color: "#4B5652", lineHeight: 1.5 }, mediaId: null, listingId: null, payload: { binding: "listing.features" } },
+    { id: "qr", type: "qr_code", x: width - 118, y: height - 128, width: 84, height: 84, rotation: 0, locked: false, zIndex: 4, content: "/properties/katampe-court-residences", style: { foreground: primary, background: "#FFFFFF" }, mediaId: null, listingId: null, payload: { destination: "/properties/katampe-court-residences" } },
+  ];
 }
 
 async function listing(id, ownerUserId, organizationId, title, category, location, priceAmount, status) {

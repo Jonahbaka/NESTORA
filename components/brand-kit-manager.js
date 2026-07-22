@@ -1,9 +1,10 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Save, Trash2, Lock, Unlock, Globe2, Palette, Type, Link2 } from "lucide-react";
+import { Plus, Save, Trash2, Lock, Unlock, Palette, Copy, CheckCircle2 } from "lucide-react";
 
-export function BrandKitManager({ data }) {
+export function BrandKitManager({ data, role }) {
   const [kits, setKits] = useState(data?.kits || []);
   const [editing, setEditing] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -80,9 +81,19 @@ export function BrandKitManager({ data }) {
     const nextAction = kit.isLocked ? "unlock" : "lock";
     const result = await performWrite({ action: nextAction, brandKitId: id }, nextAction === "unlock" ? "Brand kit unlocked." : "Brand kit locked.");
     if (result) {
-      setKits((current) => current.map((k) => k.id === id ? { ...k, locked: !k.locked } : k));
-      if (editing?.id === id) setEditing((k) => ({ ...k, locked: !k.locked }));
+      setKits((current) => current.map((k) => k.id === id ? { ...k, isLocked: !k.isLocked } : k));
+      if (editing?.id === id) setEditing((k) => ({ ...k, isLocked: !k.isLocked }));
     }
+  }
+
+  async function duplicateKit(kit) {
+    const result = await performWrite({ action: "create", name: `${kit.name} Copy`, brandColors: kit.brandColors, fonts: kit.fonts, contactFooter: kit.contactFooter, websiteUrl: kit.websiteUrl, socialHandles: kit.socialHandles, disclaimer: kit.disclaimer, defaultQrStyle: kit.defaultQrStyle, approvedImages: kit.approvedImages }, "Brand kit duplicated.");
+    if (result?.brandKit) setKits((current) => [result.brandKit, ...current]);
+  }
+
+  function applyKit(kit) {
+    window.localStorage.setItem("nestora-active-brand-kit", kit.id);
+    setNotice(`${kit.name} will be applied to your next design.`);
   }
 
   return (
@@ -123,15 +134,17 @@ export function BrandKitManager({ data }) {
 <section className="kit-gallery">
         {kits.length ? kits.map((kit) => (
           <article key={kit.id} className="kit-card">
-            <div><strong>{kit.name}</strong><small>{kit.fonts?.heading || "Helvetica-Bold"} / {kit.fonts?.body || "Helvetica"}</small></div>
+            <div className="kit-card__identity">{kit.approvedImages?.[0]?.url ? <img src={kit.approvedImages[0].url} alt={`${kit.name} logo`} /> : null}<strong>{kit.name}</strong><small>{kit.fonts?.heading || "Helvetica-Bold"} / {kit.fonts?.body || "Helvetica"}</small><em>{kit.isOrganizationKit ? "Organisation brand" : "Personal brand"}</em></div>
             <div className="kit-swatches">
               <span style={{ background: kit.brandColors?.primary || "#173b31" }} />
               <span style={{ background: kit.brandColors?.secondary || "#9b4d42" }} />
               <span style={{ background: kit.brandColors?.accent || "#e98d7e" }} />
             </div>
             <div className="kit-actions">
+              <button type="button" onClick={() => applyKit(kit)}><CheckCircle2 size={16} />Apply</button>
               <button type="button" onClick={() => setEditing(kit)}><Save size={16} />Edit</button>
-              {kit.locked ? <button type="button" onClick={() => toggleLock(kit.id)}><Unlock size={16} />Unlock</button> : <button type="button" onClick={() => toggleLock(kit.id)}><Lock size={16} />Lock</button>}
+              <button type="button" onClick={() => duplicateKit(kit)}><Copy size={16} />Duplicate</button>
+              {role === "admin" ? kit.isLocked ? <button type="button" onClick={() => toggleLock(kit.id)}><Unlock size={16} />Unlock</button> : <button type="button" onClick={() => toggleLock(kit.id)}><Lock size={16} />Lock</button> : null}
               <button type="button" onClick={() => removeKit(kit.id)}><Trash2 size={16} />Remove</button>
             </div>
           </article>

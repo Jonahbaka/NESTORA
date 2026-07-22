@@ -86,12 +86,12 @@ const adminSchema = z.discriminatedUnion("action", [
 ]);
 const marketingSchema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("generate"), kind: z.enum(["agent_profile", "rental_flyer", "sale_brochure", "development_brochure", "hotel_flyer", "payment_plan", "qr_poster", "comparison_sheet"]), listingId: z.string().trim().min(1).max(160).nullable().optional(), developmentId: z.uuid().nullable().optional(), qrTarget: z.string().trim().max(500).refine((value) => !value || (value.startsWith("/") && !value.startsWith("//")), "Use a Nestora path beginning with one slash.").nullable().optional() }),
-  z.object({ action: z.literal("save"), elements: z.array(z.any()).optional() }),
-  z.object({ action: z.literal("export"), format: z.enum(["pdf", "png", "jpeg"]), elements: z.array(z.any()).optional() }),
+  z.object({ action: z.literal("save"), designId: z.uuid().nullable().optional(), name: z.string().trim().min(2).max(160).default("Untitled design"), kind: z.string().trim().min(2).max(80).default("sale_brochure"), canvasWidth: z.number().int().min(200).max(4000).default(595), canvasHeight: z.number().int().min(200).max(4000).default(842), brandKitId: z.uuid().nullable().optional(), elements: z.array(z.any()).max(500).default([]), dynamicBindings: z.record(z.any()).default({}) }),
+  z.object({ action: z.literal("export"), format: z.enum(["pdf", "png", "jpeg"]), designId: z.uuid().nullable().optional(), name: z.string().trim().min(2).max(160).default("Untitled design"), kind: z.string().trim().min(2).max(80).default("sale_brochure"), canvasWidth: z.number().int().min(200).max(4000).default(595), canvasHeight: z.number().int().min(200).max(4000).default(842), brandKitId: z.uuid().nullable().optional(), elements: z.array(z.any()).max(500).default([]), dynamicBindings: z.record(z.any()).default({}) }),
 ]);
 
 const brandKitSchema = z.object({
-  action: z.enum(["create", "update", "delete", "lock"]),
+  action: z.enum(["create", "update", "delete", "lock", "unlock"]),
   name: z.string().trim().min(2).max(120).optional(),
   brandColors: z.record(z.string()).optional(),
   fonts: z.record(z.string()).optional(),
@@ -99,17 +99,30 @@ const brandKitSchema = z.object({
   websiteUrl: z.string().trim().max(200).optional(),
   socialHandles: z.record(z.string()).optional(),
   disclaimer: z.string().trim().max(2000).optional(),
-  defaultQrStyle: z.record(z.any()).optional(),
+  defaultQrStyle: z.string().trim().max(40).optional(),
+  approvedImages: z.array(z.object({ role: z.string().trim().max(40), url: z.string().trim().max(300) })).max(20).optional(),
   isOrganizationKit: z.boolean().optional(),
   brandKitId: z.uuid().optional(),
 });
 const templateSchema = z.object({
   action: z.enum(["create", "duplicate"]),
   designId: z.uuid().optional(),
-  kind: z.enum(["agent_profile", "rental_flyer", "sale_brochure", "development_brochure", "hotel_flyer", "payment_plan", "qr_poster", "comparison_sheet"]).optional(),
+  name: z.string().trim().min(2).max(160).optional(),
+  kind: z.string().trim().min(2).max(80).optional(),
+  templateId: z.string().trim().max(120).nullable().optional(),
+  canvasPreset: z.enum(["a4", "us_letter", "square", "portrait", "story", "landscape", "social_square", "social_portrait", "social_story"]).optional(),
+  brandKitId: z.uuid().nullable().optional(),
+  elements: z.array(z.any()).max(500).optional(),
+  dynamicBindings: z.record(z.any()).optional(),
   listingId: z.string().trim().max(160).optional(),
 });
-const writeSchemas = { profile: profileSchema, listings: listingSchema, leads: leadSchema, inspections: inspectionSchema, hotel: hotelSchema, developer: developerSchema, team: teamSchema, admin: adminSchema, marketing: marketingSchema, subscription: z.object({ action: z.enum(["requestUpgrade"]), planId: z.string().trim().min(1).max(80) }), "brand-kits": brandKitSchema, templates: templateSchema };
+const websiteSchema = z.discriminatedUnion("action", [
+  z.object({ action: z.literal("create"), name: z.string().trim().min(2).max(120), kind: z.enum(["agent", "agency", "developer", "hospitality", "serviced_apartments", "short_stay"]), templateId: z.string().trim().min(2).max(80), brandKitId: z.uuid().nullable().optional(), sections: z.array(z.string().trim().min(2).max(80)).max(30).default([]), theme: z.record(z.any()).default({}), contact: z.record(z.any()).default({}), seo: z.record(z.any()).default({}) }),
+  z.object({ action: z.literal("update"), websiteId: z.uuid(), name: z.string().trim().min(2).max(120).optional(), templateId: z.string().trim().min(2).max(80).optional(), brandKitId: z.uuid().nullable().optional(), sections: z.array(z.string().trim().min(2).max(80)).max(30).optional(), theme: z.record(z.any()).optional(), contact: z.record(z.any()).optional(), seo: z.record(z.any()).optional() }),
+  z.object({ action: z.literal("publish"), websiteId: z.uuid() }),
+  z.object({ action: z.literal("unpublish"), websiteId: z.uuid() }),
+]);
+const writeSchemas = { profile: profileSchema, listings: listingSchema, leads: leadSchema, inspections: inspectionSchema, hotel: hotelSchema, developer: developerSchema, team: teamSchema, admin: adminSchema, marketing: marketingSchema, subscription: z.object({ action: z.enum(["requestUpgrade"]), planId: z.string().trim().min(1).max(80) }), websites: websiteSchema, "brand-kits": brandKitSchema, templates: templateSchema };
 
 export async function GET(request, { params }) {
   const { resource } = await params;

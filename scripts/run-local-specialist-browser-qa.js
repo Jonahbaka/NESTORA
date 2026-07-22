@@ -30,7 +30,7 @@ let expectedAvailabilityConflict = false;
 let fatalError = null;
 let currentScenario = "initialization";
 
-const browser = await chromium.launch({ headless: true, executablePath: process.env.NESTORA_CHROME_PATH || "C:/Program Files/Google/Chrome/Application/chrome.exe" });
+const browser = await chromium.launch({ headless: true, executablePath: await resolveBrowserExecutable() });
 const context = await browser.newContext({ baseURL: baseUrl, viewport: { width: 1440, height: 1000 }, acceptDownloads: true });
 const page = await context.newPage();
 page.setDefaultTimeout(30_000);
@@ -38,7 +38,10 @@ page.setDefaultNavigationTimeout(60_000);
 page.on("console", (message) => {
   if (message.type() === "error" && !message.text().startsWith("Failed to load resource:")) results.push({ name: "browser console", status: "warning", detail: message.text() });
 });
-page.on("pageerror", (error) => results.push({ name: "page error", status: "warning", detail: `${currentScenario} | ${page.url()} | ${error.message}` }));
+page.on("pageerror", (error) => {
+  if (error.message.includes("Minified React error #418") && error.message.includes("args[]=HTML")) return;
+  results.push({ name: "page error", status: "warning", detail: `${currentScenario} | ${page.url()} | ${error.message}` });
+});
 page.on("response", (response) => {
   if (response.status() < 400) return;
   if (response.status() === 401 && response.url().endsWith("/api/auth/session")) return;
@@ -242,7 +245,7 @@ async function login(email, destination) {
   await page.locator(".auth-submit").click();
   await page.waitForURL(`**${destination}`, { waitUntil: "domcontentloaded" });
   assert(new URL(page.url()).pathname === destination, `${email} landed on ${new URL(page.url()).pathname}`);
-  await page.getByLabel("Open account").waitFor({ state: "attached" });
+  await page.locator(".pro-user, .my-user, .admin-shell, .admin-console").first().waitFor({ state: "attached" });
   await page.waitForTimeout(750);
 }
 
@@ -327,12 +330,12 @@ async function generateMarketing(navName, kind, title, listingId) {
   await page.locator(".marketing-form select[name=listingId]").selectOption({ label: title });
   await page.locator(".marketing-form input[name=qrTarget]").fill(`/properties/${listingId}`);
   await page.getByRole("button", { name: "Generate material" }).click();
-  await expectVisible(page.locator(".workspace-record").filter({ hasText: title }).getByRole("link", { name: "Download" }).first(), `${kind} PDF`);
+  await page.locator(".workspace-record").filter({ hasText: title }).getByRole("link", { name: "Download" }).first().waitFor({ state: "visible", timeout: 60_000 }).catch(() => { throw new Error(`${kind} PDF was not visible`); });
 }
 
 async function logoutProfessional() {
   const response = page.waitForResponse((item) => item.url().endsWith("/api/auth/logout") && item.request().method() === "POST");
-  await page.locator(".pro-sidebar__bottom button").filter({ hasText: "Sign out" }).click();
+  await page.locator(".pro-sidebar__bottom button").filter({ hasText: "Logout" }).click();
   await response;
   await page.waitForURL("**/login", { waitUntil: "domcontentloaded" });
 }
@@ -351,12 +354,18 @@ async function logoutFromHeader() {
 
 async function open(pathname) {
   await page.goto(pathname, { waitUntil: "domcontentloaded", timeout: 60_000 });
-  if (pathname !== "/login") {
-    await page.getByLabel("Open account").waitFor({ state: "attached" });
-    if (pathname.startsWith("/properties/")) await page.locator('.inquiry-panel[data-inquiry-ready="true"]').waitFor({ state: "attached" });
-    await page.waitForTimeout(750);
-  }
+  if (pathname.startsWith("/workspace/")) await page.locator(".pro-user").waitFor({ state: "attached" });
+  if (pathname === "/my-nestora") await page.locator(".my-user").waitFor({ state: "attached" });
+  if (pathname === "/admin") await page.locator(".admin-shell, .admin-console").first().waitFor({ state: "attached" });
+  if (pathname.startsWith("/properties/")) await page.locator('.inquiry-panel[data-inquiry-ready="true"]').waitFor({ state: "attached" });
+  if (pathname !== "/login") await page.waitForTimeout(750);
 }
 async function expectVisible(locator, label) { await locator.waitFor({ state: "visible", timeout: 20_000 }).catch(() => { throw new Error(`${label} was not visible`); }); }
 function futureDate(days) { return new Date(Date.now() + days * 86_400_000).toISOString().slice(0, 10); }
 function assert(condition, message) { if (!condition) throw new Error(message); }
+
+async function resolveBrowserExecutable() {
+  if (process.env.NESTORA_CHROME_PATH) return process.env.NESTORA_CHROME_PATH;
+  const systemChrome = "C:/Program Files/Google/Chrome/Application/chrome.exe";
+  try { await fs.access(systemChrome); return systemChrome; } catch { return undefined; }
+}

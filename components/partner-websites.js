@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useNestora } from "@/components/providers";
-import { Plus, Save, Globe2, ExternalLink, BarChart3, Eye, XCircle, Archive, RefreshCw, Check, Lock, Palette, LayoutTemplate } from "lucide-react";
+import { Plus, Save, Globe2, ExternalLink, BarChart3, Eye, XCircle, Check, Palette, Sparkles } from "lucide-react";
 
 const TEMPLATE_OPTIONS = [
   { id: "professional", name: "Professional", description: "Independent agent profile with featured listings" },
@@ -24,7 +24,7 @@ const SECTION_OPTIONS = [
   { id: "social", label: "Social links" },
 ];
 
-export function PartnerWebsites({ data }) {
+export function PartnerWebsites({ data, reload }) {
   const [websites, setWebsites] = useState(data?.websites || []);
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState(null);
@@ -51,7 +51,7 @@ export function PartnerWebsites({ data }) {
       return null;
     }
     setNotice(successMessage || "Changes saved.");
-    if (data?.reload) data.reload();
+    reload?.();
     return payload;
   }
 
@@ -63,12 +63,11 @@ export function PartnerWebsites({ data }) {
       action: "create",
       name: formData.get("name"),
       kind: formData.get("kind"),
-      subdomain: formData.get("subdomain"),
-      configuration: {
-        templateId: formData.get("templateId"),
-        sections: ["hero", "about", "contact", "social"],
-        brand: {},
-      },
+      templateId: formData.get("templateId"),
+      sections: ["hero", "about", "featured_listings", "contact", "social_links"],
+      theme: {},
+      contact: {},
+      seo: {},
     }, "Website created.");
     if (result?.website) { setCreating(false); setWebsites((current) => [result.website, ...current]); }
   }
@@ -78,11 +77,7 @@ export function PartnerWebsites({ data }) {
     if (!editing) return;
     const form = event.currentTarget;
     const formData = new FormData(form);
-    const configuration = {
-      ...editing.configuration,
-      sections: formData.getAll("sections"),
-    };
-    const result = await performWrite({ action: "update", websiteId: editing.id, ...editing, configuration }, "Site saved.");
+    const result = await performWrite({ action: "update", websiteId: editing.id, name: formData.get("name"), templateId: editing.configuration?.templateId || "professional", brandKitId: editing.configuration?.brandKitId || null, sections: formData.getAll("sections"), theme: editing.configuration?.theme || {}, contact: editing.configuration?.contact || {}, seo: editing.configuration?.seo || {} }, "Site saved.");
     if (result?.website) setEditing(result.website);
   }
 
@@ -100,8 +95,9 @@ export function PartnerWebsites({ data }) {
     <div className="partner-websites">
       <header className="partner-header">
         <div>
-          <h1>Partner websites</h1>
-          <p>Create and manage public websites for your listings, developments, and hospitality brand.</p>
+          <span className="studio-kicker"><Sparkles size={15} />No-code AI website builder</span>
+          <h1>Launch a property website in minutes.</h1>
+          <p>Publish a polished, mobile-ready home for your listings, developments, or hospitality brand.</p>
         </div>
         {isProfessional && <button className="button button--coral" type="button" onClick={() => setCreating(true)}><Plus size={17} />New website</button>}
       </header>
@@ -111,9 +107,9 @@ export function PartnerWebsites({ data }) {
       {creating ? (
         <form className="studio-form" onSubmit={createWebsite}>
           <label>Website name<input name="name" required minLength={2} maxLength={120} placeholder="Aisha Ibrahim Properties" /></label>
-          <label>Website type<select name="kind" required>{TEMPLATE_OPTIONS.map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}</select></label>
+          <label>Website type<select name="kind" required>{TEMPLATE_OPTIONS.map((item) => <option value={item.id === "professional" ? "agent" : item.id} key={item.id}>{item.name}</option>)}</select></label>
           <label>Template<select name="templateId" required>{TEMPLATE_OPTIONS.map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}</select></label>
-          <label>Subdomain<input name="subdomain" required pattern="[a-z0-9][a-z0-9-]{1,40}" placeholder="aisha-properties" /></label>
+          <p className="form-wide form-hint">Your public address is generated securely from the website name and can be previewed before publishing.</p>
           <div className="form-actions form-wide">
             <button type="button" onClick={() => setCreating(false)}>Cancel</button>
             <button className="button button--ink" type="submit">Create website</button>
@@ -124,6 +120,7 @@ export function PartnerWebsites({ data }) {
 {!creating && !editing && (
         <section className="website-gallery">
           {websites.length ? websites.map((site) => <article key={site.id} className="website-card">
+            <div className="website-card__preview" style={{ backgroundImage: `linear-gradient(0deg, rgba(11,35,27,.25), transparent), url(${websitePreviewImage(site.kind)})` }}><span>{site.status}</span></div>
             <div>
               <strong>{site.name}</strong>
               <small>{site.kind} · {site.subdomain}.nestora.doctarx.com</small>
@@ -133,7 +130,7 @@ export function PartnerWebsites({ data }) {
               <span><BarChart3 size={15} />{site.visitsLast30Days || 0}</span>
             </div>
             <div className="website-actions">
-              <button type="button" onClick={() => setPreviewing(site)}><ExternalLink size={15} />Preview</button>
+              <a href={`/sites/${site.subdomain}`} target="_blank" rel="noreferrer"><ExternalLink size={15} />Open site</a>
               <button type="button" onClick={() => setEditing(site)}><Palette size={15} />Customize</button>
               {site.status === "published" ? <button type="button" onClick={() => unpublish(site.id)} className="website-action--danger"><XCircle size={15} />Unpublish</button> : <button type="button" onClick={() => publish(site.id)}><Globe2 size={15} />Publish</button>}
             </div>
@@ -145,7 +142,7 @@ export function PartnerWebsites({ data }) {
         <form className="website-editor" onSubmit={saveWebsite}>
           <div className="website-toolbar">
             <label>Name<input name="name" value={editing.name || ""} onChange={(e) => setEditing((d) => ({ ...d, name: e.target.value }))} required /></label>
-            <label>Subdomain<input name="subdomain" value={editing.subdomain || ""} onChange={(e) => setEditing((d) => ({ ...d, subdomain: e.target.value }))} required pattern="[a-z0-9][a-z0-9-]{1,40}" /></label>
+            <label>Public address<input value={`${editing.subdomain}.nestora.doctarx.com`} readOnly aria-readonly="true" /></label>
             <div className="studio-actions">
               <button type="button" className="button button--outline" onClick={() => publish(editing.id)}><Globe2 size={16} />Publish</button>
               <button type="button" className="button button--outline" onClick={() => { setEditing(null); setPreviewing(null); }}>Back</button>
@@ -185,4 +182,11 @@ export function PartnerWebsites({ data }) {
       )}
     </div>
   );
+}
+
+function websitePreviewImage(kind) {
+  if (kind === "developer") return "/images/nestora/katampe-residences.webp";
+  if (["hospitality", "serviced_apartments", "short_stay"].includes(kind)) return "/images/nestora/jabi-serviced-suite.webp";
+  if (kind === "agency") return "/images/nestora/hero-abuja-residence.webp";
+  return "/images/nestora/maitama-villa.webp";
 }

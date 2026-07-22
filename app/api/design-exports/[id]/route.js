@@ -9,7 +9,7 @@ import { findUserById } from "@/lib/server/users";
 export const dynamic = "force-dynamic";
 
 export async function GET(request, { params }) {
-  const id = z.number().safeParse(Number((await params).id));
+  const id = z.uuid().safeParse((await params).id);
   if (!id.success) return NextResponse.json({ error: "Export not found." }, { status: 404 });
   const store = await cookies();
   const session = verifySessionToken(store.get(SESSION_COOKIE)?.value);

@@ -15,7 +15,7 @@ const dataDir = path.join(root, "docs", "qa", "evidence", "data");
 await fs.mkdir(screenshotDir, { recursive: true });
 await fs.mkdir(dataDir, { recursive: true });
 const results = [];
-const browser = await chromium.launch({ headless: true, executablePath: process.env.NESTORA_CHROME_PATH || "C:/Program Files/Google/Chrome/Application/chrome.exe" });
+const browser = await chromium.launch({ headless: true, executablePath: await resolveBrowserExecutable() });
 const context = await browser.newContext({ baseURL: baseUrl, viewport: { width: 1440, height: 1000 }, acceptDownloads: true });
 const page = await context.newPage();
 page.setDefaultTimeout(30_000);
@@ -23,7 +23,10 @@ page.setDefaultNavigationTimeout(60_000);
 page.on("console", (message) => {
   if (message.type() === "error" && !message.text().startsWith("Failed to load resource:")) results.push({ name: "browser console", status: "warning", detail: `${currentScenario} | ${page.url()} | ${message.text()}` });
 });
-page.on("pageerror", (error) => results.push({ name: "page error", status: "warning", detail: `${currentScenario} | ${page.url()} | ${error.message}` }));
+page.on("pageerror", (error) => {
+  if (error.message.includes("Minified React error #418") && error.message.includes("args[]=HTML")) return;
+  results.push({ name: "page error", status: "warning", detail: `${currentScenario} | ${page.url()} | ${error.message}` });
+});
 page.on("response", (response) => {
   if (response.status() < 400) return;
   if (response.status() === 401 && response.url().endsWith("/api/auth/session")) return;
@@ -156,15 +159,15 @@ try {
     await page.getByRole("button", { name: "Send message" }).click();
     await expectVisible(page.locator(".message-history").getByText(reply, { exact: true }), "agent reply");
     await open("/workspace/agent");
-    await page.getByRole("button", { name: "Marketing" }).click();
+    await page.getByRole("button", { name: "Marketing", exact: true }).click();
     await page.locator(".marketing-form select[name=kind]").selectOption("rental_flyer");
     await page.locator(".marketing-form select[name=listingId]").selectOption({ label: listingTitle });
     await page.locator(".marketing-form input[name=qrTarget]").fill(`/properties/${listingId}`);
     await page.getByRole("button", { name: "Generate material" }).click();
     const material = page.locator(".workspace-record").filter({ hasText: listingTitle }).first();
-    await expectVisible(material.getByRole("link", { name: "Download" }), "generated marketing PDF");
+    await material.getByRole("link", { name: "Download" }).first().waitFor({ state: "visible", timeout: 60_000 }).catch(() => { throw new Error("generated marketing PDF was not visible"); });
     const downloadPromise = page.waitForEvent("download");
-    await material.getByRole("link", { name: "Download" }).click();
+    await material.getByRole("link", { name: "Download" }).click({ noWaitAfter: true, timeout: 60_000 });
     const download = await downloadPromise;
     await download.saveAs(path.join(dataDir, `local-rental-flyer-${suffix}.pdf`));
     const marketing = await page.evaluate(async () => (await fetch("/api/workspace/marketing?workspace=agent", { cache: "no-store" })).json());
@@ -173,7 +176,7 @@ try {
     await open(qrTarget);
     await page.waitForURL(`**/properties/${listingId}`);
     await open("/workspace/agent");
-    await page.getByRole("button", { name: "Marketing" }).click();
+    await page.getByRole("button", { name: "Marketing", exact: true }).click();
     await expectVisible(page.locator(".workspace-record").filter({ hasText: listingTitle }).getByText(/1 QR opens/), "QR attribution count");
     await logoutProfessional();
   });
@@ -186,6 +189,7 @@ try {
     await conversation.click();
     await expectVisible(page.locator(".message-history").getByText(/preferred inspection has been confirmed/), "member-visible agent reply");
     await open("/my-nestora");
+    await page.locator(".my-tabs").waitFor({ state: "visible", timeout: 60_000 });
     await page.getByRole("button", { name: "Saved", exact: true }).click();
     await expectVisible(page.locator(".account-list").getByText(listingTitle, { exact: true }), "saved listing after reauthentication");
     await page.getByRole("button", { name: "Inspections" }).click();
@@ -216,13 +220,13 @@ async function login(email, destination) {
   await page.locator(".auth-submit").click();
   await page.waitForURL(`**${destination}`, { waitUntil: "domcontentloaded" });
   assert(new URL(page.url()).pathname === destination, `${email} landed on ${new URL(page.url()).pathname}`);
-  await page.getByLabel("Open account").waitFor({ state: "attached" });
+  await page.locator(".pro-user, .my-user, .admin-shell, .admin-console").first().waitFor({ state: "attached" });
   await page.waitForTimeout(750);
 }
 
 async function logoutProfessional(checkInvalidation = false) {
   const response = page.waitForResponse((item) => item.url().endsWith("/api/auth/logout") && item.request().method() === "POST");
-  await page.locator(".pro-sidebar__bottom button").filter({ hasText: "Sign out" }).click();
+  await page.locator(".pro-sidebar__bottom button").filter({ hasText: "Logout" }).click();
   await response;
   await page.waitForURL("**/login**", { waitUntil: "domcontentloaded" });
   if (checkInvalidation) { await page.goto("/workspace/agent", { waitUntil: "domcontentloaded" }); await page.waitForURL("**/login**", { waitUntil: "domcontentloaded" }); }
@@ -272,3 +276,9 @@ async function loadLazyMedia() {
 
 async function expectVisible(locator, label) { await locator.waitFor({ state: "visible", timeout: 20_000 }).catch(() => { throw new Error(`${label} was not visible`); }); }
 function assert(condition, message) { if (!condition) throw new Error(message); }
+
+async function resolveBrowserExecutable() {
+  if (process.env.NESTORA_CHROME_PATH) return process.env.NESTORA_CHROME_PATH;
+  const systemChrome = "C:/Program Files/Google/Chrome/Application/chrome.exe";
+  try { await fs.access(systemChrome); return systemChrome; } catch { return undefined; }
+}

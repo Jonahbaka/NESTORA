@@ -6,6 +6,7 @@ docs/qa/evidence/data/local-*.pdf
 .env.local
 .env.*.local
 .data/
+.codex/
 coverage/
 *.log
 .DS_Store

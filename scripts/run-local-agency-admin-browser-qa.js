@@ -21,7 +21,7 @@ const routingRuleName = `Abuja rental routing ${suffix}`;
 let fatalError = null;
 let currentScenario = "initialization";
 
-const browser = await chromium.launch({ headless: true, executablePath: process.env.NESTORA_CHROME_PATH || "C:/Program Files/Google/Chrome/Application/chrome.exe" });
+const browser = await chromium.launch({ headless: true, executablePath: await resolveBrowserExecutable() });
 const context = await browser.newContext({ baseURL: baseUrl, viewport: { width: 1440, height: 1000 }, acceptDownloads: true });
 const page = await context.newPage();
 page.setDefaultTimeout(30_000);
@@ -174,17 +174,23 @@ async function login(email, destination) {
   await page.locator(".auth-submit").click();
   await page.waitForURL(`**${destination}`, { waitUntil: "domcontentloaded" });
   if (new URL(page.url()).pathname !== destination) throw new Error(`${email} landed on ${new URL(page.url()).pathname}`);
-  await page.getByLabel("Open account").waitFor({ state: "attached" });
+  await page.locator(".pro-user, .my-user, .admin-shell, .admin-console").first().waitFor({ state: "attached" });
   await page.waitForTimeout(750);
 }
 
 async function logoutProfessional() {
   const response = page.waitForResponse((item) => item.url().endsWith("/api/auth/logout") && item.request().method() === "POST");
-  await page.locator(".pro-sidebar__bottom button").filter({ hasText: "Sign out" }).click();
+  await page.locator(".pro-sidebar__bottom button").filter({ hasText: "Logout" }).click();
   await response;
   await page.waitForURL("**/login", { waitUntil: "domcontentloaded" });
 }
 
 async function expectVisible(locator, label) {
   await locator.waitFor({ state: "visible", timeout: 20_000 }).catch(() => { throw new Error(`${label} was not visible`); });
+}
+
+async function resolveBrowserExecutable() {
+  if (process.env.NESTORA_CHROME_PATH) return process.env.NESTORA_CHROME_PATH;
+  const systemChrome = "C:/Program Files/Google/Chrome/Application/chrome.exe";
+  try { await fs.access(systemChrome); return systemChrome; } catch { return undefined; }
 }

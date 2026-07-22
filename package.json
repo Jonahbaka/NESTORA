@@ -18,6 +18,7 @@
     "qa:marketing-qr": "node scripts/verify-marketing-qr.js",
     "qa:marketing-pdf": "node scripts/package-marketing-pdfs.js",
     "qa:commercial": "node scripts/run-commercial-qa.js",
+    "qa:browser:commercial": "node scripts/run-commercial-workspace-browser-qa.js",
     "qa:e2e": "node scripts/run-deployed-e2e.js",
     "qa:browser": "node scripts/run-local-product-browser-qa.js",
     "qa:browser:specialists": "node scripts/run-local-specialist-browser-qa.js",
@@ -41,7 +42,7 @@
     "qrcode": "^1.5.4",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "sharp": "^0.34.5",
+    "sharp": "^0.35.3",
     "tailwind-merge": "^3.4.0",
     "three": "^0.183.2",
     "zod": "^4.3.6"
@@ -58,6 +59,7 @@
   "overrides": {
     "next": {
       "postcss": "8.5.10"
-    }
+    },
+    "sharp": "$sharp"
   }
 }
