@@ -2,16 +2,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, Building2, CalendarCheck2, ChevronRight, KeyRound, MessageCircle, ShieldCheck, Sparkles, UsersRound } from "lucide-react";
 import { HomeStoryFilm } from "@/components/home-story-film";
+import { PropertyMediaHome } from "@/components/property-media-home";
 import { PropertyCard } from "@/components/property-card";
 import { SearchBar } from "@/components/search-bar";
 import { SectionHeading } from "@/components/section-heading";
 import { areas } from "@/lib/site-content";
 import { listPublicListings } from "@/lib/server/public-listings";
+import { getPropertyMediaConfiguration } from "@/lib/server/property-media-services";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const properties = await listPublicListings({ limit: 4 });
+  const [properties, propertyMedia] = await Promise.all([listPublicListings({ limit: 4 }), getPropertyMediaConfiguration()]);
   return (
     <>
       <section className="home-hero" aria-labelledby="home-heading">
@@ -26,6 +28,8 @@ export default async function HomePage() {
         <SectionHeading eyebrow="Current Abuja listings" title="Places worth opening" copy="Only active inventory reviewed for public publication appears here." href="/search" action="Explore all" />
         {properties.length ? <div className="property-grid">{properties.map((property, index) => <PropertyCard key={property.id} property={property} priority={index < 2} />)}</div> : <div className="marketplace-empty"><div><ShieldCheck size={25} /><p className="eyebrow">Publication review in progress</p><h2>No verified listings are public right now.</h2><p>New inventory appears here after ownership, media and publication checks are complete.</p></div><Link href="/workspace" className="button button--ink">Manage a property <ArrowRight size={17} /></Link></div>}
       </section>
+
+      <PropertyMediaHome configuration={propertyMedia} />
 
       <HomeStoryFilm />
 

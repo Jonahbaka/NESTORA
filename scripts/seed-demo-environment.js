@@ -210,6 +210,24 @@ try {
     ["whatsapp-status", "WhatsApp listing status", "whatsapp_status", 360, 640, "#153E35", "#70C1A3", "/images/nestora/wuye-apartment.webp", "AVAILABLE THIS WEEK"],
     ["carousel-cover", "Listing carousel cover", "social_square", 500, 500, "#232323", "#E4BA69", "/images/nestora/asokoro-rooftop.webp", "5 REASONS TO LOOK CLOSER"],
   ];
+  const premiumVariants = [
+    ["editorial-listing", "Editorial listing", "sale_brochure", "#24352F", "#D5AA72", "/images/nestora/maitama-villa.webp", "A HOME OF NOTE"],
+    ["rental-launch", "Rental launch", "rental_flyer", "#153B50", "#F4A261", "/images/nestora/wuye-apartment.webp", "AVAILABLE NOW"],
+    ["open-house-story", "Open house story", "social_story", "#402A32", "#F2C572", "/images/nestora/guzape-duplex.webp", "VIEW THIS SATURDAY"],
+    ["agent-market-note", "Agent market note", "linkedin_post", "#123B33", "#E76F51", "/images/nestora/amina-bello-agent.webp", "MARKET INTELLIGENCE"],
+    ["agency-quarterly", "Agency quarterly report", "agency_brochure", "#102A43", "#D4A72C", "/images/nestora/hero-abuja-residence.webp", "QUARTERLY REVIEW"],
+    ["development-launch-story", "Development launch story", "social_story", "#20231F", "#B78A52", "/images/nestora/katampe-residences.webp", "THE NEXT CHAPTER"],
+    ["investor-linkedin", "Investor LinkedIn post", "linkedin_post", "#111827", "#C99B43", "/images/nestora/asokoro-rooftop.webp", "INVESTMENT OUTLOOK"],
+    ["hotel-social-story", "Hotel social story", "social_story", "#4A3028", "#D97B59", "/images/nestora/jabi-serviced-suite.webp", "YOUR WEEKEND AWAITS"],
+    ["stay-email-header", "Stay email header", "email_header", "#50372F", "#F2B880", "/images/nestora/abuja-weekend-retreat.webp", "STAY A LITTLE LONGER"],
+    ["property-youtube", "Property video thumbnail", "youtube_thumbnail", "#17231F", "#E98D7E", "/images/nestora/maitama-villa.webp", "INSIDE MAITAMA"],
+    ["digital-window-card", "Digital window card", "digital_sign", "#173B31", "#F2C572", "/images/nestora/guzape-duplex.webp", "NOW SHOWING"],
+    ["valuation-guide", "Valuation guide", "agency_brochure", "#243B53", "#9FB3C8", "/images/nestora/jabi-community.webp", "VALUE WITH CONTEXT"],
+  ];
+  for (const variant of premiumVariants) {
+    templateSpecs.push([`${variant[0]}-portrait`, `${variant[1]} · Portrait`, variant[2], 400, 600, variant[3], variant[4], variant[5], variant[6]]);
+    templateSpecs.push([`${variant[0]}-landscape`, `${variant[1]} · Landscape`, variant[2], 800, 500, variant[3], variant[4], variant[5], variant[6]]);
+  }
   for (const spec of templateSpecs) await upsertDesign({ externalKey: `demo-template-${spec[0]}`, owner: users.admin, org: null, brandKitId: null, name: spec[1], kind: spec[2], width: spec[3], height: spec[4], elements: demoDesignElements(spec[3], spec[4], spec[5], spec[6], spec[7], spec[8]), bindings: { listingTitle: "listing.title", price: "listing.price", address: "listing.location", qrTarget: "listing.url" }, isTemplate: true, approved: true, status: "completed" });
 
   await upsertDesign({ externalKey: "demo-design-agent-katampe", owner: users.agent, org: organizations.agency, brandKitId: brandKits.agent, name: "Katampe Court Residences — Premium Listing Flyer", kind: "sale_brochure", width: 595, height: 842, elements: demoDesignElements(595, 842, "#123B33", "#E76F51", "/images/nestora/katampe-residences.webp", "₦245,000,000 · KATAMPE"), bindings: { listingId: "katampe-court-residences", agent: "Amina Bello", qrTarget: "/properties/katampe-court-residences" }, status: "draft" });
@@ -324,11 +342,11 @@ async function profile(userId, organizationId, slug, headline, biography, servic
 
 async function upsertBrandKit(kit) {
   return upsertOne(
-    `INSERT INTO brand_kits (external_key, owner_user_id, organization_id, name, is_organization_kit, brand_colors, fonts, contact_footer, website_url, social_handles, disclaimer, default_qr_style, approved_images)
-     VALUES ($1, $2, $3, $4, TRUE, $5::jsonb, $6::jsonb, $7, $8, $9::jsonb, $10, $11, $12::jsonb)
-     ON CONFLICT (external_key) DO UPDATE SET owner_user_id = EXCLUDED.owner_user_id, organization_id = EXCLUDED.organization_id, name = EXCLUDED.name, brand_colors = EXCLUDED.brand_colors, fonts = EXCLUDED.fonts, contact_footer = EXCLUDED.contact_footer, website_url = EXCLUDED.website_url, social_handles = EXCLUDED.social_handles, disclaimer = EXCLUDED.disclaimer, default_qr_style = EXCLUDED.default_qr_style, approved_images = EXCLUDED.approved_images, updated_at = NOW()
+    `INSERT INTO brand_kits (external_key, owner_user_id, organization_id, name, is_organization_kit, brand_colors, fonts, contact_footer, website_url, social_handles, disclaimer, default_qr_style, approved_images, brand_system)
+     VALUES ($1, $2, $3, $4, TRUE, $5::jsonb, $6::jsonb, $7, $8, $9::jsonb, $10, $11, $12::jsonb, $13::jsonb)
+     ON CONFLICT (external_key) DO UPDATE SET owner_user_id = EXCLUDED.owner_user_id, organization_id = EXCLUDED.organization_id, name = EXCLUDED.name, brand_colors = EXCLUDED.brand_colors, fonts = EXCLUDED.fonts, contact_footer = EXCLUDED.contact_footer, website_url = EXCLUDED.website_url, social_handles = EXCLUDED.social_handles, disclaimer = EXCLUDED.disclaimer, default_qr_style = EXCLUDED.default_qr_style, approved_images = EXCLUDED.approved_images, brand_system = EXCLUDED.brand_system, updated_at = NOW()
      RETURNING id`,
-    [kit.externalKey, kit.owner, kit.org, kit.name, JSON.stringify(kit.colors), JSON.stringify(kit.fonts), kit.footer, kit.website, JSON.stringify(kit.social), kit.disclaimer, kit.qr, JSON.stringify(kit.logos || [])],
+    [kit.externalKey, kit.owner, kit.org, kit.name, JSON.stringify(kit.colors), JSON.stringify(kit.fonts), kit.footer, kit.website, JSON.stringify(kit.social), kit.disclaimer, kit.qr, JSON.stringify(kit.logos || []), JSON.stringify(kit.system || { tagline: kit.name, positioning: "A coherent property brand across website, listing, social and print.", voice: "Clear, credible and human", logoUsage: "Use approved marks with generous clear space.", photographyDirection: "Authentic light, honest space and local context.", typographyScale: { display: "64/68", heading: "36/42", body: "16/26" } })],
   );
 }
 
@@ -344,11 +362,11 @@ async function upsertDesign(design) {
 
 async function upsertWebsite(site) {
   return upsertOne(
-    `INSERT INTO partner_websites (external_key, owner_user_id, organization_id, kind, template_id, brand_kit_id, name, slug, subdomain, status, sections, theme, contact, seo, published_at)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $8, 'published', $9::jsonb, $10::jsonb, $11::jsonb, $12::jsonb, NOW())
-     ON CONFLICT (external_key) DO UPDATE SET owner_user_id = EXCLUDED.owner_user_id, organization_id = EXCLUDED.organization_id, kind = EXCLUDED.kind, template_id = EXCLUDED.template_id, brand_kit_id = EXCLUDED.brand_kit_id, name = EXCLUDED.name, slug = EXCLUDED.slug, subdomain = EXCLUDED.subdomain, status = 'published', sections = EXCLUDED.sections, theme = EXCLUDED.theme, contact = EXCLUDED.contact, seo = EXCLUDED.seo, published_at = COALESCE(partner_websites.published_at, NOW()), updated_at = NOW()
+    `INSERT INTO partner_websites (external_key, owner_user_id, organization_id, kind, template_id, brand_kit_id, name, slug, subdomain, status, sections, theme, contact, seo, content, navigation, published_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $8, 'published', $9::jsonb, $10::jsonb, $11::jsonb, $12::jsonb, $13::jsonb, $14::jsonb, NOW())
+     ON CONFLICT (external_key) DO UPDATE SET owner_user_id = EXCLUDED.owner_user_id, organization_id = EXCLUDED.organization_id, kind = EXCLUDED.kind, template_id = EXCLUDED.template_id, brand_kit_id = EXCLUDED.brand_kit_id, name = EXCLUDED.name, slug = EXCLUDED.slug, subdomain = EXCLUDED.subdomain, status = 'published', sections = EXCLUDED.sections, theme = EXCLUDED.theme, contact = EXCLUDED.contact, seo = EXCLUDED.seo, content = EXCLUDED.content, navigation = EXCLUDED.navigation, published_at = COALESCE(partner_websites.published_at, NOW()), updated_at = NOW()
      RETURNING id`,
-    [site.externalKey, site.owner, site.org, site.kind, site.template, site.brandKitId, site.name, site.slug, JSON.stringify(site.sections), JSON.stringify(site.theme), JSON.stringify(site.contact), JSON.stringify({ title: site.name, description: site.theme.tagline })],
+    [site.externalKey, site.owner, site.org, site.kind, site.template, site.brandKitId, site.name, site.slug, JSON.stringify(site.sections.map((section) => section === "featured" ? "featured_listings" : section === "social" ? "social_links" : section)), JSON.stringify(site.theme), JSON.stringify(site.contact), JSON.stringify({ title: site.name, description: site.theme.tagline }), JSON.stringify({ eyebrow: site.kind === "developer" ? "A new Abuja landmark" : site.kind === "hospitality" ? "Stay beautifully" : "Property expertise, made personal", heroTitle: site.theme.tagline, heroCopy: site.kind === "developer" ? "Explore considered residences, live availability and a transparent construction story." : site.kind === "hospitality" ? "Warm rooms, thoughtful service and an easy base beside the city." : "A focused collection and a clearer path from enquiry to confident decision.", aboutTitle: site.kind === "agency" ? "A connected team with uncommon local depth." : "Property decisions deserve uncommon clarity.", collectionTitle: site.kind === "developer" ? "Residences designed for how Abuja lives." : site.kind === "hospitality" ? "A stay for every rhythm." : "Homes with a reason to look closer." }), JSON.stringify([{ id: "home", label: "Home", visible: true }, { id: "portfolio", label: site.kind === "developer" ? "Developments" : site.kind === "hospitality" ? "Rooms & stays" : "Properties", visible: true }, { id: "about", label: "About", visible: true }, { id: "services", label: "Services", visible: true }, { id: "contact", label: "Contact", visible: true }])],
   );
 }
 

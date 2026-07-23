@@ -1,10 +1,10 @@
 "use client";
 
-import { AlertTriangle, BarChart3, Building2, Check, CircleDollarSign, FileSearch, Flag, LayoutDashboard, RefreshCw, Search, ShieldCheck, UserCheck, UsersRound } from "lucide-react";
+import { AlertTriangle, BarChart3, Building2, Camera, Check, CircleDollarSign, FileSearch, Flag, LayoutDashboard, RefreshCw, Search, ShieldCheck, UserCheck, UsersRound } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNestora } from "@/components/providers";
 
-const sections = [["Overview", "overview", LayoutDashboard], ["Listing approval", "pendingListings", Building2], ["Listing reports", "reports", Flag], ["Message safety", "conversationReports", UsersRound], ["Verification", "verifications", UserCheck], ["User access", "users", UsersRound], ["Plans", "subscriptions", CircleDollarSign], ["Incidents", "incidents", AlertTriangle], ["Audit log", "auditEvents", BarChart3]];
+const sections = [["Overview", "overview", LayoutDashboard], ["Media production", "propertyMedia", Camera], ["Listing approval", "pendingListings", Building2], ["Listing reports", "reports", Flag], ["Message safety", "conversationReports", UsersRound], ["Verification", "verifications", UserCheck], ["User access", "users", UsersRound], ["Plans", "subscriptions", CircleDollarSign], ["Incidents", "incidents", AlertTriangle], ["Audit log", "auditEvents", BarChart3]];
 
 export function AdminConsole() {
   const [section, setSection] = useState("overview");
@@ -19,16 +19,20 @@ export function AdminConsole() {
   const load = useCallback(async () => {
     setLoading(true); setError("");
     try {
-      const response = await fetch("/api/workspace/admin", { cache: "no-store" });
-      const payload = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(payload.error || "Administration data could not be loaded.");
-      setData(payload);
+      const [adminResponse, mediaResponse, pricingResponse] = await Promise.all([
+        fetch("/api/workspace/admin", { cache: "no-store" }),
+        fetch("/api/property-media/operations", { cache: "no-store" }),
+        fetch("/api/property-media/config", { cache: "no-store" }),
+      ]);
+      const [payload, mediaPayload, pricingPayload] = await Promise.all([adminResponse.json().catch(() => ({})), mediaResponse.json().catch(() => ({})), pricingResponse.json().catch(() => ({}))]);
+      if (!adminResponse.ok) throw new Error(payload.error || "Administration data could not be loaded.");
+      setData({ ...payload, propertyMedia: mediaResponse.ok ? mediaPayload.bookings || [] : [], propertyMediaError: mediaResponse.ok ? "" : mediaPayload.error, propertyMediaPricing: pricingResponse.ok ? pricingPayload : null });
     } catch (loadError) { setError(loadError.message); }
     finally { setLoading(false); }
   }, []);
   useEffect(() => { load(); }, [load]);
 
-  const counts = { pendingListings: data?.pendingListings?.filter((item) => item.verification_status === "pending").length || 0, reports: data?.reports?.filter(openItem).length || 0, conversationReports: data?.conversationReports?.filter(openItem).length || 0, verifications: data?.verifications?.filter((item) => item.status === "submitted").length || 0, users: data?.users?.filter((item) => item.status === "suspended").length || 0, incidents: data?.incidents?.filter((item) => !item.resolved_at).length || 0 };
+  const counts = { propertyMedia: data?.propertyMedia?.filter((item) => !["delivered","cancelled"].includes(item.status)).length || 0, pendingListings: data?.pendingListings?.filter((item) => item.verification_status === "pending").length || 0, reports: data?.reports?.filter(openItem).length || 0, conversationReports: data?.conversationReports?.filter(openItem).length || 0, verifications: data?.verifications?.filter((item) => item.status === "submitted").length || 0, users: data?.users?.filter((item) => item.status === "suspended").length || 0, incidents: data?.incidents?.filter((item) => !item.resolved_at).length || 0 };
   const rows = useMemo(() => section === "overview" ? [] : (data?.[section] || []).filter((item) => JSON.stringify(item).toLowerCase().includes(query.toLowerCase())), [data, query, section]);
   function chooseSection(value) { setSection(value); setSelected(null); }
   function showNotice(message) { setNotice(message); window.setTimeout(() => setNotice(""), 2300); }
@@ -40,10 +44,57 @@ function AdminOverview({ counts, data }) { return <><section className="admin-me
 function Metric({ icon: Icon, label, value, detail }) { return <article><span><Icon size={18} /></span><div><small>{label}</small><strong>{value}</strong></div><em>{detail}</em></article>; }
 
 function AdminQueue({ section, rows, data, selected, setSelected, reload, notify }) {
+  if (section === "propertyMedia") return <PropertyMediaAdmin data={data} rows={rows} reload={reload} notify={notify} />;
   if (section === "subscriptions") return <SubscriptionAdmin data={data} rows={rows} reload={reload} notify={notify} />;
   if (section === "auditEvents") return <section className="audit-list workspace-panel">{rows.map((item) => <article key={item.id}><span>{item.action}</span><strong>{item.target_type} · {item.target_id}</strong><small>{item.actor_name || "System"} · {formatDateTime(item.created_at)}</small></article>)}</section>;
   if (section === "incidents") return <section className="audit-list workspace-panel">{rows.map((item) => <article key={item.id}><span className={`incident-${item.level}`}>{item.level}</span><strong>{item.source} · {item.event_key}</strong><p>{item.message}</p><small>{formatDateTime(item.created_at)}</small>{!item.resolved_at ? <button type="button" onClick={() => resolveIncident(item.id, reload, notify)}>Resolve</button> : <em>Resolved</em>}</article>)}</section>;
   return <div className="admin-grid"><section className="review-queue"><div className="panel-heading"><div><h2>Review queue</h2><p>{rows.length} records in this view.</p></div></div><header><span>Record</span><span>Subject</span><span>Status</span><span>Created</span><span>Owner</span></header>{rows.map((item) => <button type="button" key={item.id} className={selected?.id === item.id ? "active" : ""} onClick={() => setSelected(item)}><span>{String(item.external_key || item.id).slice(0,12)}</span><span><b>{subjectFor(section, item)}</b><small>{item.reason || item.kind || item.location || item.email}</small></span><span><em className={`risk risk--${riskFor(statusFor(section, item))}`}>{statusFor(section, item)}</em></span><span>{formatDateTime(item.created_at)}</span><span>{item.assignee_name || item.reviewer_name || item.owner_name || item.role || "Unassigned"}</span></button>)}</section><aside className="case-panel">{selected ? <DecisionPanel section={section} item={selected} reload={reload} notify={notify} clear={() => setSelected(null)} /> : <div className="empty-state"><FileSearch size={28} /><h2>Select a record</h2><p>Review its context and record a reasoned decision.</p></div>}</aside></div>;
+}
+
+function PropertyMediaAdmin({ data, rows, reload, notify }) {
+  const [tab, setTab] = useState("jobs");
+  async function updateJob(item, event) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const response = await fetch("/api/property-media/operations", {
+      method: "PATCH", headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        action: "update", bookingId: item.id, status: form.get("status"), paymentStatus: form.get("paymentStatus"),
+        staffAssignment: form.get("staffAssignment"), photographerAssignment: form.get("photographerAssignment"),
+        droneOperatorAssignment: form.get("droneOperatorAssignment"),
+        equipmentRequirements: String(form.get("equipmentRequirements") || "").split(",").map((value) => value.trim()).filter(Boolean),
+        scheduledAt: form.get("scheduledAt") ? new Date(form.get("scheduledAt")).toISOString() : "",
+        productionNotes: form.get("productionNotes"),
+        revisionRequests: String(form.get("revisionRequests") || "").split("\n").map((value) => value.trim()).filter(Boolean),
+      }),
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) { notify(payload.error || "Production job could not be updated."); return; }
+    notify("Production job and audit trail updated."); await reload();
+  }
+  async function savePricing(event) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const config = data.propertyMediaPricing;
+    const packagePrices = Object.fromEntries(config.pricing.packages.map((item) => [item.id, Number(form.get(`package-${item.id}`))]));
+    const extraPrices = Object.fromEntries(config.pricing.extras.filter((item) => item.priceNgn != null).map((item) => [item.id, Number(form.get(`extra-${item.id}`))]));
+    const serviceMedia = Object.fromEntries(["team","interior","drone"].map((key) => [key, { src: form.get(`${key}Src`), alt: form.get(`${key}Alt`) }]));
+    const response = await fetch("/api/property-media/config", {
+      method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        depositPercent: Number(form.get("depositPercent")), taxMode: form.get("taxMode"),
+        taxRatePercent: Number(form.get("taxRatePercent")), taxLabel: form.get("taxLabel"),
+        includedRadiusKm: Number(form.get("includedRadiusKm")), additionalKmRateNgn: Number(form.get("additionalKmRateNgn")),
+        hostingRenewalNgn: Number(form.get("hostingRenewalNgn")), packagePrices, extraPrices, serviceMedia,
+      }),
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) { notify(payload.error || "Pricing could not be updated."); return; }
+    notify("Authoritative public pricing and service media updated."); await reload();
+  }
+  if (data.propertyMediaError) return <AdminState icon={AlertTriangle} title="Media operations unavailable" copy={data.propertyMediaError} action={reload} />;
+  const pricing = data.propertyMediaPricing?.pricing;
+  return <div className="media-admin"><div className="media-admin__tabs"><button type="button" className={tab === "jobs" ? "active" : ""} onClick={() => setTab("jobs")}>Production jobs ({rows.length})</button><button type="button" className={tab === "pricing" ? "active" : ""} onClick={() => setTab("pricing")}>Pricing & service media</button></div>{tab === "jobs" ? <div className="media-admin__jobs">{rows.length ? rows.map((item) => <form className="workspace-panel media-job" onSubmit={(event) => updateJob(item, event)} key={item.id}><header><div><span>{item.booking_reference}</span><h2>{item.estimate?.package?.name || humanize(item.package_id)}</h2><p>{item.customer_name} · {item.property_type} · {item.property_address}</p></div><strong>{formatNairaAdmin(item.estimate?.totalNgn || 0)}</strong></header><dl><div><dt>Preferred</dt><dd>{formatDateTime(item.preferred_date)}</dd></div><div><dt>Deposit</dt><dd>{formatNairaAdmin(item.estimate?.deposit?.amountNgn || 0)}</dd></div><div><dt>Listing</dt><dd>{item.listing_title || "Not connected"}</dd></div><div><dt>Requester</dt><dd>{item.requester_name || item.customer_email}</dd></div></dl><div className="workspace-form"><label>Status<select name="status" defaultValue={item.status}>{["requested","quote_pending","awaiting_deposit","confirmed","scheduled","capture_completed","editing","ready_for_review","delivered","cancelled"].map((value) => <option value={value} key={value}>{humanize(value)}</option>)}</select></label><label>Payment<select name="paymentStatus" defaultValue={item.payment_status}>{["unpaid","deposit_pending","deposit_paid","paid","refunded","failed"].map((value) => <option value={value} key={value}>{humanize(value)}</option>)}</select></label><label>Schedule<input name="scheduledAt" type="datetime-local" defaultValue={localDateTime(item.scheduled_at)} /></label><label>Crew lead<input name="staffAssignment" defaultValue={item.staff_assignment || ""} /></label><label>Photographer<input name="photographerAssignment" defaultValue={item.photographer_assignment || ""} /></label><label>Drone operator<input name="droneOperatorAssignment" defaultValue={item.drone_operator_assignment || ""} /></label><label className="form-wide">Equipment requirements<input name="equipmentRequirements" defaultValue={(item.equipment_requirements || []).join(", ")} placeholder="Full-frame camera, 360 camera, lighting kit" /></label><label className="form-wide">Private production notes<textarea name="productionNotes" defaultValue={item.production_notes || ""} /></label><label className="form-wide">Revision requests, one per line<textarea name="revisionRequests" defaultValue={(item.revision_requests || []).join("\n")} /></label><div className="form-actions form-wide"><button className="button button--ink" type="submit">Save production job</button></div></div></form>) : <AdminState icon={Camera} title="No production jobs" copy="New property-media bookings will appear here." />}</div> : pricing ? <form className="workspace-panel media-pricing-editor" onSubmit={savePricing}><header><div><p className="eyebrow">Authoritative configuration</p><h2>Public package prices and production policy</h2></div><button className="button button--ink" type="submit">Publish pricing</button></header><div className="media-price-fields">{pricing.packages.map((item) => <label key={item.id}>{item.name}<input name={`package-${item.id}`} type="number" min="0" defaultValue={item.priceNgn} /><small>{item.startingFrom ? "Starting-from price" : "Published fixed price"}</small></label>)}</div><h3>Extras</h3><div className="media-price-fields">{pricing.extras.filter((item) => item.priceNgn != null).map((item) => <label key={item.id}>{item.name}<input name={`extra-${item.id}`} type="number" min="0" defaultValue={item.priceNgn} /></label>)}</div><h3>Policy controls</h3><div className="workspace-form"><label>Deposit %<input name="depositPercent" type="number" min="0" max="100" defaultValue={pricing.depositPercent} /></label><label>Tax mode<select name="taxMode" defaultValue={pricing.taxMode}><option value="exclusive">Exclusive</option><option value="inclusive">Inclusive</option></select></label><label>Tax rate %<input name="taxRatePercent" type="number" min="0" max="100" defaultValue={pricing.taxRatePercent} /></label><label>Included radius km<input name="includedRadiusKm" type="number" min="0" defaultValue={pricing.includedRadiusKm} /></label><label>Additional km rate NGN<input name="additionalKmRateNgn" type="number" min="0" defaultValue={pricing.additionalKmRateNgn} /></label><label>Annual 360 hosting NGN<input name="hostingRenewalNgn" type="number" min="0" defaultValue={pricing.hostingRenewalNgn} /></label><label className="form-wide">Tax disclosure<input name="taxLabel" minLength={5} defaultValue={pricing.taxLabel} /></label></div><h3>Admin-replaceable service visuals</h3><div className="workspace-form">{["team","interior","drone"].flatMap((key) => [<label key={`${key}-src`}>{humanize(key)} image path<input name={`${key}Src`} required defaultValue={data.propertyMediaPricing.serviceMedia[key].src} /></label>,<label key={`${key}-alt`}>{humanize(key)} accessible description<input name={`${key}Alt`} required minLength={12} defaultValue={data.propertyMediaPricing.serviceMedia[key].alt} /></label>])}</div></form> : <AdminState icon={RefreshCw} title="Pricing unavailable" copy="The authoritative pricing configuration could not be loaded." action={reload} />}</div>;
 }
 
 function DecisionPanel({ section, item, reload, notify, clear }) {
@@ -83,3 +134,5 @@ function openItem(item) { return item.status === "open" || item.status === "inve
 function initials(name = "NA") { return name.split(/\s+/).slice(0,2).map((part) => part[0]).join("").toUpperCase(); }
 function humanize(value) { return String(value || "").replaceAll("-", " ").replaceAll("_", " ").replace(/^./, (letter) => letter.toUpperCase()); }
 function formatDateTime(value) { return value ? new Date(value).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }) : ""; }
+function formatNairaAdmin(value) { return new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 0 }).format(Number(value || 0)); }
+function localDateTime(value) { if (!value) return ""; const date = new Date(value); const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000); return local.toISOString().slice(0, 16); }

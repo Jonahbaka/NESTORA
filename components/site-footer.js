@@ -5,7 +5,7 @@ import { Brand } from "@/components/brand";
 const columns = [
   { title: "Discover", links: [["Stays", "/search?mode=stay"], ["Homes to rent", "/search?mode=rent"], ["Homes to buy", "/search?mode=buy"], ["New developments", "/search?mode=new"]] },
   { title: "Nestora", links: [["Nora guide", "/nora"], ["Trust & safety", "/trust"], ["Help centre", "/help"], ["Contact", "mailto:jonahbaka00@gmail.com"]] },
-  { title: "Professionals", links: [["Plans and pricing", "/pricing"], ["All workspaces", "/workspace"], ["Agent workspace", "/workspace/agent"], ["Host workspace", "/workspace/host"], ["Developer workspace", "/workspace/developer"], ["Agency workspace", "/workspace/agency"]] },
+  { title: "Professionals", links: [["Property photography", "/services/property-media"], ["Media packages and pricing", "/services/property-media#pricing"], ["Plans and pricing", "/pricing"], ["All workspaces", "/workspace"], ["Agent workspace", "/workspace/agent"], ["Host workspace", "/workspace/host"], ["Developer workspace", "/workspace/developer"], ["Agency workspace", "/workspace/agency"]] },
 ];
 
 export function SiteFooter() {

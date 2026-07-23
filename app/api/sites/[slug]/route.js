@@ -11,5 +11,5 @@ export async function GET(request, { params }) {
   }
   const website = await getPartnerWebsiteBySubdomain(normalized);
   if (!website || website.status !== "published") return NextResponse.json({ error: "Site not found." }, { status: 404 });
-  return NextResponse.json({ site: { id: website.id, externalKey: website.external_key, kind: website.template_id || "professional", name: website.name, subdomain: website.subdomain, status: website.status, configuration: { sections: website.sections || [], theme: website.theme || {}, contact: website.contact || {}, seo: website.seo || {}, brand: { ...(website.theme || {}), ...(website.contact || {}) } } } });
+  return NextResponse.json({ site: { id: website.id, externalKey: website.external_key, kind: website.kind || website.template_id || "agent", name: website.name, subdomain: website.subdomain, status: website.status, configuration: { sections: website.sections || [], theme: website.theme || {}, contact: website.contact || {}, seo: website.seo || {}, content: website.content || {}, navigation: website.navigation || [], brand: { ...(website.theme || {}), ...(website.contact || {}) } } } });
 }

@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-export const migrationFiles = ["001_core.sql", "002_member_activity.sql", "003_commercial_operations.sql", "004_production_operations.sql", "005_agent_product_foundations.sql", "006_listing_tours_and_attribution.sql", "007_hotel_listing_inventory.sql", "008_durable_actor_deletion.sql", "009_professional_membership.sql", "010_commercial_studio_demos.sql"];
+export const migrationFiles = ["001_core.sql", "002_member_activity.sql", "003_commercial_operations.sql", "004_production_operations.sql", "005_agent_product_foundations.sql", "006_listing_tours_and_attribution.sql", "007_hotel_listing_inventory.sql", "008_durable_actor_deletion.sql", "009_professional_membership.sql", "010_commercial_studio_demos.sql", "011_premium_property_media.sql"];
 export const skippedInMemoryMigrations = new Set(["007_hotel_listing_inventory.sql"]);
 
 export async function createLocalQaDatabase(root = path.resolve(__dirname, "..", "..")) {

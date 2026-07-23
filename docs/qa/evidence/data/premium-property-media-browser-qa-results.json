@@ -1,0 +1,34 @@
+{
+  "generatedAt": "2026-07-23T17:28:41.674Z",
+  "baseURL": "http://localhost:3040",
+  "results": [
+    {
+      "name": "public photography, pricing and genuine WebGL 360 experience",
+      "status": "pass",
+      "durationMs": 10051
+    },
+    {
+      "name": "agent premium media, Studio, Brand Kit, templates and website editor",
+      "status": "pass",
+      "durationMs": 9627
+    },
+    {
+      "name": "admin media operations and authoritative pricing editor",
+      "status": "pass",
+      "durationMs": 5395
+    }
+  ],
+  "failures": [],
+  "verified": [
+    "real Three.js WebGL context",
+    "eight authoritative packages",
+    "server estimate",
+    "prominent multi-upload workflow",
+    "Studio delivered-media library",
+    "multi-page Studio",
+    "50+ templates",
+    "full Brand Kit preview",
+    "multi-page website editor",
+    "admin pricing"
+  ]
+}

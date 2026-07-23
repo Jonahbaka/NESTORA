@@ -14,12 +14,16 @@ const TEMPLATE_OPTIONS = [
 const SECTION_OPTIONS = [
   { id: "hero", label: "Hero banner" },
   { id: "about", label: "About" },
-  { id: "featured", label: "Featured properties" },
+  { id: "featured_listings", label: "Featured properties" },
   { id: "developments", label: "Developments" },
   { id: "available_units", label: "Available units" },
   { id: "rooms_stays", label: "Rooms and stays" },
   { id: "amenities", label: "Amenities" },
   { id: "team", label: "Team" },
+  { id: "areas_served", label: "Areas served" },
+  { id: "testimonials", label: "Testimonials" },
+  { id: "construction_updates", label: "Construction updates" },
+  { id: "gallery", label: "Gallery" },
   { id: "contact", label: "Contact and enquiry" },
   { id: "social", label: "Social links" },
 ];
@@ -64,10 +68,12 @@ export function PartnerWebsites({ data, reload }) {
       name: formData.get("name"),
       kind: formData.get("kind"),
       templateId: formData.get("templateId"),
-      sections: ["hero", "about", "featured_listings", "contact", "social_links"],
-      theme: {},
+      sections: defaultSiteSections(formData.get("kind")),
+      theme: { primaryColor: "#173b31", accentColor: "#e98d7e", headingFont: "Georgia, serif", fontFamily: "Inter, sans-serif", heroImage: websitePreviewImage(formData.get("kind")) },
       contact: {},
-      seo: {},
+      seo: { title: formData.get("name"), description: "Verified professional property services and current opportunities." },
+      content: { heroTitle: formData.get("name"), heroCopy: "Local property expertise, presented with clarity.", aboutTitle: "Property decisions deserve uncommon clarity." },
+      navigation: defaultSiteNavigation(formData.get("kind")),
     }, "Website created.");
     if (result?.website) { setCreating(false); setWebsites((current) => [result.website, ...current]); }
   }
@@ -77,7 +83,11 @@ export function PartnerWebsites({ data, reload }) {
     if (!editing) return;
     const form = event.currentTarget;
     const formData = new FormData(form);
-    const result = await performWrite({ action: "update", websiteId: editing.id, name: formData.get("name"), templateId: editing.configuration?.templateId || "professional", brandKitId: editing.configuration?.brandKitId || null, sections: formData.getAll("sections"), theme: editing.configuration?.theme || {}, contact: editing.configuration?.contact || {}, seo: editing.configuration?.seo || {} }, "Site saved.");
+    const content = { ...(editing.configuration?.content || {}), heroTitle: formData.get("heroTitle"), heroCopy: formData.get("heroCopy"), aboutTitle: formData.get("aboutTitle"), aboutCopy: formData.get("aboutCopy"), collectionTitle: formData.get("collectionTitle"), servicesTitle: formData.get("servicesTitle"), contactTitle: formData.get("contactTitle") };
+    const theme = { ...(editing.configuration?.theme || {}), primaryColor: formData.get("primaryColor"), accentColor: formData.get("accentColor"), headingFont: formData.get("headingFont"), fontFamily: formData.get("bodyFont"), heroImage: formData.get("heroImage") };
+    const contact = { ...(editing.configuration?.contact || {}), email: formData.get("email"), phone: formData.get("phone"), address: formData.get("address") };
+    const seo = { ...(editing.configuration?.seo || {}), title: formData.get("seoTitle"), description: formData.get("seoDescription") };
+    const result = await performWrite({ action: "update", websiteId: editing.id, name: formData.get("name"), templateId: editing.configuration?.templateId || "professional", brandKitId: editing.configuration?.brandKitId || null, sections: formData.getAll("sections"), theme, contact, seo, content, navigation: editing.configuration?.navigation?.length ? editing.configuration.navigation : defaultSiteNavigation(editing.kind) }, "Site saved.");
     if (result?.website) setEditing(result.website);
   }
 
@@ -165,6 +175,13 @@ export function PartnerWebsites({ data, reload }) {
               })}
             </div>
           </div>
+          <div className="website-editor-grid">
+            <section><h3>Identity & theme</h3><label>Primary colour<input name="primaryColor" type="color" value={editing.configuration?.theme?.primaryColor || "#173b31"} onChange={(e) => updateEditingConfig(setEditing, "theme", "primaryColor", e.target.value)} /></label><label>Accent colour<input name="accentColor" type="color" value={editing.configuration?.theme?.accentColor || "#e98d7e"} onChange={(e) => updateEditingConfig(setEditing, "theme", "accentColor", e.target.value)} /></label><label>Heading font<input name="headingFont" value={editing.configuration?.theme?.headingFont || "Georgia, serif"} onChange={(e) => updateEditingConfig(setEditing, "theme", "headingFont", e.target.value)} /></label><label>Body font<input name="bodyFont" value={editing.configuration?.theme?.fontFamily || "Inter, sans-serif"} onChange={(e) => updateEditingConfig(setEditing, "theme", "fontFamily", e.target.value)} /></label><label>Hero image path<input name="heroImage" value={editing.configuration?.theme?.heroImage || websitePreviewImage(editing.kind)} onChange={(e) => updateEditingConfig(setEditing, "theme", "heroImage", e.target.value)} /></label></section>
+            <section><h3>Page navigation</h3>{(editing.configuration?.navigation?.length ? editing.configuration.navigation : defaultSiteNavigation(editing.kind)).map((item, index) => <div className="website-nav-row" key={item.id}><input value={item.label} aria-label={`${item.id} page label`} onChange={(event) => updateNavigation(setEditing, editing, index, { label: event.target.value })} /><label><input type="checkbox" checked={item.visible !== false} onChange={(event) => updateNavigation(setEditing, editing, index, { visible: event.target.checked })} />Visible</label></div>)}</section>
+            <section className="website-copy-editor"><h3>Website copy</h3><label>Home headline<input name="heroTitle" value={editing.configuration?.content?.heroTitle || editing.name} onChange={(e) => updateEditingConfig(setEditing, "content", "heroTitle", e.target.value)} /></label><label>Home introduction<textarea name="heroCopy" value={editing.configuration?.content?.heroCopy || ""} onChange={(e) => updateEditingConfig(setEditing, "content", "heroCopy", e.target.value)} /></label><label>About headline<input name="aboutTitle" value={editing.configuration?.content?.aboutTitle || ""} onChange={(e) => updateEditingConfig(setEditing, "content", "aboutTitle", e.target.value)} /></label><label>About story<textarea name="aboutCopy" value={editing.configuration?.content?.aboutCopy || ""} onChange={(e) => updateEditingConfig(setEditing, "content", "aboutCopy", e.target.value)} /></label><label>Portfolio headline<input name="collectionTitle" value={editing.configuration?.content?.collectionTitle || ""} onChange={(e) => updateEditingConfig(setEditing, "content", "collectionTitle", e.target.value)} /></label><label>Services headline<input name="servicesTitle" value={editing.configuration?.content?.servicesTitle || ""} onChange={(e) => updateEditingConfig(setEditing, "content", "servicesTitle", e.target.value)} /></label><label>Contact headline<input name="contactTitle" value={editing.configuration?.content?.contactTitle || ""} onChange={(e) => updateEditingConfig(setEditing, "content", "contactTitle", e.target.value)} /></label></section>
+            <section><h3>Contact & discovery</h3><label>Email<input name="email" type="email" value={editing.configuration?.contact?.email || ""} onChange={(e) => updateEditingConfig(setEditing, "contact", "email", e.target.value)} /></label><label>Phone<input name="phone" value={editing.configuration?.contact?.phone || ""} onChange={(e) => updateEditingConfig(setEditing, "contact", "phone", e.target.value)} /></label><label>Address<textarea name="address" value={editing.configuration?.contact?.address || ""} onChange={(e) => updateEditingConfig(setEditing, "contact", "address", e.target.value)} /></label><label>Search title<input name="seoTitle" value={editing.configuration?.seo?.title || editing.name} onChange={(e) => updateEditingConfig(setEditing, "seo", "title", e.target.value)} /></label><label>Search description<textarea name="seoDescription" value={editing.configuration?.seo?.description || ""} onChange={(e) => updateEditingConfig(setEditing, "seo", "description", e.target.value)} /></label></section>
+          </div>
+          <div className="website-device-preview"><header><span>Desktop</span><span>Tablet</span><span>Mobile</span><a href={`/sites/${editing.subdomain}`} target="_blank" rel="noreferrer">Open live preview <ExternalLink size={14} /></a></header><div style={{ "--preview-primary": editing.configuration?.theme?.primaryColor || "#173b31", backgroundImage: `linear-gradient(90deg, rgba(9,28,22,.88), rgba(9,28,22,.12)), url(${editing.configuration?.theme?.heroImage || websitePreviewImage(editing.kind)})` }}><small>{editing.name}</small><h3>{editing.configuration?.content?.heroTitle || editing.name}</h3><p>{editing.configuration?.content?.heroCopy || "Local property expertise, presented with clarity."}</p><button type="button">Explore</button></div></div>
         </form>
       )}
 
@@ -189,4 +206,21 @@ function websitePreviewImage(kind) {
   if (["hospitality", "serviced_apartments", "short_stay"].includes(kind)) return "/images/nestora/jabi-serviced-suite.webp";
   if (kind === "agency") return "/images/nestora/hero-abuja-residence.webp";
   return "/images/nestora/maitama-villa.webp";
+}
+
+function defaultSiteNavigation(kind) {
+  const portfolio = kind === "developer" ? "Developments" : ["hospitality", "serviced_apartments", "short_stay"].includes(kind) ? "Rooms & stays" : "Properties";
+  return [{ id: "home", label: "Home", visible: true }, { id: "portfolio", label: portfolio, visible: true }, { id: "about", label: "About", visible: true }, { id: "services", label: "Services", visible: true }, { id: "contact", label: "Contact", visible: true }];
+}
+function defaultSiteSections(kind) {
+  if (kind === "developer") return ["hero", "about", "developments", "available_units", "construction_updates", "contact", "social_links"];
+  if (["hospitality", "serviced_apartments", "short_stay"].includes(kind)) return ["hero", "about", "rooms_stays", "amenities", "gallery", "contact", "social_links"];
+  if (kind === "agency") return ["hero", "about", "featured_listings", "team", "areas_served", "contact", "social_links"];
+  return ["hero", "about", "featured_listings", "areas_served", "testimonials", "contact", "social_links"];
+}
+function updateEditingConfig(setEditing, group, key, value) { setEditing((current) => ({ ...current, configuration: { ...(current.configuration || {}), [group]: { ...(current.configuration?.[group] || {}), [key]: value } } })); }
+function updateNavigation(setEditing, editing, index, patch) {
+  const navigation = [...(editing.configuration?.navigation?.length ? editing.configuration.navigation : defaultSiteNavigation(editing.kind))];
+  navigation[index] = { ...navigation[index], ...patch };
+  setEditing((current) => ({ ...current, configuration: { ...(current.configuration || {}), navigation } }));
 }

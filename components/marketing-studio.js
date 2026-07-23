@@ -2,11 +2,17 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Type, Save, Download, Undo, Redo, Trash2, Lock, Unlock, ChevronUp, ChevronDown, Maximize2, Upload, Shapes, QrCode, Building2, Sparkles, Plus } from "lucide-react";
+import { Type, Save, Download, Undo, Redo, Trash2, Lock, Unlock, ChevronUp, ChevronDown, Maximize2, Upload, Shapes, QrCode, Building2, Camera, Images, Sparkles, Plus } from "lucide-react";
 
 const INITIAL_WIDTH = 595;
 const INITIAL_HEIGHT = 420;
 const SNAP = 12;
+const DOCUMENT_PRESETS = {
+  "A4 print": { width: 595, height: 842 }, "US Letter": { width: 612, height: 792 },
+  "Instagram square": { width: 500, height: 500 }, "Instagram portrait": { width: 400, height: 600 },
+  "Story / Reel": { width: 360, height: 640 }, "Landscape": { width: 800, height: 500 },
+  "Business card": { width: 504, height: 288 }, "Merchandise front": { width: 600, height: 600 },
+};
 
 export function MarketingStudio({ data, reload }) {
   const canvasRef = useRef(null);
@@ -19,6 +25,11 @@ export function MarketingStudio({ data, reload }) {
   const [brandKitId, setBrandKitId] = useState(draft?.brandKitId || "");
   const [listingId, setListingId] = useState(draft?.dynamicBindings?.listingId || "");
   const [exportFormat, setExportFormat] = useState("pdf");
+  const [pages, setPages] = useState(() => normalizedPages(draft));
+  const [activePage, setActivePage] = useState(0);
+  const [exportPreset, setExportPreset] = useState(draft?.documentSettings?.preset || "web");
+  const [dpi, setDpi] = useState(draft?.documentSettings?.dpi || 144);
+  const [mockup, setMockup] = useState(draft?.mockupSettings?.enabled || false);
   const [selectedId, setSelectedId] = useState(null);
   const [history, setHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
@@ -27,6 +38,7 @@ export function MarketingStudio({ data, reload }) {
   const [exporting, setExporting] = useState(false);
   const [notice, setNotice] = useState("");
   const [uploadingImage, setUploadingImage] = useState(null);
+  const [mediaFilter, setMediaFilter] = useState("all");
 
   const selectedElement = elements.find((item) => item.id === selectedId) || null;
   const elementsRef = useRef(elements);
@@ -45,6 +57,8 @@ export function MarketingStudio({ data, reload }) {
     setListingId(draft.dynamicBindings?.listingId || "");
     const editorElements = toEditorElements(draft.elements || []);
     setElements(editorElements);
+    setPages(normalizedPages(draft)); setActivePage(0);
+    setExportPreset(draft.documentSettings?.preset || "web"); setDpi(draft.documentSettings?.dpi || 144); setMockup(Boolean(draft.mockupSettings?.enabled));
     setHistory([JSON.stringify(editorElements)]);
     setHistoryIndex(0);
   }, [data?.latestDraft]);
@@ -56,12 +70,39 @@ export function MarketingStudio({ data, reload }) {
     setDesignId(next.id); setDesignName(next.name); setDesignKind(next.kind || "sale_brochure"); setCanvasSize({ width: next.canvasWidth, height: next.canvasHeight });
     setBrandKitId(next.brandKitId || ""); setListingId(next.dynamicBindings?.listingId || "");
     const editorElements = toEditorElements(next.elements || []);
+    setPages(normalizedPages(next)); setActivePage(0);
     setElements(editorElements); setHistory([JSON.stringify(editorElements)]); setHistoryIndex(0); setSelectedId(null);
   }
 
   function newDesign() {
     loadedDesignIdRef.current = null; setDesignId(null); setDesignName("Untitled property campaign"); setDesignKind("sale_brochure"); setCanvasSize({ width: 595, height: 842 });
-    setElements([]); setHistory(["[]"]); setHistoryIndex(0); setSelectedId(null);
+    setElements([]); setPages([{ id: crypto.randomUUID(), name: "Front", elements: [] }]); setActivePage(0); setHistory(["[]"]); setHistoryIndex(0); setSelectedId(null);
+  }
+
+  function committedPages() {
+    return pages.map((page, index) => ({ ...page, elements: index === activePage ? toCanonicalElements(elements) : page.elements || [] }));
+  }
+  function selectPage(index) {
+    const nextPages = committedPages();
+    setPages(nextPages); setActivePage(index);
+    const nextElements = toEditorElements(nextPages[index]?.elements || []);
+    setElements(nextElements); setHistory([JSON.stringify(nextElements)]); setHistoryIndex(0); setSelectedId(null);
+  }
+  function addPage(duplicate = false) {
+    const nextPages = committedPages();
+    const next = { id: crypto.randomUUID(), name: nextPages.length === 1 ? "Back" : `Page ${nextPages.length + 1}`, elements: duplicate ? toCanonicalElements(elements) : [] };
+    setPages([...nextPages, next]); setActivePage(nextPages.length);
+    const nextElements = toEditorElements(next.elements); setElements(nextElements); setHistory([JSON.stringify(nextElements)]); setHistoryIndex(0); setSelectedId(null);
+  }
+  function removePage(index) {
+    if (pages.length === 1) return;
+    const nextPages = committedPages().filter((_, pageIndex) => pageIndex !== index);
+    setPages(nextPages); const nextIndex = Math.max(0, Math.min(index, nextPages.length - 1)); setActivePage(nextIndex);
+    const nextElements = toEditorElements(nextPages[nextIndex].elements || []); setElements(nextElements); setHistory([JSON.stringify(nextElements)]); setHistoryIndex(0); setSelectedId(null);
+  }
+  function applyPreset(name) {
+    const preset = DOCUMENT_PRESETS[name];
+    if (preset) setCanvasSize(preset);
   }
 
   const pushHistory = useCallback((next) => {
@@ -90,6 +131,12 @@ export function MarketingStudio({ data, reload }) {
     pushHistory(next);
     setSelectedId(next[next.length - 1].id);
   }, [createElement, elements, pushHistory]);
+
+  function addLibraryImage(asset) {
+    const nextElement = { ...createElement("image"), src: asset.url, mediaId: asset.id, width: 300, height: 210 };
+    const next = [...elements, nextElement];
+    setElements(next); pushHistory(next); setSelectedId(nextElement.id);
+  }
 
   const updateElement = useCallback((id, patch) => {
     const next = elements.map((item) => item.id === id ? { ...item, ...patch } : item);
@@ -137,7 +184,7 @@ export function MarketingStudio({ data, reload }) {
       const response = await fetch("/api/workspace/marketing", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ action: "save", designId, name: designName, kind: designKind, canvasWidth: canvasSize.width, canvasHeight: canvasSize.height, brandKitId: brandKitId || null, elements: toCanonicalElements(elements), dynamicBindings: { ...(draft?.dynamicBindings || {}), listingId: listingId || null } }),
+        body: JSON.stringify({ action: "save", designId, name: designName, kind: designKind, canvasWidth: canvasSize.width, canvasHeight: canvasSize.height, brandKitId: brandKitId || null, elements: toCanonicalElements(elements), pages: committedPages(), documentSettings: { preset: exportPreset, dpi, bleedMm: exportPreset === "press" ? 3 : 0, cropMarks: exportPreset === "press" }, mockupSettings: { enabled: mockup, type: designKind.includes("social") ? "phone" : designKind.includes("business") ? "card" : "print" }, dynamicBindings: { ...(draft?.dynamicBindings || {}), listingId: listingId || null } }),
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload.error || "Draft could not be saved.");
@@ -159,7 +206,7 @@ export function MarketingStudio({ data, reload }) {
       const response = await fetch("/api/workspace/marketing", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ action: "export", format: exportFormat, designId, name: designName, kind: designKind, canvasWidth: canvasSize.width, canvasHeight: canvasSize.height, brandKitId: brandKitId || null, elements: toCanonicalElements(elements), dynamicBindings: { ...(draft?.dynamicBindings || {}), listingId: listingId || null } }),
+        body: JSON.stringify({ action: "export", format: exportFormat, designId, name: designName, kind: designKind, canvasWidth: canvasSize.width, canvasHeight: canvasSize.height, brandKitId: brandKitId || null, elements: toCanonicalElements(elements), pages: committedPages(), documentSettings: { preset: exportPreset, dpi, bleedMm: exportPreset === "press" ? 3 : 0, cropMarks: exportPreset === "press" }, mockupSettings: { enabled: mockup }, preset: exportPreset, dpi, exportKind: mockup ? "mockup" : "artwork", dynamicBindings: { ...(draft?.dynamicBindings || {}), listingId: listingId || null } }),
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload.error || "Export failed.");
@@ -254,6 +301,7 @@ export function MarketingStudio({ data, reload }) {
             <button type="button" onClick={handleRedo} disabled={historyIndex >= history.length - 1}><Redo size={16} />Redo</button>
           </div>
           <div className="studio-connections"><h3>Connected data</h3><label>Brand Kit<select value={brandKitId} onChange={(event) => setBrandKitId(event.target.value)}><option value="">No Brand Kit</option>{(data?.brandKits || []).map((kit) => <option key={kit.id} value={kit.id}>{kit.name}</option>)}</select></label><label>Property<select value={listingId} onChange={(event) => setListingId(event.target.value)}><option value="">No connected property</option>{(data?.listings || []).map((listing) => <option key={listing.id} value={listing.id}>{listing.title}</option>)}</select></label></div>
+          <div className="studio-media-library"><h3><Images size={15} />Media library</h3><div role="group" aria-label="Media source filters">{[["all","All"],["delivered","Nestora delivered"],["photos","Photos"],["drone","Drone"],["tour","360°"]].map(([value,label]) => <button type="button" className={mediaFilter === value ? "active" : ""} onClick={() => setMediaFilter(value)} key={value}>{label}</button>)}</div><div>{(data?.mediaLibrary || []).filter((asset) => mediaMatches(asset, mediaFilter)).slice(0, 24).map((asset) => <button type="button" onClick={() => addLibraryImage(asset)} aria-label={`Add ${asset.filename} to design`} key={asset.id}><img src={asset.url} alt="" /><span>{asset.media_source !== "user_upload" ? <Camera size={11} /> : null}{asset.listing_title}</span></button>)}</div>{!(data?.mediaLibrary || []).length ? <p>Upload listing media or receive a Nestora production delivery to reuse it here permanently.</p> : null}</div>
           {selectedElement ? (
             <div className="studio-selection">
               <h3>Selection</h3>
@@ -274,12 +322,14 @@ export function MarketingStudio({ data, reload }) {
           ) : <p className="panel-empty">Select an element to edit its size, position and stacking order.</p>}
         </aside>
         <div className="studio-canvas-wrap">
+          <div className="studio-document-bar"><label>Format<select onChange={(event) => applyPreset(event.target.value)} defaultValue="A4 print">{Object.keys(DOCUMENT_PRESETS).map((name) => <option value={name} key={name}>{name}</option>)}</select></label><span>{canvasSize.width} × {canvasSize.height}px</span><label className="studio-mockup-toggle"><input type="checkbox" checked={mockup} onChange={(event) => setMockup(event.target.checked)} />Mockup preview</label></div>
+          <div className="studio-pages" role="tablist" aria-label="Design pages">{pages.map((page, index) => <div key={page.id}><button type="button" role="tab" aria-selected={activePage === index} className={activePage === index ? "active" : ""} onClick={() => selectPage(index)}>{page.name}</button>{pages.length > 1 ? <button type="button" onClick={() => removePage(index)} aria-label={`Remove ${page.name}`}><Trash2 size={12} /></button> : null}</div>)}<button type="button" onClick={() => addPage(false)}><Plus size={13} />Page</button><button type="button" onClick={() => addPage(true)}>Duplicate</button></div>
           <div className="studio-zoom">
             <button type="button" onClick={() => setZoom((z) => Math.max(0.5, z - 0.1))}>-</button>
             <span>{Math.round(zoom * 100)}%</span>
             <button type="button" onClick={() => setZoom((z) => Math.min(2, z + 0.1))}>+</button>
           </div>
-          <div className="studio-canvas" onClick={() => setSelectedId(null)} style={{ transform: `scale(${zoom})` }} ref={canvasRef}>
+          <div className={`studio-canvas ${mockup ? "studio-canvas--mockup" : ""}`} onClick={() => setSelectedId(null)} style={{ transform: `scale(${zoom})` }} ref={canvasRef}>
             <div style={{ width: canvasSize.width, height: canvasSize.height, background: "#ffffff", border: "1px solid #d6ded9", position: "relative", overflow: "hidden" }}>
               {elements.map((element) => {
                 const isSelected = selectedId === element.id;
@@ -300,6 +350,8 @@ export function MarketingStudio({ data, reload }) {
       </div>
       <div className="studio-footer">
         <button type="button" onClick={saveDraft} disabled={saving}><Save size={16} />{saving ? "Saving..." : "Save draft"}</button>
+        <label className="studio-export-format">Preset<select value={exportPreset} onChange={(event) => setExportPreset(event.target.value)}><option value="web">Web</option><option value="social">Social</option><option value="print">Print</option><option value="press">Press · bleed & crop marks</option></select></label>
+        <label className="studio-export-format">DPI<select value={dpi} onChange={(event) => setDpi(Number(event.target.value))}><option value="72">72</option><option value="144">144</option><option value="300">300</option><option value="600">600</option></select></label>
         <label className="studio-export-format">Export<select value={exportFormat} onChange={(event) => setExportFormat(event.target.value)}><option value="pdf">PDF</option><option value="png">PNG</option><option value="jpeg">JPEG</option></select></label>
         <button type="button" onClick={exportDesignFile} disabled={exporting}><Download size={16} />{exporting ? "Exporting..." : `Export ${exportFormat.toUpperCase()}`}</button>
       </div>
@@ -309,6 +361,11 @@ export function MarketingStudio({ data, reload }) {
 
 function snap(value) {
   return Math.round(value / SNAP) * SNAP;
+}
+
+function normalizedPages(design) {
+  if (Array.isArray(design?.pages) && design.pages.length) return design.pages;
+  return [{ id: "front", name: "Front", elements: design?.elements || [] }];
 }
 
 function toEditorElements(elements) {
@@ -350,4 +407,13 @@ function normalizedQrTarget(element) {
     if (candidate && typeof candidate.destination === "string") return candidate.destination;
   }
   return "/";
+}
+
+function mediaMatches(asset, filter) {
+  if (filter === "all") return asset.kind === "image";
+  if (filter === "delivered") return asset.media_source !== "user_upload" && asset.kind === "image";
+  if (filter === "photos") return ["cover", "gallery"].includes(asset.media_role);
+  if (filter === "drone") return asset.media_source === "drone";
+  if (filter === "tour") return asset.media_role === "panorama" || asset.media_source === "tour_360";
+  return true;
 }

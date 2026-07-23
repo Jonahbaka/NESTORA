@@ -19,6 +19,7 @@
     "qa:marketing-pdf": "node scripts/package-marketing-pdfs.js",
     "qa:commercial": "node scripts/run-commercial-qa.js",
     "qa:browser:commercial": "node scripts/run-commercial-workspace-browser-qa.js",
+    "qa:browser:property-media": "node scripts/run-premium-property-media-browser-qa.js",
     "qa:e2e": "node scripts/run-deployed-e2e.js",
     "qa:browser": "node scripts/run-local-product-browser-qa.js",
     "qa:browser:specialists": "node scripts/run-local-specialist-browser-qa.js",
